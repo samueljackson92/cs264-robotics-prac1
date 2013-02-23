@@ -1,13 +1,12 @@
-# Compiled Object files
 *.slo
 *.lo
-*.o
 
-# Compiled Dynamic libraries
+*.o
 *.so
 *.dylib
 
-# Compiled Static libraries
 *.lai
 *.la
 *.a
+
+*.tar

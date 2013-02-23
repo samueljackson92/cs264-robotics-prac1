@@ -26,45 +26,115 @@
  *                                           SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *                                           */
 
+#define _USE_MATH_DEFINES
+
 #include <iostream>
 #include <libplayerc++/playerc++.h>
+#include <cmath>
 
-	int
-main(int argc, char *argv[])
+using namespace std;
+using namespace PlayerCc;
+
+void turn(double angle, PlayerClient &robot, Position2dProxy &pp);
+void move(double x, double y, PlayerClient &robot, Position2dProxy &pp);
+void moveToPosition(double x, double y, PlayerClient &robot, Position2dProxy &pp);
+
+int main(int argc, char *argv[])
 {
-	using namespace PlayerCc;
-
-	PlayerClient    robot("localhost");
-	RangerProxy      sp(&robot,0);
+	PlayerClient robot("localhost");
+	RangerProxy sp(&robot,0);
 	Position2dProxy pp(&robot,0);
 
 	pp.SetMotorEnable(true);
+	robot.Read();
 
-	for(;;)
-	{
-		double turnrate, speed;
+	moveToPosition(7, -7, robot, pp);
+	// for(;;)
+	// {
+	// 	double turnrate, speed;
 
-		//  read from the proxies
-		robot.Read();
+	// 	//  read from the proxies
+	// 	robot.Read();
 
-		//         print out sonars for fun
-		std::cout << sp << std::endl;
+	// 	//print out sonars for fun
+	// 	std::cout << sp << std::endl;
 
-		//             do simple collision avoidance
-		if((sp[0] + sp[1]) < (sp[6] + sp[7]))
-			turnrate = dtor(-20); // turn 20 degrees per second
-		else
-			turnrate = dtor(20);
+	// 	//do simple collision avoidance
+	// 	if((sp[0] + sp[1]) < (sp[6] + sp[7]))
+	// 		turnrate = dtor(-20); // turn 20 degrees per second
+	// 	else
+	// 		turnrate = dtor(20);
 
-		if(sp[3] < 0.500)
-			speed = 0;
-		else
-			speed = 0.100;
+	// 	if(sp[3] < 0.500)
+	// 		speed = 0;
+	// 	else
+	// 		speed = 0.100;
 
-		//                                                           command the motors
-		pp.SetSpeed(speed, turnrate);
 
-	}
+	// 	move(-1, -7, robot, pp);
+	// 	//turn(90, robot, pp); //turn 90 degrees
+
+	// 	//command the motors
+	// 	//pp.SetSpeed(speed, turnrate);
+
+	// }
 }
 
+//turn to the given angle
+void turn(double target, PlayerClient &robot, Position2dProxy &pp) {
+	const double gain = 0.5;
+	double turnrate, yaw, error;
+
+	do {
+		robot.Read();
+		yaw = rtod(pp.GetYaw());
+
+		error = target - yaw;
+		turnrate = error * gain;
+
+		pp.SetSpeed(0, dtor(turnrate));
+
+	} while(abs(error) > 2);
+
+	cout << "Angle Error: " << error << endl;
+	cout << "Done Turning!" << endl;
+}
+
+void moveToPosition(double x, double y, PlayerClient &robot, Position2dProxy &pp) {
+	double dx, dy, angle;
+
+	dx = x - pp.GetXPos();
+	dy = y - pp.GetYPos();
+
+	angle = atan2(dy, dx) * 180 / M_PI;
+	turn(angle, robot, pp);
+	move(x, y, robot, pp);
+}
+
+//Move robot to a specific x/y position
+void move(double x, double y, PlayerClient &robot, Position2dProxy &pp) {
+	double dx, dy, angle, speed, turnrate;
+	const double gain = 0.15;
+
+	dx = x - pp.GetXPos();
+	dy = y - pp.GetYPos();
+
+	do {
+		robot.Read();
+
+		dx = x - pp.GetXPos();
+		dy = y - pp.GetYPos();
+		speed = sqrt(pow(dx,2) + pow(dy,2)) * gain;
+
+		//correct angle while moving
+		angle = atan2(dy, dx) * 180 / M_PI;
+		turnrate = dtor((angle - rtod(pp.GetYaw())) * 0.5);
+
+		pp.SetSpeed(speed, turnrate);
+	} while (abs(dx) > 0.3 || abs(dy) > 0.3);
+
+	cout << "X Error: " << dx << endl;
+	cout << "Y Error: " << dy << endl;
+	cout << "Finished Moving!" << endl;
+}
 
