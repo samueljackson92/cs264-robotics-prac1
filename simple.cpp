@@ -32,12 +32,11 @@
 #include <libplayerc++/playerc++.h>
 #include <cmath>
 
+#include "pcontroller.h"
+#include "occupancygrid.h"
+
 using namespace std;
 using namespace PlayerCc;
-
-void turn(double angle, PlayerClient &robot, Position2dProxy &pp);
-void move(double x, double y, PlayerClient &robot, Position2dProxy &pp);
-void moveToPosition(double x, double y, PlayerClient &robot, Position2dProxy &pp);
 
 int main(int argc, char *argv[])
 {
@@ -45,96 +44,51 @@ int main(int argc, char *argv[])
 	RangerProxy sp(&robot,0);
 	Position2dProxy pp(&robot,0);
 
+	//create a pcontroller for the robot
+	PController pc(&robot, &pp);
+
+	//createa blank occupancy grid
+	OccupancyGrid grid;
+
 	pp.SetMotorEnable(true);
-	robot.Read();
+	double turnrate, speed;
 
-	moveToPosition(7, -7, robot, pp);
-	// for(;;)
-	// {
-	// 	double turnrate, speed;
-
-	// 	//  read from the proxies
-	// 	robot.Read();
-
-	// 	//print out sonars for fun
-	// 	std::cout << sp << std::endl;
-
-	// 	//do simple collision avoidance
-	// 	if((sp[0] + sp[1]) < (sp[6] + sp[7]))
-	// 		turnrate = dtor(-20); // turn 20 degrees per second
-	// 	else
-	// 		turnrate = dtor(20);
-
-	// 	if(sp[3] < 0.500)
-	// 		speed = 0;
-	// 	else
-	// 		speed = 0.100;
-
-
-	// 	move(-1, -7, robot, pp);
-	// 	//turn(90, robot, pp); //turn 90 degrees
-
-	// 	//command the motors
-	// 	//pp.SetSpeed(speed, turnrate);
-
-	// }
-}
-
-//turn to the given angle
-void turn(double target, PlayerClient &robot, Position2dProxy &pp) {
-	const double gain = 0.5;
-	double turnrate, yaw, error;
-
-	do {
+	//pc.Turn(0);
+	//pc.MoveSetDistance(5);
+	for (;;) {
 		robot.Read();
-		yaw = rtod(pp.GetYaw());
+	 	std::cout << sp << std::endl;
 
-		error = target - yaw;
-		turnrate = error * gain;
+		//do simple collision avoidance
+		if((sp[0] + sp[1]) < (sp[6] + sp[7]))
+			turnrate = dtor(-20); // turn 20 degrees per second
+		else
+			turnrate = dtor(20);
 
-		pp.SetSpeed(0, dtor(turnrate));
+		if(sp[3] < 0.500)
+			speed = 0;
+		else
+			speed = 0.100;
 
-	} while(abs(error) > 2);
+		//map using sensors
+		double x = pp.GetXPos();
+		double y = pp.GetYPos();
+		double angle = pp.GetYaw();
 
-	cout << "Angle Error: " << error << endl;
-	cout << "Done Turning!" << endl;
-}
+		//forward sensors
+		grid.SensorUpdate(x, y, sp[3], angle + dtor(15));
+		grid.SensorUpdate(x, y, sp[4], angle + dtor(345));
 
-void moveToPosition(double x, double y, PlayerClient &robot, Position2dProxy &pp) {
-	double dx, dy, angle;
+		//rear sensors
+		grid.SensorUpdate(x, y, sp[0], angle + dtor(90));
+		grid.SensorUpdate(x, y, sp[7], angle + dtor(270));
 
-	dx = x - pp.GetXPos();
-	dy = y - pp.GetYPos();
+		grid.PrintGrid();
 
-	angle = atan2(dy, dx) * 180 / M_PI;
-	turn(angle, robot, pp);
-	move(x, y, robot, pp);
-}
-
-//Move robot to a specific x/y position
-void move(double x, double y, PlayerClient &robot, Position2dProxy &pp) {
-	double dx, dy, angle, speed, turnrate;
-	const double gain = 0.15;
-
-	dx = x - pp.GetXPos();
-	dy = y - pp.GetYPos();
-
-	do {
-		robot.Read();
-
-		dx = x - pp.GetXPos();
-		dy = y - pp.GetYPos();
-		speed = sqrt(pow(dx,2) + pow(dy,2)) * gain;
-
-		//correct angle while moving
-		angle = atan2(dy, dx) * 180 / M_PI;
-		turnrate = dtor((angle - rtod(pp.GetYaw())) * 0.5);
-
+		//pc.MoveSetDistance(1);
+		//command the motors
 		pp.SetSpeed(speed, turnrate);
-	} while (abs(dx) > 0.3 || abs(dy) > 0.3);
 
-	cout << "X Error: " << dx << endl;
-	cout << "Y Error: " << dy << endl;
-	cout << "Finished Moving!" << endl;
+	}
 }
 
