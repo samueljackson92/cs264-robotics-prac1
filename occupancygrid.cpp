@@ -63,16 +63,16 @@ void OccupancyGrid::PrintGrid(){
 	using namespace std;
 	for (int i = 0; i < MAP_SIZE; i++) {
 		for (int j = 0; j < MAP_SIZE; j++) {
-			printf(" %3d ", map[j][i]);
+			printf(" %4d ", map[j][i]);
 		}
 		cout << endl;
 	}
 }
 
 int OccupancyGrid::ScaleToGrid(double num) {
-	return RoundHalfUp((num + GRID_OFFSET) * MAP_SCALE);
+	return Round((num + GRID_OFFSET) * MAP_SCALE);
 }
 
-int OccupancyGrid::RoundHalfUp(double num) {
+int OccupancyGrid::Round(double num) {
 	return (num >= 0) ? floor(num+0.6) : ceil(num-0.6);
 }

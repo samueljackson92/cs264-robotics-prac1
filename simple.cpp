@@ -76,12 +76,16 @@ int main(int argc, char *argv[])
 		double angle = pp.GetYaw();
 
 		//forward sensors
-		grid.SensorUpdate(x, y, sp[3], angle + dtor(15));
-		grid.SensorUpdate(x, y, sp[4], angle + dtor(345));
+		grid.SensorUpdate(x, y, sp[3], angle + dtor(10));
+		grid.SensorUpdate(x, y, sp[4], angle + dtor(350));
 
-		//rear sensors
+		//side sensors
 		grid.SensorUpdate(x, y, sp[0], angle + dtor(90));
 		grid.SensorUpdate(x, y, sp[7], angle + dtor(270));
+
+		//rear sensors
+		grid.SensorUpdate(x, y, sp[12], angle + dtor(170));
+		grid.SensorUpdate(x, y, sp[11], angle + dtor(190));
 
 		grid.PrintGrid();
 

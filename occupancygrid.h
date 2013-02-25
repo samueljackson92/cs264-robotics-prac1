@@ -1,8 +1,11 @@
 #ifndef __OCCUPANCYGRID_H_INCLUDED__
 #define __OCCUPANCYGRID_H_INCLUDED__
 
-#define MAP_SIZE 16
+#include <cmath>
+
+#define COORD_SIZE 17
 #define MAP_SCALE 1
+#define MAP_SIZE (int) (COORD_SIZE / MAP_SCALE)
 #define GRID_OFFSET MAP_SIZE /2
 
 class OccupancyGrid {
@@ -19,7 +22,7 @@ class OccupancyGrid {
 
 	private:
 		int ScaleToGrid(double num);
-		int RoundHalfUp(double num);
+		int Round(double num);
 };
 
 #endif
