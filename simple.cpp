@@ -49,10 +49,9 @@ int main(int argc, char *argv[])
 
 	//createa blank occupancy grid
 	OccupancyGrid grid;
-
 	pp.SetMotorEnable(true);
-	double turnrate, speed;
-
+	double turnrate, speed, dx, dy;
+	double x, y;
 	//pc.Turn(0);
 	//pc.MoveSetDistance(5);
 	for (;;) {
@@ -71,21 +70,22 @@ int main(int argc, char *argv[])
 			speed = 0.100;
 
 		//map using sensors
-		double x = pp.GetXPos();
-		double y = pp.GetYPos();
+		x = pp.GetXPos();
+		y = pp.GetYPos();
 		double angle = pp.GetYaw();
 
 		//forward sensors
-		grid.SensorUpdate(x, y, sp[3], angle + dtor(10));
-		grid.SensorUpdate(x, y, sp[4], angle + dtor(350));
+		grid.UpdateBotPosition(x,y);
+		// grid.SensorUpdate(sp[3], angle + dtor(10));
+		// grid.SensorUpdate(sp[4], angle + dtor(350));
 
 		//side sensors
-		grid.SensorUpdate(x, y, sp[0], angle + dtor(90));
-		grid.SensorUpdate(x, y, sp[7], angle + dtor(270));
+		grid.SensorUpdate(sp[0], angle + dtor(90));
+		grid.SensorUpdate(sp[7], angle + dtor(270));
 
 		//rear sensors
-		grid.SensorUpdate(x, y, sp[12], angle + dtor(170));
-		grid.SensorUpdate(x, y, sp[11], angle + dtor(190));
+		// grid.SensorUpdate(sp[12], angle + dtor(170));
+		// grid.SensorUpdate(sp[11], angle + dtor(190));
 
 		grid.PrintGrid();
 
