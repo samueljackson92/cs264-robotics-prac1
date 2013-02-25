@@ -1,31 +1,34 @@
 #ifndef __OCCUPANCYGRID_H_INCLUDED__
 #define __OCCUPANCYGRID_H_INCLUDED__
 
-#include <cmath>
+#include <vector>
+#include <string>
 
-#define COORD_SIZE 17
 #define MAP_SCALE 0.6
-#define BOT_START_X -7
-#define BOT_START_Y -7
-#define MAP_SIZE (int) (COORD_SIZE / MAP_SCALE)
+#define EXPANSION_SIZE 6
 
 class OccupancyGrid {
 	
-	int map[MAP_SIZE][MAP_SIZE];
-	double robot_x, robot_y;
-	double start_x, start_y;
-	double old_x, old_y;
-	int grid_x, grid_y;
+	//grid of cells
+	std::vector<std::vector<int> > grid;
+	double robot_x, robot_y; //internal robot position
+	double start_x, start_y; //internal robot start point
+	double old_x, old_y;	 //previous internal robot positon
+	int grid_x, grid_y;		 //range grid position
+	int grid_height, grid_width;
 
 	public:
-		OccupancyGrid();
+		OccupancyGrid(double x, double y);
 		int GetCell(int x, int y);
 		void SetCell(int x, int y, int value);
 		void IncrementCell(int x, int y);
 		void SensorUpdate(double range, double angle);
 		void PrintGrid();
 		void UpdateBotPosition(double x, double y);
+		void WriteGrid(const char* filename);
 	private:
+		void ExpandGrid();
+		void ResizeGrid(int w, int h);
 		int ScaleToGrid(double num);
 		int Round(double num);
 };

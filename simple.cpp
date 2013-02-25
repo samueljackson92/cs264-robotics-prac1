@@ -31,6 +31,7 @@
 #include <iostream>
 #include <libplayerc++/playerc++.h>
 #include <cmath>
+#include <signal.h>
 
 #include "pcontroller.h"
 #include "occupancygrid.h"
@@ -38,8 +39,15 @@
 using namespace std;
 using namespace PlayerCc;
 
+OccupancyGrid grid(-7,-7);
+
+//Interrupt handler.
+void signal_callback_handler(int signum);
+
 int main(int argc, char *argv[])
 {
+	signal(SIGINT, signal_callback_handler);
+
 	PlayerClient robot("localhost");
 	RangerProxy sp(&robot,0);
 	Position2dProxy pp(&robot,0);
@@ -47,11 +55,18 @@ int main(int argc, char *argv[])
 	//create a pcontroller for the robot
 	PController pc(&robot, &pp);
 
-	//createa blank occupancy grid
-	OccupancyGrid grid;
-	pp.SetMotorEnable(true);
 	double turnrate, speed, dx, dy;
-	double x, y;
+	double x, y, angle;
+
+	robot.Read();
+
+	x = pp.GetXPos();
+	y = pp.GetYPos();
+
+	//create a blank occupancy grid
+
+	pp.SetMotorEnable(true);
+
 	//pc.Turn(0);
 	//pc.MoveSetDistance(5);
 	for (;;) {
@@ -72,7 +87,7 @@ int main(int argc, char *argv[])
 		//map using sensors
 		x = pp.GetXPos();
 		y = pp.GetYPos();
-		double angle = pp.GetYaw();
+		angle = pp.GetYaw();
 
 		//forward sensors
 		grid.UpdateBotPosition(x,y);
@@ -94,5 +109,14 @@ int main(int argc, char *argv[])
 		pp.SetSpeed(speed, turnrate);
 
 	}
+}
+
+void signal_callback_handler(int signum)
+{
+   printf("Caught signal %d\n",signum);
+   // Cleanup and close up stuff here
+   grid.WriteGrid("output.csv");
+   // Terminate program
+   exit(signum);
 }
 
