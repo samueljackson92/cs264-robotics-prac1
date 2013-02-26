@@ -39,6 +39,7 @@
 using namespace std;
 using namespace PlayerCc;
 
+//create a blank occupancy grid
 OccupancyGrid grid(-7,-7);
 
 //Interrupt handler.
@@ -53,7 +54,7 @@ int main(int argc, char *argv[])
 	Position2dProxy pp(&robot,0);
 
 	//create a pcontroller for the robot
-	PController pc(&robot, &pp);
+	PController pc(&robot, &pp, &grid);
 
 	double turnrate, speed, dx, dy;
 	double x, y, angle;
@@ -63,57 +64,70 @@ int main(int argc, char *argv[])
 	x = pp.GetXPos();
 	y = pp.GetYPos();
 
-	//create a blank occupancy grid
-
 	pp.SetMotorEnable(true);
 
-	//pc.Turn(0);
-	//pc.MoveSetDistance(5);
 	for (;;) {
 		robot.Read();
 	 	std::cout << sp << std::endl;
 
 		//do simple collision avoidance
-		if((sp[0] + sp[1]) < (sp[6] + sp[7]))
-			turnrate = dtor(-20); // turn 20 degrees per second
-		else
-			turnrate = dtor(20);
+		if(sp[3] < 0.6 || sp[4] < 0.6) {
+			int direction = (sp[3]<sp[4]) ? -1 : 1;
+		} else if((sp[0] + sp[1]) < (sp[6] + sp[7])) {
+			turnrate = dtor(-10); // turn 20 degrees per second
+		} else {
+			turnrate = dtor(10);
+		}
 
-		if(sp[3] < 0.500)
+		if(sp[3] < 0.6 || sp[4] < 0.6) {
 			speed = 0;
-		else
-			speed = 0.100;
+		} else {
+			speed = 0.150;
+		}
 
 		//map using sensors
 		x = pp.GetXPos();
 		y = pp.GetYPos();
 		angle = pp.GetYaw();
 
-		//forward sensors
 		grid.UpdateBotPosition(x,y);
-		// grid.SensorUpdate(sp[3], angle + dtor(10));
-		// grid.SensorUpdate(sp[4], angle + dtor(350));
+
+		//forward sensors
+		grid.SensorUpdate(sp[3], angle + dtor(10));
+		grid.SensorUpdate(sp[4], angle + dtor(-10));
 
 		//side sensors
 		grid.SensorUpdate(sp[0], angle + dtor(90));
-		grid.SensorUpdate(sp[7], angle + dtor(270));
+		grid.SensorUpdate(sp[15], angle + dtor(90));
+
+		grid.SensorUpdate(sp[7], angle + dtor(-90));
+		grid.SensorUpdate(sp[8], angle + dtor(-90));
 
 		//rear sensors
-		// grid.SensorUpdate(sp[12], angle + dtor(170));
-		// grid.SensorUpdate(sp[11], angle + dtor(190));
+		grid.SensorUpdate(sp[12], angle + dtor(170));
+		grid.SensorUpdate(sp[11], angle + dtor(-170));
+
+		//diagonal sensors
+		grid.SensorUpdate(sp[1], angle + dtor(50));
+		grid.SensorUpdate(sp[2], angle + dtor(30));
+		grid.SensorUpdate(sp[5], angle + dtor(-30));
+		grid.SensorUpdate(sp[6], angle + dtor(-50));
+
+		grid.SensorUpdate(sp[14], angle + dtor(130));
+		grid.SensorUpdate(sp[13], angle + dtor(150));
+		grid.SensorUpdate(sp[10], angle + dtor(-150));
+		grid.SensorUpdate(sp[9], angle + dtor(-130));
 
 		grid.PrintGrid();
 
-		//pc.MoveSetDistance(1);
 		//command the motors
 		pp.SetSpeed(speed, turnrate);
-
 	}
 }
 
 void signal_callback_handler(int signum)
 {
-   printf("Caught signal %d\n",signum);
+   printf("\nCaught signal %d\n",signum);
    // Cleanup and close up stuff here
    grid.WriteGrid("output.csv");
    // Terminate program

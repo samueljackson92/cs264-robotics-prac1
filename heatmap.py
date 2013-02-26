@@ -40,9 +40,17 @@ if __name__ == "__main__":
 	
 	dat = dat[::-1]
 
+	def average_list(listdat):
+		return float(sum(listdat)) / float(len(listdat))
+
+	def weight(listdat):
+		maxdat = max(listdat)
+		weights_list = [(float(maxdat - item)/ float(maxdat)) for item in listdat]
+		return average_list(weights_list)
+
 	flatdat = [item for sublist in dat for item in sublist if item > 0]
-	average = float(sum(flatdat)) / float(len(flatdat))
-	threshold = int(math.floor(average/2.0))
+	average = average_list(flatdat)
+	threshold = int(math.floor(average/2.5) * weight(flatdat)) 
 
 	print "\nSTATS---------------------------------"
 	print "Average Density: %0.3f" % average

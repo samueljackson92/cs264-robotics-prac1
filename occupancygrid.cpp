@@ -6,11 +6,13 @@
 #include "occupancygrid.h"
 
 OccupancyGrid::OccupancyGrid(double x, double y) {
-	grid_height = 3;
-	grid_width = 3;
+	threshold = 0;
 
-	start_x = 1.0;
-	start_y = 1.0;
+	grid_height = EXPANSION_SIZE;
+	grid_width = EXPANSION_SIZE;
+
+	start_x = EXPANSION_SIZE/2;
+	start_y = EXPANSION_SIZE/2;
 
 	old_x = x;
 	old_y = y;
@@ -57,10 +59,7 @@ void OccupancyGrid::UpdateBotPosition(double x, double y) {
 void OccupancyGrid::SensorUpdate(double range, double angle) {
 	double sensor_x, sensor_y;
 
-	sensor_x = robot_x + (cos(angle) * range);
-	sensor_y = robot_y + (sin(angle) * range);
-
-	if (range < 4) {
+	if (range < 1.8) {
 		//new point hit by sensor
 		sensor_x = robot_x + (cos(angle) * range);
 		sensor_y = robot_y + (sin(angle) * range);
@@ -97,11 +96,7 @@ void OccupancyGrid::PrintGrid(){
 }
 
 int OccupancyGrid::ScaleToGrid(double num) {
-	return Round(num/MAP_SCALE);
-}
-
-int OccupancyGrid::Round(double num) {
-	return (num >= 0) ? floor(num+0.5) : ceil(num-0.5);
+	return (num >= 0) ? floor((num+ROUNDING_OFFSET)/MAP_SCALE) : ceil((num-ROUNDING_OFFSET)/MAP_SCALE);
 }
 
 void OccupancyGrid::ExpandGrid() {
@@ -163,4 +158,22 @@ void OccupancyGrid::WriteGrid(const char* filename) {
 	}
 
 	file.close();
+}
+
+void OccupancyGrid::CalculateThreshold() {
+	//calculate the average of all wall points
+	int n = 0, d = 0, value = 0;
+	for (int i = 0; i < grid_height; i++) {
+		for (int j = 0; j < grid_width; j++) {
+			value = GetCell(i,j);
+			if(value > 0) {
+				n += value;
+				d += 1;
+			}
+		}
+	}
+
+	//always round down
+	threshold = n/d;
+
 }

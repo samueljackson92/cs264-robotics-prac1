@@ -14,19 +14,22 @@
 #include <libplayerc++/playerc++.h>
 #include <cmath>
 
+#include "occupancygrid.h"
+
 class PController {
 	PlayerCc::PlayerClient* robot;
 	PlayerCc::Position2dProxy* pp;
-
+	OccupancyGrid* grid;
+	
 	public:
 		PController(PlayerCc::PlayerClient* robot, 
-			PlayerCc::Position2dProxy* pp);
-		
+			PlayerCc::Position2dProxy* pp, OccupancyGrid* grid);
+		~PController();
+
 		void Turn(double angle);
 		void Move(double x, double y);
 		void MoveSetDistance(double distance);
 		void MoveToPosition(double x, double y);
-
 };
 
 #endif

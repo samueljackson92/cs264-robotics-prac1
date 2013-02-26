@@ -5,6 +5,7 @@
 #include <string>
 
 #define MAP_SCALE 0.6
+#define ROUNDING_OFFSET 0.35
 #define EXPANSION_SIZE 6
 
 class OccupancyGrid {
@@ -16,6 +17,7 @@ class OccupancyGrid {
 	double old_x, old_y;	 //previous internal robot positon
 	int grid_x, grid_y;		 //range grid position
 	int grid_height, grid_width;
+	int threshold;
 
 	public:
 		OccupancyGrid(double x, double y);
@@ -28,9 +30,9 @@ class OccupancyGrid {
 		void WriteGrid(const char* filename);
 	private:
 		void ExpandGrid();
+		void CalculateThreshold();
 		void ResizeGrid(int w, int h);
 		int ScaleToGrid(double num);
-		int Round(double num);
 };
 
 #endif
