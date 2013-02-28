@@ -18,15 +18,10 @@ OccupancyGrid::OccupancyGrid() {
 	robot_x = start_x;
 	robot_y = start_y;
 
-	ResizeGrid(grid_width, grid_height);
+	grid_x = start_x;
+	grid_y = start_y;
 
-	//fill grid with empty squares
-	for (int i = 0; i < grid_width; i++) {
-		for (int j = 0; j < grid_height; j++) {
-			SetCell(i, j, 0);
-		}
-	}
-	std::cout << "hi" << std::endl;
+	ResizeGrid(grid_width, grid_height);
 }
 
 void OccupancyGrid::Init(double x, double y) {
@@ -35,11 +30,11 @@ void OccupancyGrid::Init(double x, double y) {
 }
 
 int OccupancyGrid::GetCell(int x, int y) {
-	return grid[/*(grid_height-1) -*/ y][x];
+	return grid[y][x];
 }
 
 void OccupancyGrid::SetCell(int x, int y, int value) {
-	grid[/*(grid_height-1) -*/ y][x] = value;
+	grid[y][x] = value;
 }
 
 void OccupancyGrid::IncrementCell(int x, int y) {
@@ -63,9 +58,10 @@ void OccupancyGrid::SensorUpdate(double range, double angle) {
 	double sensor_x, sensor_y;
 
 	if (range > 0.6  && range < 2) {
+
 		//new point hit by sensor
-		sensor_x = (robot_x/MAP_SCALE) + (cos(angle) * (range/MAP_SCALE));
-		sensor_y = (robot_y/MAP_SCALE) + (sin(angle) * (range/MAP_SCALE));
+		sensor_x = robot_x + (cos(angle) * range);
+		sensor_y = robot_y + (sin(angle) * range);
 
 		std::cout << "Our Position:" << std::endl;
 		std::cout << "x: " << robot_x << std::endl;
@@ -89,6 +85,7 @@ void OccupancyGrid::SensorUpdate(double range, double angle) {
 
 void OccupancyGrid::PrintGrid(){
 	using namespace std;
+
 	for (int y = (grid_height-1); y >= 0; y--) {
 		for (int x = 0; x < grid_width; x++) {
 			int value = GetCell(x, y);
@@ -101,7 +98,7 @@ void OccupancyGrid::PrintGrid(){
 }
 
 int OccupancyGrid::ScaleToGrid(double num) {
-	return (num >= 0) ? floor((num/MAP_SCALE) +0.5) : ceil((num-0.5));
+	return (num >= 0) ? floor((num+0.5)/MAP_SCALE) : ceil((num-0.5)/MAP_SCALE);
 }
 
 void OccupancyGrid::ExpandGrid() {
@@ -121,8 +118,9 @@ void OccupancyGrid::ExpandGrid() {
 		
 		//if we did a negative resize, shift data
 		if(grid_x < 0 || grid_y < 0) {
-			robot_x += x_expand;
-			robot_y += y_expand;
+			std::cout << "Moved in Y" << std::endl;
+			robot_x += (x_expand*MAP_SCALE);
+			robot_y += (y_expand*MAP_SCALE);
 
 			grid_x += x_expand;
 			grid_y += y_expand;
@@ -172,7 +170,7 @@ void OccupancyGrid::CalculateThreshold() {
 
 	vector<int> vec = VectorUtils::Flatten(grid);
 	vec = VectorUtils::Filter(vec, 0);
-	average = VectorUtils::Average(vec);
+	average = VectorUtils::Average(vec)/2;
 
 	cout << "Threshold: " << average << endl;
 }

@@ -49,7 +49,9 @@ int main(int argc, char *argv[])
 {
 	signal(SIGINT, signal_callback_handler);
 
+	//PlayerClient robot("bart.islnet.dcs.aber.ac.uk");
 	PlayerClient robot("localhost");
+	//SonarProxy sp(&robot,0);
 	RangerProxy sp(&robot,0);
 	Position2dProxy pp(&robot,0);
 
@@ -72,6 +74,13 @@ int main(int argc, char *argv[])
 		robot.Read();
 	 	std::cout << sp << std::endl;
 
+		//map using sensors
+		x = pp.GetXPos();
+		y = pp.GetYPos();
+		angle = pp.GetYaw();
+
+		grid.UpdateBotPosition(x,y);
+
 		//do simple collision avoidance
 		if(sp[3] < 0.6 || sp[4] < 0.6) {
 			int direction = (sp[3]<sp[4]) ? -1 : 1;
@@ -86,13 +95,6 @@ int main(int argc, char *argv[])
 		} else {
 			speed = 0.150;
 		}
-
-		//map using sensors
-		x = pp.GetXPos();
-		y = pp.GetYPos();
-		angle = pp.GetYaw();
-
-		grid.UpdateBotPosition(x,y);
 
 		if(speed != 0 ) {
 			//forward sensors

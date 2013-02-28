@@ -5,7 +5,6 @@
 #include <string>
 
 #define MAP_SCALE 0.6
-#define ROUNDING_OFFSET 0.3
 #define EXPANSION_SIZE 6
 
 class OccupancyGrid {
