@@ -94,32 +94,34 @@ int main(int argc, char *argv[])
 
 		grid.UpdateBotPosition(x,y);
 
-		//forward sensors
-		grid.SensorUpdate(sp[3], angle + dtor(10));
-		grid.SensorUpdate(sp[4], angle + dtor(-10));
+		if(speed != 0 ) {
+			//forward sensors
+			grid.SensorUpdate(sp[3], angle + dtor(10));
+			grid.SensorUpdate(sp[4], angle + dtor(-10));
 
-		//side sensors
-		grid.SensorUpdate(sp[0], angle + dtor(90));
-		grid.SensorUpdate(sp[15], angle + dtor(90));
+			//side sensors
+			grid.SensorUpdate(sp[0], angle + dtor(90));
+			grid.SensorUpdate(sp[15], angle + dtor(90));
 
-		grid.SensorUpdate(sp[7], angle + dtor(-90));
-		grid.SensorUpdate(sp[8], angle + dtor(-90));
+			grid.SensorUpdate(sp[7], angle + dtor(-90));
+			grid.SensorUpdate(sp[8], angle + dtor(-90));
 
-		//rear sensors
-		grid.SensorUpdate(sp[12], angle + dtor(170));
-		grid.SensorUpdate(sp[11], angle + dtor(-170));
+			//rear sensors
+			grid.SensorUpdate(sp[12], angle + dtor(170));
+			grid.SensorUpdate(sp[11], angle + dtor(-170));
 
-		//diagonal sensors
-		grid.SensorUpdate(sp[1], angle + dtor(50));
-		grid.SensorUpdate(sp[2], angle + dtor(30));
-		grid.SensorUpdate(sp[5], angle + dtor(-30));
-		grid.SensorUpdate(sp[6], angle + dtor(-50));
+			//diagonal sensors
+			grid.SensorUpdate(sp[1], angle + dtor(50));
+			grid.SensorUpdate(sp[2], angle + dtor(30));
+			grid.SensorUpdate(sp[5], angle + dtor(-30));
+			grid.SensorUpdate(sp[6], angle + dtor(-50));
 
-		grid.SensorUpdate(sp[14], angle + dtor(130));
-		grid.SensorUpdate(sp[13], angle + dtor(150));
-		grid.SensorUpdate(sp[10], angle + dtor(-150));
-		grid.SensorUpdate(sp[9], angle + dtor(-130));
-
+			grid.SensorUpdate(sp[14], angle + dtor(130));
+			grid.SensorUpdate(sp[13], angle + dtor(150));
+			grid.SensorUpdate(sp[10], angle + dtor(-150));
+			grid.SensorUpdate(sp[9], angle + dtor(-130));
+		}
+		
 		grid.PrintGrid();
 
 		//command the motors

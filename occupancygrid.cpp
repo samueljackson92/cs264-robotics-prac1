@@ -62,10 +62,10 @@ void OccupancyGrid::UpdateBotPosition(double x, double y) {
 void OccupancyGrid::SensorUpdate(double range, double angle) {
 	double sensor_x, sensor_y;
 
-	if (range < 1.8) {
+	if (range > 0.6  && range < 2) {
 		//new point hit by sensor
-		sensor_x = robot_x + (cos(angle) * range);
-		sensor_y = robot_y + (sin(angle) * range);
+		sensor_x = (robot_x/MAP_SCALE) + (cos(angle) * (range/MAP_SCALE));
+		sensor_y = (robot_y/MAP_SCALE) + (sin(angle) * (range/MAP_SCALE));
 
 		std::cout << "Our Position:" << std::endl;
 		std::cout << "x: " << robot_x << std::endl;
@@ -101,7 +101,7 @@ void OccupancyGrid::PrintGrid(){
 }
 
 int OccupancyGrid::ScaleToGrid(double num) {
-	return (num >= 0) ? floor(num/0.6) : ceil((num-0.5));
+	return (num >= 0) ? floor((num/MAP_SCALE) +0.5) : ceil((num-0.5));
 }
 
 void OccupancyGrid::ExpandGrid() {
