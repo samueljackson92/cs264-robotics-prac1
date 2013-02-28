@@ -12,13 +12,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 
-def createHeatmap(img, lim):
+def createHeatmap(img, lower_lim=None, upper_lim=None):
 	plt.xlabel('Cell X (60cm per square)')
 	plt.ylabel('Cell Y (60cm per square)')
 
 	imgplot = plt.imshow(img, origin='lower')
 	imgplot.set_cmap('hot')
-	imgplot.set_clim(lim) 
+	imgplot.set_clim(lower_lim, upper_lim) 
 	imgplot.set_interpolation('nearest')
 
 	return hm, imgplot
@@ -49,6 +49,14 @@ if __name__ == "__main__":
 	average = average_list(flatdat)
 	threshold = int(math.floor(average) * weight(flatdat)) 
 
+	array_list = np.array(flatdat)
+	print array_list.std()
+	print array_list.mean()
+
+	upper_lim = None
+	#threshold = (array_list.mean() - array_list.std())/2
+	#upper_lim = (array_list.mean() + array_list.std())
+
 	print "\nSTATS---------------------------------"
 	print "Average Density: %0.3f" % average
 	print "Suggested Lower Threshold:  %0.3f" % threshold
@@ -60,10 +68,10 @@ if __name__ == "__main__":
 
 	plt.subplot(121)
 	plt.title('Without Threshold')
-	hm1, imgplot1 = createHeatmap(img, 0)
+	hm1, imgplot1 = createHeatmap(img)
 	plt.subplot(122)
 	plt.title('With Lower Threshold : ' + str(threshold))
-	hm2, imgplot2 = createHeatmap(img, threshold)
+	hm2, imgplot2 = createHeatmap(img, threshold, upper_lim)
 
 	plt.colorbar()
 	plt.show()

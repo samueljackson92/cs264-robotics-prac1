@@ -3,9 +3,10 @@
 #include <fstream>
 #include <cmath>
 
+#include "vectorutils.h"
 #include "occupancygrid.h"
 
-OccupancyGrid::OccupancyGrid(double x, double y) {
+OccupancyGrid::OccupancyGrid() {
 	threshold = 0;
 
 	grid_height = EXPANSION_SIZE;
@@ -13,9 +14,6 @@ OccupancyGrid::OccupancyGrid(double x, double y) {
 
 	start_x = EXPANSION_SIZE/2;
 	start_y = EXPANSION_SIZE/2;
-
-	old_x = x;
-	old_y = y;
 
 	robot_x = start_x;
 	robot_y = start_y;
@@ -29,6 +27,11 @@ OccupancyGrid::OccupancyGrid(double x, double y) {
 		}
 	}
 	std::cout << "hi" << std::endl;
+}
+
+void OccupancyGrid::Init(double x, double y) {
+	old_x = x;
+	old_y = y;
 }
 
 int OccupancyGrid::GetCell(int x, int y) {
@@ -93,10 +96,12 @@ void OccupancyGrid::PrintGrid(){
 		}
 		cout << endl;
 	}
+
+	CalculateThreshold();
 }
 
 int OccupancyGrid::ScaleToGrid(double num) {
-	return (num >= 0) ? floor((num+ROUNDING_OFFSET)/MAP_SCALE) : ceil((num-ROUNDING_OFFSET)/MAP_SCALE);
+	return (num >= 0) ? floor(num/0.6) : ceil((num-0.5));
 }
 
 void OccupancyGrid::ExpandGrid() {
@@ -122,10 +127,10 @@ void OccupancyGrid::ExpandGrid() {
 			grid_x += x_expand;
 			grid_y += y_expand;
 
-			for (int i = (new_width-1); i >= grid_width; i--) {
-				for (int j = (new_height-1); j >= grid_height; j--) {
+			for (int i = (grid_width-1); i >= 0; i--) {
+				for (int j = (grid_height-1); j >= 0; j--) {
 					int value = GetCell(i,j);
-					SetCell(i-x_expand,(new_height-y_expand)+j,value);
+					SetCell(i+x_expand,j+y_expand,value);
 					SetCell(i,j,0);
 				}
 			}
@@ -162,18 +167,12 @@ void OccupancyGrid::WriteGrid(const char* filename) {
 
 void OccupancyGrid::CalculateThreshold() {
 	//calculate the average of all wall points
-	int n = 0, d = 0, value = 0;
-	for (int i = 0; i < grid_height; i++) {
-		for (int j = 0; j < grid_width; j++) {
-			value = GetCell(i,j);
-			if(value > 0) {
-				n += value;
-				d += 1;
-			}
-		}
-	}
+	using namespace std;
+	double average = 0;
 
-	//always round down
-	threshold = n/d;
+	vector<int> vec = VectorUtils::Flatten(grid);
+	vec = VectorUtils::Filter(vec, 0);
+	average = VectorUtils::Average(vec);
 
+	cout << "Threshold: " << average << endl;
 }

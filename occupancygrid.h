@@ -5,7 +5,7 @@
 #include <string>
 
 #define MAP_SCALE 0.6
-#define ROUNDING_OFFSET 0.35
+#define ROUNDING_OFFSET 0.3
 #define EXPANSION_SIZE 6
 
 class OccupancyGrid {
@@ -20,7 +20,8 @@ class OccupancyGrid {
 	int threshold;
 
 	public:
-		OccupancyGrid(double x, double y);
+		OccupancyGrid();
+		void Init(double x, double y);
 		int GetCell(int x, int y);
 		void SetCell(int x, int y, int value);
 		void IncrementCell(int x, int y);

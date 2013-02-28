@@ -40,7 +40,7 @@ using namespace std;
 using namespace PlayerCc;
 
 //create a blank occupancy grid
-OccupancyGrid grid(-7,-7);
+OccupancyGrid grid;
 
 //Interrupt handler.
 void signal_callback_handler(int signum);
@@ -63,6 +63,8 @@ int main(int argc, char *argv[])
 
 	x = pp.GetXPos();
 	y = pp.GetYPos();
+
+	grid.Init(x, y);
 
 	pp.SetMotorEnable(true);
 
