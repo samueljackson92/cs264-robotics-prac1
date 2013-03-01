@@ -5,12 +5,13 @@
 #include <string>
 
 #define MAP_SCALE 0.6
+#define MAX_RANGE 1.8
 #define EXPANSION_SIZE 6
 
 class OccupancyGrid {
 	
 	//grid of cells
-	std::vector<std::vector<int> > grid;
+	std::vector<std::vector<double> > grid;
 	double robot_x, robot_y; //internal robot position
 	double start_x, start_y; //internal robot start point
 	double old_x, old_y;	 //previous internal robot positon
@@ -21,8 +22,8 @@ class OccupancyGrid {
 	public:
 		OccupancyGrid();
 		void Init(double x, double y);
-		int GetCell(int x, int y);
-		void SetCell(int x, int y, int value);
+		double GetCell(int x, int y);
+		void SetCell(int x, int y, double value);
 		void IncrementCell(int x, int y);
 		void SensorUpdate(double range, double angle);
 		void PrintGrid();

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <fstream>
 #include <cmath>
+#include <stdlib.h> 
 
 #include "vectorutils.h"
 #include "occupancygrid.h"
@@ -15,8 +16,8 @@ OccupancyGrid::OccupancyGrid() {
 	start_x = EXPANSION_SIZE/2;
 	start_y = EXPANSION_SIZE/2;
 
-	robot_x = start_x + 0.3;
-	robot_y = start_y + 0.3;
+	robot_x = start_x*MAP_SCALE + 0.3;
+	robot_y = start_y*MAP_SCALE + 0.3;
 
 	grid_x = start_x;
 	grid_y = start_y;
@@ -29,11 +30,11 @@ void OccupancyGrid::Init(double x, double y) {
 	old_y = y;
 }
 
-int OccupancyGrid::GetCell(int x, int y) {
+double OccupancyGrid::GetCell(int x, int y) {
 	return grid[y][x];
 }
 
-void OccupancyGrid::SetCell(int x, int y, int value) {
+void OccupancyGrid::SetCell(int x, int y, double value) {
 	grid[y][x] = value;
 }
 
@@ -57,13 +58,13 @@ void OccupancyGrid::UpdateBotPosition(double x, double y) {
 void OccupancyGrid::SensorUpdate(double range, double angle) {
 	double sensor_x, sensor_y;
 
-	if (range < 2) {
+	if (range < MAX_RANGE) {
 
 		//new point hit by sensor
 		sensor_x = robot_x + (cos(angle) * range);
 		sensor_y = robot_y + (sin(angle) * range);
 
-
+		std::cout << "----------------------------------------" << std::endl;
 		std::cout << "Robot Angle: " << angle << std::endl;
 		std::cout << "Robot Range: " << range << std::endl;
 		std::cout << "Our Position:";
@@ -74,6 +75,8 @@ void OccupancyGrid::SensorUpdate(double range, double angle) {
 		std::cout << " x: " << sensor_x;
 		std::cout << " y: " << sensor_y << std::endl;
 
+
+
 		grid_x = ScaleToGrid(sensor_x);
 		grid_y = ScaleToGrid(sensor_y);
 
@@ -81,8 +84,12 @@ void OccupancyGrid::SensorUpdate(double range, double angle) {
 		std::cout << " x: " << grid_x;
 		std::cout << " y: " << grid_y << std::endl;
 
+		std::cout << "----------------------------------------" << std::endl;
+
 		ExpandGrid();
-		IncrementCell(grid_x, grid_y);
+		double max_grid_r = (MAX_RANGE/MAP_SCALE);
+		double range_prob = (max_grid_r-range)/max_grid_r;
+		SetCell(grid_x, grid_y, GetCell(grid_x, grid_y) + range_prob);
 	}
 }
 
@@ -101,7 +108,14 @@ void OccupancyGrid::PrintGrid(){
 }
 
 int OccupancyGrid::ScaleToGrid(double num) {
-	return (num >= 0) ? floor(num/MAP_SCALE) : ceil(num/MAP_SCALE);
+	num = num / MAP_SCALE;
+	if(abs(num - ceil(num)) < 0.09)  {
+		num += 0.1;
+	}
+	if(abs((num) - floor(num)) < 0.09)  {
+		num -= 0.1;
+	}
+	return (num >= 0) ? floor(num) : ceil(num);
 }
 
 void OccupancyGrid::ExpandGrid() {
@@ -156,7 +170,7 @@ void OccupancyGrid::WriteGrid(const char* filename) {
 
 	for (int y = (grid_height-1); y >= 0; y--) {
 		for (int x = 0; x < grid_width; x++) {
-			int value = GetCell(x, y);
+			double value = GetCell(x, y);
 			file << value;
 			if(x < (grid_width-1)) { file << ","; }
 		}
@@ -171,9 +185,9 @@ void OccupancyGrid::CalculateThreshold() {
 	using namespace std;
 	double average = 0;
 
-	vector<int> vec = VectorUtils::Flatten(grid);
-	vec = VectorUtils::Filter(vec, 0);
-	average = VectorUtils::Average(vec)/2;
+	// vector<int> vec = VectorUtils::Flatten(grid);
+	// vec = VectorUtils::Filter(vec, 0);
+	// average = VectorUtils::Average(vec)/2;
 
 	cout << "Threshold: " << average << endl;
 }
