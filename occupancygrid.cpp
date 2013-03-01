@@ -15,8 +15,8 @@ OccupancyGrid::OccupancyGrid() {
 	start_x = EXPANSION_SIZE/2;
 	start_y = EXPANSION_SIZE/2;
 
-	robot_x = start_x;
-	robot_y = start_y;
+	robot_x = start_x + 0.3;
+	robot_y = start_y + 0.3;
 
 	grid_x = start_x;
 	grid_y = start_y;
@@ -57,26 +57,29 @@ void OccupancyGrid::UpdateBotPosition(double x, double y) {
 void OccupancyGrid::SensorUpdate(double range, double angle) {
 	double sensor_x, sensor_y;
 
-	if (range > 0.6  && range < 2) {
+	if (range < 2) {
 
 		//new point hit by sensor
 		sensor_x = robot_x + (cos(angle) * range);
 		sensor_y = robot_y + (sin(angle) * range);
 
-		std::cout << "Our Position:" << std::endl;
-		std::cout << "x: " << robot_x << std::endl;
-		std::cout << "y: " << robot_y << std::endl;
 
-		std::cout << "Our Range Point:" << std::endl;
-		std::cout << "x: " << sensor_x << std::endl;
-		std::cout << "y: " << sensor_y << std::endl;
+		std::cout << "Robot Angle: " << angle << std::endl;
+		std::cout << "Robot Range: " << range << std::endl;
+		std::cout << "Our Position:";
+		std::cout << " x: " << robot_x ;
+		std::cout << " y: " << robot_y << std::endl;
+
+		std::cout << "Our Range Point:";
+		std::cout << " x: " << sensor_x;
+		std::cout << " y: " << sensor_y << std::endl;
 
 		grid_x = ScaleToGrid(sensor_x);
 		grid_y = ScaleToGrid(sensor_y);
 
-		std::cout << "Range Cell:" << std::endl;
-		std::cout << "x: " << grid_x << std::endl;
-		std::cout << "y: " << grid_y << std::endl;
+		std::cout << "Range Cell:";
+		std::cout << " x: " << grid_x;
+		std::cout << " y: " << grid_y << std::endl;
 
 		ExpandGrid();
 		IncrementCell(grid_x, grid_y);
@@ -98,7 +101,7 @@ void OccupancyGrid::PrintGrid(){
 }
 
 int OccupancyGrid::ScaleToGrid(double num) {
-	return (num >= 0) ? floor((num+0.5)/MAP_SCALE) : ceil((num-0.5)/MAP_SCALE);
+	return (num >= 0) ? floor(num/MAP_SCALE) : ceil(num/MAP_SCALE);
 }
 
 void OccupancyGrid::ExpandGrid() {
