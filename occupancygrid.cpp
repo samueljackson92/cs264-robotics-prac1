@@ -2,10 +2,13 @@
 #include <stdio.h>
 #include <fstream>
 #include <cmath>
-#include <stdlib.h> 
+#include <stdlib.h>
+#include <libplayerc++/playerc++.h> 
 
 #include "vectorutils.h"
 #include "occupancygrid.h"
+
+using namespace PlayerCc;
 
 OccupancyGrid::OccupancyGrid() {
 	threshold = 0;
@@ -57,12 +60,22 @@ void OccupancyGrid::UpdateBotPosition(double x, double y) {
 //Take the postion of the robot and the range of the sensor
 void OccupancyGrid::SensorUpdate(double range, double angle) {
 	double sensor_x, sensor_y;
+	double sensor_x_min, sensor_y_min;
+	double sensor_x_max, sensor_y_max;
+	int grid_x_min, grid_y_min, grid_x_max, grid_y_max;
 
 	if (range < MAX_RANGE) {
 
 		//new point hit by sensor
 		sensor_x = robot_x + (cos(angle) * range);
 		sensor_y = robot_y + (sin(angle) * range);
+
+		sensor_x_min = robot_x + (cos(dtor(rtod(angle)+7.5))*range);
+		sensor_y_min = robot_y + (sin(dtor(rtod(angle)+7.5))*range);
+
+		sensor_x_max = robot_x + (cos(dtor(rtod(angle)-7.5))*range);
+		sensor_y_max = robot_y + (sin(dtor(rtod(angle)-7.5))*range);
+
 
 		std::cout << "----------------------------------------" << std::endl;
 		std::cout << "Robot Angle: " << angle << std::endl;
@@ -75,10 +88,14 @@ void OccupancyGrid::SensorUpdate(double range, double angle) {
 		std::cout << " x: " << sensor_x;
 		std::cout << " y: " << sensor_y << std::endl;
 
-
-
 		grid_x = ScaleToGrid(sensor_x);
 		grid_y = ScaleToGrid(sensor_y);
+
+		grid_x_min = ScaleToGrid(sensor_x_min);
+		grid_y_min = ScaleToGrid(sensor_y_min);
+
+		grid_x_max = ScaleToGrid(sensor_x_max);
+		grid_y_max = ScaleToGrid(sensor_y_max);
 
 		std::cout << "Range Cell:";
 		std::cout << " x: " << grid_x;
@@ -89,7 +106,19 @@ void OccupancyGrid::SensorUpdate(double range, double angle) {
 		ExpandGrid();
 		double max_grid_r = (MAX_RANGE/MAP_SCALE);
 		double range_prob = (max_grid_r-range)/max_grid_r;
-		SetCell(grid_x, grid_y, GetCell(grid_x, grid_y) + range_prob);
+
+		if((grid_x_max != grid_x_min) || (grid_y_min != grid_y_max)) {
+			double a, b;
+			a = GetCell(grid_x_min, grid_y_min);
+			b = GetCell(grid_x_max, grid_y_max);
+			if (a > b) {
+				SetCell(grid_x_min, grid_y_min, GetCell(grid_x_min, grid_y_min) + range_prob);
+			} else if (b < a) {
+				SetCell(grid_x_max, grid_y_max, GetCell(grid_x_max, grid_y_max) + range_prob);
+			}
+		} else {
+			SetCell(grid_x, grid_y, GetCell(grid_x, grid_y) + range_prob);
+		}
 	}
 }
 
@@ -109,12 +138,6 @@ void OccupancyGrid::PrintGrid(){
 
 int OccupancyGrid::ScaleToGrid(double num) {
 	num = num / MAP_SCALE;
-	if(abs(num - ceil(num)) < 0.09)  {
-		num += 0.1;
-	}
-	if(abs((num) - floor(num)) < 0.09)  {
-		num -= 0.1;
-	}
 	return (num >= 0) ? floor(num) : ceil(num);
 }
 
