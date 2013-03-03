@@ -25,9 +25,6 @@ OccupancyGrid::OccupancyGrid() {
 	grid_x = start_x;
 	grid_y = start_y;
 
-	angle = 0;
-	range = 0;
-
 	ResizeGrid(grid_width, grid_height);
 }
 
@@ -65,25 +62,12 @@ void OccupancyGrid::UpdateBotPosition(double x, double y) {
 //Take the postion of the robot and the range of the sensor
 void OccupancyGrid::SensorUpdate(double range, double angle) {
 	double sensor_x, sensor_y;
-	double sensor_x_min, sensor_y_min;
-	double sensor_x_max, sensor_y_max;
-	int grid_x_min, grid_y_min, grid_x_max, grid_y_max;
-
-	this->angle = angle;
-	this->range = range;
 
 	if (range < MAX_RANGE) {
 
 		//new point hit by sensor
 		sensor_x = robot_x + (cos(angle) * range);
 		sensor_y = robot_y + (sin(angle) * range);
-
-		sensor_x_min = robot_x + (cos(dtor(rtod(angle)+7.5))/range);
-		sensor_y_min = robot_y + (sin(dtor(rtod(angle)+7.5))/range);
-
-		sensor_x_max = robot_x + (cos(dtor(rtod(angle)-7.5))/range);
-		sensor_y_max = robot_y + (sin(dtor(rtod(angle)-7.5))/range);
-
 
 		std::cout << "----------------------------------------" << std::endl;
 		std::cout << "Robot Angle: " << angle << std::endl;
@@ -99,12 +83,6 @@ void OccupancyGrid::SensorUpdate(double range, double angle) {
 		grid_x = ScaleToGrid(sensor_x);
 		grid_y = ScaleToGrid(sensor_y);
 
-		grid_x_min = ScaleToGrid(sensor_x_min);
-		grid_y_min = ScaleToGrid(sensor_y_min);
-
-		grid_x_max = ScaleToGrid(sensor_x_max);
-		grid_y_max = ScaleToGrid(sensor_y_max);
-
 		std::cout << "Range Cell:";
 		std::cout << " x: " << grid_x;
 		std::cout << " y: " << grid_y << std::endl;
@@ -114,18 +92,7 @@ void OccupancyGrid::SensorUpdate(double range, double angle) {
 		double max_grid_r = (MAX_RANGE/MAP_SCALE);
 		double range_prob = (max_grid_r-range)/max_grid_r;
 
-		if((grid_x_max != grid_x_min) || (grid_y_min != grid_y_max)) {
-			double a, b;
-			a = GetCell(grid_x_min, grid_y_min);
-			b = GetCell(grid_x_max, grid_y_max);
-			if (a > b) {
-				SetCell(grid_x_min, grid_y_min, GetCell(grid_x_min, grid_y_min) + range_prob);
-			} else if (b < a) {
-				SetCell(grid_x_max, grid_y_max, GetCell(grid_x_max, grid_y_max) + range_prob);
-			}
-		} else {
-			SetCell(grid_x, grid_y, GetCell(grid_x, grid_y) + range_prob);
-		}
+		SetCell(grid_x, grid_y, GetCell(grid_x, grid_y) + range_prob);
 	}
 }
 
@@ -169,11 +136,8 @@ void OccupancyGrid::ExpandGrid(double x, double y) {
 			robot_x += (x_expand*MAP_SCALE);
 			robot_y += (y_expand*MAP_SCALE);
 
-			x = robot_x + (cos(angle) * range);
-			y = robot_y + (sin(angle) * range);
-
-			x = ScaleToGrid(x);
-			y = ScaleToGrid(y);
+			x += EXPANSION_SIZE;
+			y += EXPANSION_SIZE;
 
 			for (int i = (grid_width-1); i >= 0; i--) {
 				for (int j = (grid_height-1); j >= 0; j--) {
