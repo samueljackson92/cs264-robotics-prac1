@@ -119,19 +119,19 @@ int main(int argc, char *argv[])
 			//grid.SensorUpdate((sp[11] + sp[12])/2, dtor(angle+180));
 
 			//diagonal sensors
-			grid.SensorUpdate(sp[1], dtor(angle + 50));
-			grid.SensorUpdate(sp[2], dtor(angle + 30));
-			// grid.SensorUpdate((sp[1] + sp[2])/2, dtor(angle+45));
-			grid.SensorUpdate(sp[5], dtor(angle - 30));
-			grid.SensorUpdate(sp[6], dtor(angle - 50));
-			// grid.SensorUpdate((sp[5] + sp[6])/2, dtor(angle-45));
+			// grid.SensorUpdate(sp[1], dtor(angle + 50));
+			// grid.SensorUpdate(sp[2], dtor(angle + 30));
+			// // grid.SensorUpdate((sp[1] + sp[2])/2, dtor(angle+45));
+			// grid.SensorUpdate(sp[5], dtor(angle - 30));
+			// grid.SensorUpdate(sp[6], dtor(angle - 50));
+			// // grid.SensorUpdate((sp[5] + sp[6])/2, dtor(angle-45));
 
-			grid.SensorUpdate(sp[14], dtor(angle + 130));
-			grid.SensorUpdate(sp[13], dtor(angle + 150));
-			// grid.SensorUpdate((sp[13] + sp[14])/2, dtor(angle+135));
-			grid.SensorUpdate(sp[10], dtor(angle - 150));
-			grid.SensorUpdate(sp[9], dtor(angle - 130));
-			grid.SensorUpdate((sp[9] + sp[10])/2, dtor(angle-135));
+			// grid.SensorUpdate(sp[14], dtor(angle + 130));
+			// grid.SensorUpdate(sp[13], dtor(angle + 150));
+			// // grid.SensorUpdate((sp[13] + sp[14])/2, dtor(angle+135));
+			// grid.SensorUpdate(sp[10], dtor(angle - 150));
+			// grid.SensorUpdate(sp[9], dtor(angle - 130));
+			// grid.SensorUpdate((sp[9] + sp[10])/2, dtor(angle-135));
 		}
 		
 		grid.PrintGrid();

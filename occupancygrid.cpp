@@ -34,12 +34,10 @@ void OccupancyGrid::Init(double x, double y) {
 }
 
 double OccupancyGrid::GetCell(int x, int y) {
-	ExpandGrid(x,y);
 	return grid[y][x];
 }
 
 void OccupancyGrid::SetCell(int x, int y, double value) {
-	ExpandGrid(x,y);
 	grid[y][x] = value;
 }
 
@@ -89,6 +87,9 @@ void OccupancyGrid::SensorUpdate(double range, double angle) {
 
 		std::cout << "----------------------------------------" << std::endl;
 
+		ExpandGrid();
+
+
 		double max_grid_r = (MAX_RANGE/MAP_SCALE);
 		double range_prob = (max_grid_r-range)/max_grid_r;
 
@@ -115,14 +116,14 @@ int OccupancyGrid::ScaleToGrid(double num) {
 	return (num >= 0) ? floor(num) : ceil(num);
 }
 
-void OccupancyGrid::ExpandGrid(double x, double y) {
+void OccupancyGrid::ExpandGrid() {
 	//if point falls outside current grid
 	int new_width, new_height;
 	int x_expand = 0, y_expand = 0;
-	if((x < 0 || y < 0) ||(x >= grid_width || y >= grid_height)) {
+	if((grid_x < 0 || grid_y < 0) ||(grid_x >= grid_width || grid_y >= grid_height)) {
 		
-		x_expand = (x < 0 || x >= grid_width) ? EXPANSION_SIZE : 0;
-		y_expand = (y < 0 || y >= grid_height) ? EXPANSION_SIZE : 0;
+		x_expand = (grid_x < 0 || grid_x >= grid_width) ? EXPANSION_SIZE : 0;
+		y_expand = (grid_y < 0 || grid_y >= grid_height) ? EXPANSION_SIZE : 0;
 
 		new_width = grid_width + x_expand;
 		new_height = grid_height + y_expand;
@@ -131,13 +132,13 @@ void OccupancyGrid::ExpandGrid(double x, double y) {
 		ResizeGrid(new_width, new_height);
 		
 		//if we did a negative resize, shift data
-		if(x < 0 || y < 0) {
+		if(grid_x < 0 || grid_y < 0) {
 			std::cout << "Moved in Y" << std::endl;
-			robot_x += (x_expand*MAP_SCALE);
-			robot_y += (y_expand*MAP_SCALE);
+			robot_x += (x_expand > 0) ? (x_expand+1)*MAP_SCALE : 0;
+			robot_y += (y_expand > 0) ? (y_expand+1)*MAP_SCALE : 0;
 
-			x += EXPANSION_SIZE;
-			y += EXPANSION_SIZE;
+			grid_x += x_expand;
+			grid_y += y_expand;
 
 			for (int i = (grid_width-1); i >= 0; i--) {
 				for (int j = (grid_height-1); j >= 0; j--) {

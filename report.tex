@@ -141,7 +141,16 @@ In my example controller, I am simply using a random wander technique to move th
 
 The above system works by trying to keep the robot a balanced distance between the side a further front sensors. If the distance on one side becomes to large then it turns back towards the other direction. If the distance in front of the robot becomes too small then it reacts by turning on the spot until it has enough room to move off forward again. The robot will continue mapping in this way indefinitely.
 
+\subsection{Interpreting Results}
 Once we have mapped the environment, we can begin to analyse the quality of the map sensed and use a threshold to remove any values that appear to be incorrectly identified as walls and obstacles (more on why this occurs in section \ref{sec:issues})
+
+One way of removing values from the map that have most likely been incorrectly identified as being occupied is to generate a threshold value. The threshold value acts as a cut off point. All values below the threshold are marked as being empty rather than occupied as they have most likely been misidentified.
+
+The threshold value for my system is generated using the following formula:
+
+\[Threshold = \frac{1}{2}\sum_{i=1}^{n} \frac{a_i}{n}\]
+
+This essentially states that threshold value is half the average of all points in the graph that are greater than zero. This value can be calculated in C++ code by flattening the 2D vector matrix into a single vector and removing any elements that are zero. The above formula can then be applied to the remaining dataset.
 
 \subsection{Issues and Potential Improvements}
 \label{sec:issues}

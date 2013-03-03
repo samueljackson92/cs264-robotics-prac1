@@ -18,8 +18,6 @@ class OccupancyGrid {
 	int grid_x, grid_y;		 //range grid position
 	int grid_height, grid_width;
 	int threshold;
-	double angle;
-	double range;
 
 	public:
 		OccupancyGrid();
@@ -32,7 +30,7 @@ class OccupancyGrid {
 		void UpdateBotPosition(double x, double y);
 		void WriteGrid(const char* filename);
 	private:
-		void ExpandGrid(double x, double y);
+		void ExpandGrid();
 		void CalculateThreshold();
 		void ResizeGrid(int w, int h);
 		int ScaleToGrid(double num);

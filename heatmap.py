@@ -24,7 +24,7 @@ def createHeatmap(img, lower_lim=None, upper_lim=None):
 	return hm, imgplot
 
 if __name__ == "__main__":
-	parser = ArgumentParser(description="Simple Turing Machine Simulator")
+	parser = ArgumentParser(description="Heatmap maker")
 	parser.add_argument('-f', '--file', type=str, nargs=1, required=True, help='Tape input file.')
 	args = parser.parse_args()
 	fname = args.file[0]
@@ -47,14 +47,14 @@ if __name__ == "__main__":
 
 	flatdat = [item for sublist in dat for item in sublist if item > 0]
 	average = average_list(flatdat)
-	threshold = int(math.floor(average) * weight(flatdat)) 
+	#threshold = math.ceil(math.floor(average) * weight(flatdat)) 
 
 	array_list = np.array(flatdat)
 	print array_list.std()
 	print array_list.mean()
 
 	upper_lim = None
-	#threshold = (array_list.mean() - array_list.std())/2
+	threshold = (array_list.mean() - array_list.std())/2
 	#upper_lim = (array_list.mean() + array_list.std())
 
 	print "\nSTATS---------------------------------"
