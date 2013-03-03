@@ -148,11 +148,16 @@ One way of removing values from the map that have most likely been incorrectly i
 
 The threshold value for my system is generated using the following formula:
 
-\[Threshold = \frac{1}{2}\sum_{i=1}^{n} \frac{a_i}{n}\]
+(insert formula here)
 
-This essentially states that threshold value is half the average of all points in the graph that are greater than zero. This value can be calculated in C++ code by flattening the 2D vector matrix into a single vector and removing any elements that are zero. The above formula can then be applied to the remaining dataset.
+The following heat map shows analysis of a typical run of the map. The intensity of colour represents the certainty that the square is a wall. 
 
 \subsection{Issues and Potential Improvements}
+- Sensor inaccuracy, incl. dubious points
+- Localization
+- Threshold -  not always perfect
+- Grid built overlaps some squares and not others. 
+
 \label{sec:issues}
 
 \end{document}
