@@ -150,15 +150,27 @@ The threshold value for my system is generated using the following formula:
 
 (insert formula here)
 
-The following heat map shows analysis of a typical run of the map. The intensity of colour represents the certainty that the square is a wall. 
+The following heat map shows analysis of a typical run of the map. The intensity of colour represents the certainty that the square is a wall. You can clearly see the comparison between the plain map (left) and the map with the threshold applied (right). While this method is by no means perfect, as you can see, it does help to remove some of the errors from grid and diminish the presence of others (more on this in section \ref{sec:issues}.
 
 \subsection{Issues and Potential Improvements}
-- Sensor inaccuracy, incl. dubious points
-- Localization
-- Threshold -  not always perfect
-- Grid built overlaps some squares and not others. 
-
 \label{sec:issues}
+While I believe I have demonstrated a system that does a reasonable job of mapping and environment, I have encountered several areas of my application that could be vastly improved.
+
+One issue that I have had with this problem is the inaccuracy of the sensors on the Pioneers and with sonar in general. When the Pioneer actively senses its environment, it sends a sonar pulse out from the sensor. This pulse spreads out at an angle of $15\,^\circ$. This means that the actual range measured will not necessarily be at the point exactly calculated from the robot's position, but could be anywhere within this $15\,^\circ$ field of view. Therefore at larger ranges, the accuracy of where the point is becomes less certain.
+
+This problem is a major reason why points are incorrectly labelled as walls. Unfortunately, as the only information we are able to get from the sensor is the range it measured, there is no easy solution to this problem. However there are several ways that it can be diminished. 
+
+One way is to limit the maximum range of a reading so that the ping produced does not get overly spread out. Another improvement is to only increment a cell by a value that is inversely proportional to the range of the measurement. This means that the value of the cell is directly proportional to the certainty we have about it being a wall. 
+
+A final improvement that could be done in this area is the use of probability based on the contents of surrounding cells (i.e. if all neighbours are walls this cell is more likely to be a wall). However this approach would prove to be fairly complex and would require a lot more investigation beyond the scope of this report.
+
+Another major issue that I have found using occupancy grid mapping is that the world (both simulated and real) can not always be split into a perfect grid. A wall or obstacle may intersect a cell only partially or at an awkward angle. This means that some space which is actually empty will be marked as being occupied. This problem could be potentially be solved by splitting each cell into a smaller collection of cells and analysing each one using the same technique as as before but on a smaller scale. This allows us to achieve a finer degree of accuracy for the reading, but at extra computational overhead.
+
+Further improvements could also be made to the threshold value used in mapping. While the current value does a decent job of stripping out most of the incorrectly marked cells, it can be affected by outliers which have gained especially high or low readings during mapping, thus pulling up the threshold value. To combat this we can take into account a greater weighting of the values towards the smaller values in the dataset.
+
+Alternatively we could use a clustering technique such as Otsu's method in order to find a decent threshold value to separate walls from empty space. However, this technique very much relies on a clear distinction between cells in both categories which may not necessarily be present in our collected data depending on how well we managed to measure them. Techniques such as this can also be affected if we map the same area more than once, thus raising the value stored in that position for the occupancy grid.
+
+Finally, moving obstacle detection (i.e something that acts as a wall but can move or be removed) has not really been considered as part of this report. However I feel that my approach could be developed further to account for moving obstacles. Currently if the robot detects a obstacle the degree of occupancy of a cell is incremented. As more readings hit the obstacles then the degree of occupancy increase more and more and we become more certain that the obstacle exists. If the object disappears while still in range then the occupancy value does not get incremented and therefore, as other cells are marked, will slowly become a less prominent feature in the world until it eventually drops below the threshold entirely and is removed from the map.
 
 \end{document}
 
