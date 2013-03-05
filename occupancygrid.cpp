@@ -179,13 +179,19 @@ void OccupancyGrid::WriteGrid(const char* filename) {
 }
 
 void OccupancyGrid::CalculateThreshold() {
-	//calculate the average of all wall points
 	using namespace std;
-	double average = 0;
+	double average = 0, lower_q = 0;
+	vector<double> lq;
+	vector<double> vec = VectorUtils::Flatten(grid);
+	
+	average = VectorUtils::Average(vec);
+	vec = VectorUtils::Filter(vec, 0);
+	for (int i = 0; i < vec.size(); i++) {
+		if(vec[i] <= average) {
+			lq.push_back(vec[i]);
+		}
+	}
 
-	// vector<int> vec = VectorUtils::Flatten(grid);
-	// vec = VectorUtils::Filter(vec, 0);
-	// average = VectorUtils::Average(vec)/2;
-
-	cout << "Threshold: " << average << endl;
+	lower_q = VectorUtils::Average(lq);
+	cout << "Threshold: " << lower_q+1 << endl;
 }

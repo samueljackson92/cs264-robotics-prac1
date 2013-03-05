@@ -45,7 +45,7 @@ if __name__ == "__main__":
 		weights_list = [(float(maxdat - item)/ float(maxdat)) for item in listdat]
 		return average_list(weights_list)/2
 
-	flatdat = [item for sublist in dat for item in sublist if item > 0]
+	flatdat = [item for sublist in dat for item in sublist ]
 	average = average_list(flatdat)
 	#threshold = math.ceil(math.floor(average) * weight(flatdat)) 
 
@@ -53,8 +53,11 @@ if __name__ == "__main__":
 	print array_list.std()
 	print array_list.mean()
 
+	moredat = [item for item in flatdat if item <= array_list.mean() and item > 0]
+	threshold = math.ceil(np.array(moredat).mean())+1
+
 	upper_lim = None
-	threshold = (array_list.mean() - array_list.std())/2
+	#threshold = (array_list.mean() - array_list.std())/2
 	#upper_lim = (array_list.mean() + array_list.std())
 
 	print "\nSTATS---------------------------------"

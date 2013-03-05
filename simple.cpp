@@ -85,9 +85,9 @@ int main(int argc, char *argv[])
 		if(sp[3] < 0.6 || sp[4] < 0.6) {
 			int direction = (sp[3]<sp[4]) ? -1 : 1;
 		} else if((sp[0] + sp[1]) < (sp[6] + sp[7])) {
-			turnrate = dtor(-10); // turn 20 degrees per second
+			turnrate = dtor(-15); // turn 20 degrees per second
 		} else {
-			turnrate = dtor(10);
+			turnrate = dtor(15);
 		}
 
 		if(sp[3] < 0.6 || sp[4] < 0.6) {

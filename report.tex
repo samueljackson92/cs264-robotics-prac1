@@ -4,6 +4,7 @@
 \usepackage{float}
 \usepackage{graphicx}
 
+
 \lstset{basicstyle=\footnotesize, columns=fullflexible}
 
 \setlength{\parskip}{10pt plus 1pt minus 1pt
@@ -139,18 +140,52 @@ In my example controller, I am simply using a random wander technique to move th
 	\end{lstlisting}
 \end{center}
 
-The above system works by trying to keep the robot a balanced distance between the side a further front sensors. If the distance on one side becomes to large then it turns back towards the other direction. If the distance in front of the robot becomes too small then it reacts by turning on the spot until it has enough room to move off forward again. The robot will continue mapping in this way indefinitely.
+The above system works by trying to keep the robot a balanced distance between the side a further front sensors. If the distance on one side becomes to large then it turns back towards the other direction. If the distance in front of the robot becomes too small then it reacts by turning on the spot until it has enough room to move off forward again. The robot will continue mapping in this way indefinitely. The following screen shot shows an example output from the terminal once mapping is complete:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{example_run.png}
+\caption{Console output from a typical simulation.}
+\label{fig:example-run}
+\end{figure}
 
 \subsection{Interpreting Results}
 Once we have mapped the environment, we can begin to analyse the quality of the map sensed and use a threshold to remove any values that appear to be incorrectly identified as walls and obstacles (more on why this occurs in section \ref{sec:issues})
 
-One way of removing values from the map that have most likely been incorrectly identified as being occupied is to generate a threshold value. The threshold value acts as a cut off point. All values below the threshold are marked as being empty rather than occupied as they have most likely been misidentified.
+One way of removing values from the map that have most likely been incorrectly identified as being occupied is to generate a threshold value. The threshold value acts as a cut off point. All values below the threshold are marked as being empty rather than occupied as they have most likely been misidentified. In my application, I have calculated the lower quartile of the data and used this as the threshold. This seemed a logical choice as it means any square above 25\% certainty will be classed as a wall. 
 
-The threshold value for my system is generated using the following formula:
+\begin{center}
+	\begin{lstlisting}[language=c++, showstringspaces=false, caption={C++ code used to calculate the threshold value for the grid}]
 
-(insert formula here)
+void OccupancyGrid::CalculateThreshold() {
+	using namespace std;
+	double average = 0, lower_q = 0;
+	vector<double> lq;
+	vector<double> vec = VectorUtils::Flatten(grid);
+	
+	average = VectorUtils::Average(vec);
+	vec = VectorUtils::Filter(vec, 0);
+	for (int i = 0; i < vec.size(); i++) {
+		if(vec[i] <= average) {
+			lq.push_back(vec[i]);
+		}
+	}
+
+	lower_q = VectorUtils::Average(lq);
+	cout << "Threshold: " << lower_q+1 << endl;
+}
+
+	\end{lstlisting}
+\end{center}
 
 The following heat map shows analysis of a typical run of the map. The intensity of colour represents the certainty that the square is a wall. You can clearly see the comparison between the plain map (left) and the map with the threshold applied (right). While this method is by no means perfect, as you can see, it does help to remove some of the errors from grid and diminish the presence of others (more on this in section \ref{sec:issues}.
+ 
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.1\textwidth]{final_example.png}
+\caption{Heat Map showing the certainty that each cell in the grid is a wall. Left plot shows before the threshold is applied. Right plot shows after the threshold has been applied. Notice how the incorrect wall square in the nook is removed in the right hand plot.}
+\label{fig:final-example}
+\end{figure}
 
 \subsection{Issues and Potential Improvements}
 \label{sec:issues}

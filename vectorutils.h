@@ -5,9 +5,9 @@
 
 class VectorUtils {
 	public:
-		static std::vector<int> Flatten(std::vector<std::vector<int> > vec);
-		static std::vector<int> Filter(std::vector<int> vec, int value);
-		static double Average(std::vector<int> vec);
+		static std::vector<double> Flatten(std::vector<std::vector<double> > vec);
+		static std::vector<double> Filter(std::vector<double> vec, int value);
+		static double Average(std::vector<double> vec);
 };
 
 #endif

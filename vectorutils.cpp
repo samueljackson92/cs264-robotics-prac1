@@ -4,9 +4,9 @@
 
 #include "vectorutils.h"
 
-std::vector<int> VectorUtils::Flatten(std::vector<std::vector<int> > vec) {
+std::vector<double> VectorUtils::Flatten(std::vector<std::vector<double> > vec) {
 	using namespace std;
-	vector<int> v;
+	vector<double> v;
 
 	for (int i = 0; i < vec.size(); i++) {
 		for (int j = 0; j < vec[i].size(); j++) {
@@ -17,9 +17,9 @@ std::vector<int> VectorUtils::Flatten(std::vector<std::vector<int> > vec) {
 	return v;
 }
 
-std::vector<int> VectorUtils::Filter(std::vector<int> vec, int value) {
+std::vector<double> VectorUtils::Filter(std::vector<double> vec, int value) {
 	using namespace std;
-	vector<int> v;
+	vector<double> v;
 
 	for (int i = 0; i < vec.size(); i++) {
 		if (vec[i] != value) {
@@ -30,6 +30,6 @@ std::vector<int> VectorUtils::Filter(std::vector<int> vec, int value) {
 	return v;
 }
 
-double VectorUtils::Average(std::vector<int> vec) {
+double VectorUtils::Average(std::vector<double> vec) {
 	return accumulate(vec.begin(), vec.end(), 0) / static_cast<double>(vec.size());
 }

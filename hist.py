@@ -17,7 +17,7 @@ except Exception, e:
 
 dat = dat[::-1]
 
-flatdat = [item for sublist in dat for item in sublist if item > 0]
+flatdat = [item for sublist in dat for item in sublist ]
 
 #print mahotas.thresholding.otsu(flatdat)
 
