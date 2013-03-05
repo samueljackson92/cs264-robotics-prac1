@@ -3,6 +3,8 @@
 \usepackage{listings}
 \usepackage{float}
 \usepackage{graphicx}
+\usepackage{natbib}
+\usepackage{hyperref}
 
 
 \lstset{basicstyle=\footnotesize, columns=fullflexible}
@@ -18,17 +20,18 @@
 
 
 \section{Player and Stage}
-The Player program together with the Stage plug-in provide a convenient controller and simulator pair for use in the field of robotics. Player acts as a wrapper to the hardware specifics of a robot and its sensors and provides an interface for an application to communicate with a physical robot. This is extremely useful, as it allows the developer to easily port code between different types and models of robots with different configurations and sensors without worrying too much about the underlying hardware. It also allows the developer to jump right into developing a robot controller, rather than dealing with code to interface with the system.
+\cite{player-stage}
+The Player program together with the Stage plug-in provide a convenient controller and simulator pair used in the field of robotics. Player acts as a wrapper to the hardware specifics of a robot and its sensors and provides an interface for an application to communicate with a physical robot. This is extremely useful, as it allows the developer to easily port code between different types and models of robots with different configurations and sensors without worrying too much about the underlying hardware. It also allows the developer to jump right into developing a robot controller, rather than dealing with code to interface with the system.
 
-The Stage program is a plug-in for Player which is used to simulate a robot. Stage takes instructions from the Player application (which in turn is controlled by the developers code) and actuates a model of a robot within a simulated environment. In response, Stage also simulates sensor data relative to the position, speed, angle etc. of the robot and feeds it back into Player. This is useful as development of robot controllers can be made and testing without having access to a physical robot which can be both expensive and delicate. A simulation program such as Stage allows the core development of robot controllers on a smaller budget and without risk of damaging the robot through unforeseen bugs. The controllers can then be tested, tweaked and improved on a physical robot.
+The Stage program is a plug-in for Player to create a simulation environment for robotics. Stage takes instructions from the Player application (which in turn is controlled by the developers code) and actuates a model of the robot. In response, Stage also simulates sensor data relative to the position, speed, angle etc. of the robot and feeds it back into Player. This is useful as development of robot controllers can be built and testing without having access to a physical robot. A simulation program such as Stage allows the core development of robot controllers on a smaller budget and without risk of damaging the robot through unforeseen bugs. The controllers can then be tested, tweaked and improved on a physical robot.
 
 \section{Occupancy Grid Mapping}
-Occupancy gird mapping is a robot mapping technique where the world is represented as a discrete number of equally sized, square chunks called cells. Each of these cells represents a position in a Cartesian coordinate system. Each of these cells can be labelled according to what a robot senses is at this position on the grid (such as if the cell is occupied by an object or not).
+Occupancy gird mapping is a robot mapping technique where the world is represented as a discrete number of equally sized, squares called cells. Each of these cells represents a position in a Cartesian coordinate system and can be labelled according to what a robot senses is at this position on the grid (such as if the cell is occupied by an object or not).
 
 \subsection{Representing the world}
 In my presented solution, I have split the world into a collection of cells which are 60x60 cm spanning from position (0,0) to an unspecified height and width using a 2D vector representation. Initially, only a grid of 6 x 6 cells are created, but as the robot explores the grid is able to dynamically resize to ensure that the robot never "falls off the map". 
 
-Resizing the only occurs when a measured point if found to lay outside of the existing grid. When resizing in a negative direction, we must also shift all data elements forwards (or up) in order to keep the grid correctly positioned relative to the robot's position.
+Resizing only occurs when a measured point is found to lay outside of the existing grid. When resizing in a negative direction, we must also shift all data elements forwards/up in order to keep the grid correctly positioned relative to the robot's position.
 
 \begin{center}
 	\begin{lstlisting}[language=c++, showstringspaces=false, caption={C++ code for dynamically resizing the grid when a point (x,y) falls outside the current grid's size}]
@@ -71,17 +74,17 @@ Resizing the only occurs when a measured point if found to lay outside of the ex
 	\end{lstlisting}
 \end{center}
 
-Real world values for the robots change in position are fed into the mapping system and the robots position in the grid is updated relative to its position in the grid's coordinate system rather than Stage's coordinate system. This is because we require the index of each of cells to be positive so they can be applied to the 2D vector.
+Real world values for the robot's change in position are fed into the mapping system and the robot's position in the grid is updated relative to its position in the grid's coordinate system rather than Stage's coordinate system. This is because we require the index of each of cells to be positive so they can be applied to the 2D vector.
 
 \subsection{Sensing the world}
-As the Pioneer robot moves though the world (or the simulator) it can sample data from each of it's sensors and feed the data into the mapping system for evaluation. The sonar sensors used by the Pioneer robots can only give us information on the range (between 0-5 metres) of how far away something is relative to the position of the robot.
+As the robot moves though the environment it can sample data from each of it's sensors and feed the data into the mapping system for evaluation. The sonar sensors used by the Pioneer robots can only give information on the range (between 0-5 metres) of how far away something is relative to the position of the robot.
 
-However, as we have access to the position of the robot, the angle it's facing and the distance to the sensed object, simple trigonometry can be used to estimate the likely location of the sensed point.
+However, as we know the position of the robot, the angle it's facing and the distance to the sensed object, simple trigonometry can be used to estimate the likely location of the sensed point:
 
 \[ x_{sensed} = x_{robot} + \cos (\theta) \times range \]
 \[ y_{sensed} = y_{robot} + \sin (\theta) \times range \]
 
-Where $x_{sensed}$ and $y_{sensed}$ are the position of the sensed point,$x_{robot}$ and $y_{robot}$ are the robot's current position, $\theta$ is the range of the sensor is currently pointing relative to 0 and range is the range the sensor measured too.
+Where $x_{sensed}$ and $y_{sensed}$ are the position of the sensed point,$x_{robot}$ and $y_{robot}$ are the robot's current position, $\theta$ is the angle the sensor is pointing to and range is the range the sensor measured.
 
 \begin{center}
 	\begin{lstlisting}[language=c++, showstringspaces=false, caption={C++ code used for calculating the new point given the current position, angle and range}]
@@ -108,9 +111,9 @@ void OccupancyGrid::SensorUpdate(double range, double angle) {
 	\end{lstlisting}
 \end{center}
 
-Once this new position has been obtained, we can scale and round it to the nearest cell in the grid and mark it as being occupied. In my controller, I am adding a value to the cell that represents the probability of the cell being occupied, which is inversely proportional to the range measured, as this cell is measured more and more and at closer ranges, the value increases proportionally to the certainty we have that the cell is occupied. Using this technique we can move through the world, make readings using the robot's sensors and build up a map of the world around us which could later be used for navigation.
+Once this new position has been obtained, we can round it to the nearest cell in the grid and mark it as occupied. In my controller, I am adding a value to the cell that represents the certainty we have of the cell being occupied, which is inversely proportional to the range measured. Using this technique we can move through the world, make readings using the robot's sensors and build up a map of the environment.
 
-In my example controller, I am simply using a random wander technique to move through the world and collect information about the system. This involves using simple reactive techniques to prevent the Pioneer from crashing into obstacles while still encouraging exploration of the environment. Below I provide a listing of the code I have used to get the robot moving around the simulated environment and avoiding collisions.
+In my controller, I am using a random wander technique to move through the world. This involves using simple reactive techniques to prevent the Pioneer from crashing into obstacles while still encouraging exploration of the environment. Below I provide a listing of the code I have used to move the robot around the simulated environment and avoiding collisions.
 
 \begin{center}
 	\begin{lstlisting}[language=c++, showstringspaces=false, caption={C++ code used to make control the robot to reactively wander through the environment}]
@@ -119,9 +122,7 @@ In my example controller, I am simply using a random wander technique to move th
 		robot.Read();
 
 		//do simple collision avoidance
-		if(sp[3] < 0.6 || sp[4] < 0.6) {
-			int direction = (sp[3]<sp[4]) ? -1 : 1;
-		} else if((sp[0] + sp[1]) < (sp[6] + sp[7])) {
+		if((sp[0] + sp[1]) < (sp[6] + sp[7])) {
 			turnrate = dtor(-10);
 		} else {
 			turnrate = dtor(10);
@@ -140,7 +141,7 @@ In my example controller, I am simply using a random wander technique to move th
 	\end{lstlisting}
 \end{center}
 
-The above system works by trying to keep the robot a balanced distance between the side a further front sensors. If the distance on one side becomes to large then it turns back towards the other direction. If the distance in front of the robot becomes too small then it reacts by turning on the spot until it has enough room to move off forward again. The robot will continue mapping in this way indefinitely. The following screen shot shows an example output from the terminal once mapping is complete:
+The above system works by trying to keep the robot a balanced distance between the side a further front sensors. If the distance on one side becomes too large then it turns back towards the other direction. If the distance in front of the robot becomes too small then it reacts by turning on the spot until it has enough room to move forward again. The following screen-shot shows an example output from the terminal once mapping is complete:
 
 \begin{figure}[H]
 \centering
@@ -150,9 +151,7 @@ The above system works by trying to keep the robot a balanced distance between t
 \end{figure}
 
 \subsection{Interpreting Results}
-Once we have mapped the environment, we can begin to analyse the quality of the map sensed and use a threshold to remove any values that appear to be incorrectly identified as walls and obstacles (more on why this occurs in section \ref{sec:issues})
-
-One way of removing values from the map that have most likely been incorrectly identified as being occupied is to generate a threshold value. The threshold value acts as a cut off point. All values below the threshold are marked as being empty rather than occupied as they have most likely been misidentified. In my application, I have calculated the lower quartile of the data and used this as the threshold. This seemed a logical choice as it means any square above 25\% certainty will be classed as a wall. 
+Once we have mapped the environment, we can begin to analyse the quality of the map and use a threshold to remove any values that appear to be incorrectly identified as obstacles (more on issues with this in section \ref{sec:issues}) The threshold value acts as a cut off point. All values below the threshold are marked as being empty rather than occupied as they have most likely been misidentified. In my application, I have calculated the lower quartile of the data and used this as the threshold. This seemed a reasonable (if somewhat simplistic) choice as it means any cell above 25\% certainty will be classed as an obstacle. 
 
 \begin{center}
 	\begin{lstlisting}[language=c++, showstringspaces=false, caption={C++ code used to calculate the threshold value for the grid}]
@@ -178,34 +177,30 @@ void OccupancyGrid::CalculateThreshold() {
 	\end{lstlisting}
 \end{center}
 
-The following heat map shows analysis of a typical run of the map. The intensity of colour represents the certainty that the square is a wall. You can clearly see the comparison between the plain map (left) and the map with the threshold applied (right). While this method is by no means perfect, as you can see, it does help to remove some of the errors from grid and diminish the presence of others (more on this in section \ref{sec:issues}.
+The following heat map shows analysis of a typical run of the map. The intensity of colour represents the certainty that the square is a wall. You can see the comparison between the plain map (left) and the map with the threshold applied (right). While this method is by no means perfect, it does help to remove some errors from grid and diminish the presence of others (more on this in section \ref{sec:issues}.
  
 \begin{figure}[H]
 \centering
 \includegraphics[width=1.1\textwidth]{final_example.png}
-\caption{Heat Map showing the certainty that each cell in the grid is a wall. Left plot shows before the threshold is applied. Right plot shows after the threshold has been applied. Notice how the incorrect wall square in the nook is removed in the right hand plot.}
+\caption{Two Heat Maps showing the certainty that each cell in the grid is a wall, both with and without the threshold. Notice how the incorrect wall cell in the nook is removed in the right hand plot.}
 \label{fig:final-example}
 \end{figure}
 
 \subsection{Issues and Potential Improvements}
 \label{sec:issues}
-While I believe I have demonstrated a system that does a reasonable job of mapping and environment, I have encountered several areas of my application that could be vastly improved.
+While I believe I have demonstrated a system that does a reasonable job of mapping an environment, I strongly think that there are several areas of my application that could be vastly improved.
 
-One issue that I have had with this problem is the inaccuracy of the sensors on the Pioneers and with sonar in general. When the Pioneer actively senses its environment, it sends a sonar pulse out from the sensor. This pulse spreads out at an angle of $15\,^\circ$. This means that the actual range measured will not necessarily be at the point exactly calculated from the robot's position, but could be anywhere within this $15\,^\circ$ field of view. Therefore at larger ranges, the accuracy of where the point is becomes less certain.
+One issue is the inaccuracy of the sensors on the Pioneers and with sonar in general. When a Pioneer senses its environment, it sends out a sonar pulse. This pulse spreads out at an angle of $15\,^\circ$. This means that the actual range measured will not necessarily be at the point exactly calculated from the robot's position, but could be anywhere within this $15\,^\circ$ field of view. Therefore at larger ranges, the accuracy of where the point is becomes less certain. This issue is a major reason why points are incorrectly labelled as walls. Unfortunately, as the only information from the sensor is the range it measured, there is no easy solution to this problem. However there are several ways that it can be diminished. 
 
-This problem is a major reason why points are incorrectly labelled as walls. Unfortunately, as the only information we are able to get from the sensor is the range it measured, there is no easy solution to this problem. However there are several ways that it can be diminished. 
+One way is to limit the maximum range of a reading so that the pulse does not spread out too much. Another improvement is to only increment a cell by a value that is inversely proportional to the range of the measurement. This means that the value of the cell is directly proportional to the certainty we have about it being a wall. A final improvement that could be made is to use probability based on the contents of surrounding cells (i.e. if all neighbours are walls, this cell is more likely to be a wall). However this approach would prove to be fairly complex and would require a lot more investigation beyond the scope of this report.
 
-One way is to limit the maximum range of a reading so that the ping produced does not get overly spread out. Another improvement is to only increment a cell by a value that is inversely proportional to the range of the measurement. This means that the value of the cell is directly proportional to the certainty we have about it being a wall. 
+Another major issue with occupancy grid mapping is that the world (both simulated and real) cannot always be split into a perfect grid. A wall or obstacle may intersect a cell only partially or at an awkward angle. This means that some space which is actually empty will be marked as being occupied. This problem could be potentially be solved by splitting each cell into a smaller collection of cells and analysing each one using the same technique as before but on a smaller scale. This allows us to achieve a finer degree of accuracy for the reading, but at extra computational overhead.
 
-A final improvement that could be done in this area is the use of probability based on the contents of surrounding cells (i.e. if all neighbours are walls this cell is more likely to be a wall). However this approach would prove to be fairly complex and would require a lot more investigation beyond the scope of this report.
+Further improvements could also be made to the threshold value used in mapping. While the current value does a reasonable job of stripping out most of the incorrectly marked cells, it can be affected by outliers with unreasonably high values. It can also be affected if we map the same area more than once, thus giving some cells even greater values. To solve this we could use a clustering technique such as Otsu's method  or even K-means in order to find a decent threshold value to separate walls from empty space. However, this technique very much relies on a clear distinction between cells in both categories which may not necessarily be present in the collected data depending on the quality of mapping.
 
-Another major issue that I have found using occupancy grid mapping is that the world (both simulated and real) can not always be split into a perfect grid. A wall or obstacle may intersect a cell only partially or at an awkward angle. This means that some space which is actually empty will be marked as being occupied. This problem could be potentially be solved by splitting each cell into a smaller collection of cells and analysing each one using the same technique as as before but on a smaller scale. This allows us to achieve a finer degree of accuracy for the reading, but at extra computational overhead.
-
-Further improvements could also be made to the threshold value used in mapping. While the current value does a decent job of stripping out most of the incorrectly marked cells, it can be affected by outliers which have gained especially high or low readings during mapping, thus pulling up the threshold value. To combat this we can take into account a greater weighting of the values towards the smaller values in the dataset.
-
-Alternatively we could use a clustering technique such as Otsu's method in order to find a decent threshold value to separate walls from empty space. However, this technique very much relies on a clear distinction between cells in both categories which may not necessarily be present in our collected data depending on how well we managed to measure them. Techniques such as this can also be affected if we map the same area more than once, thus raising the value stored in that position for the occupancy grid.
-
-Finally, moving obstacle detection (i.e something that acts as a wall but can move or be removed) has not really been considered as part of this report. However I feel that my approach could be developed further to account for moving obstacles. Currently if the robot detects a obstacle the degree of occupancy of a cell is incremented. As more readings hit the obstacles then the degree of occupancy increase more and more and we become more certain that the obstacle exists. If the object disappears while still in range then the occupancy value does not get incremented and therefore, as other cells are marked, will slowly become a less prominent feature in the world until it eventually drops below the threshold entirely and is removed from the map.
-
+Finally, detection of moving obstacles has not really been considered as part of this report. However I feel that my approach could be developed further to account for moving obstacles. Currently if the robot detects a obstacle the degree of occupancy of a cell is incremented. As more readings hit the obstacle then the degree of occupancy increases and we become more certain that the obstacle exists. If the object disappears while still in range then the occupancy value does not get incremented and therefore, as other cells are marked, will slowly become a less prominent feature in the world until it eventually drops below the threshold and is removed from the map.
+\nocite{*}
+\bibliographystyle{apalike} % this is one type of author-year style
+\bibliography{report_bib.bib}
 \end{document}
 
