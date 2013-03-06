@@ -47,14 +47,14 @@ int main(int argc, char *argv[])
 	Position2dProxy pp(&robot,0);
 
 	//create a pcontroller for the robot
-	PController pc(&robot, &pp, &grid);
+	PController pc(&robot, &pp);
 	
 	pp.SetMotorEnable(true);
 	robot.Read();
 
-	pc.Move(1.8);
+	pc.MoveSetDistance(1.8);
 	pc.Turn(-90);
-	pc.Move(1.2);
+	pc.MoveSetDistance(1.2);
 
 }
 

@@ -16,11 +16,10 @@
 using namespace std;
 
 PController::PController(PlayerCc::PlayerClient* robot, 
-	PlayerCc::Position2dProxy* pp, OccupancyGrid* grid){
+	PlayerCc::Position2dProxy* pp){
 
 	this->robot = robot;
 	this->pp = pp;
-	this->grid = grid;
 }
 
 void PController::Turn(double angle) {
@@ -100,11 +99,9 @@ void PController::MoveToPosition(double x, double y){
 }
 
 PController::~PController() {
-	free(grid);
 	free(robot);
 	free(pp);
 	
-	grid = NULL;
 	robot = NULL;
 	pp = NULL;
 }
