@@ -94,7 +94,7 @@ void PController::MoveToPosition(double x, double y){
 	dy = y - pp->GetYPos();
 
 	angle = atan2(dy, dx) * 180 / M_PI;
-	Turn(angle);
+	//Turn(angle);
 	Move(x, y);
 }
 
