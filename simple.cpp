@@ -49,10 +49,10 @@ int main(int argc, char *argv[])
 {
 	signal(SIGINT, signal_callback_handler);
 
-	//PlayerClient robot("bart.islnet.dcs.aber.ac.uk");
-	PlayerClient robot("localhost");
-	//SonarProxy sp(&robot,0);
-	RangerProxy sp(&robot,0);
+	PlayerClient robot("bart.islnet.dcs.aber.ac.uk");
+	//PlayerClient robot("localhost");
+	SonarProxy sp(&robot,0);
+	//RangerProxy sp(&robot,0);
 	Position2dProxy pp(&robot,0);
 
 	//create a pcontroller for the robot
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 	y = pp.GetYPos();
 
 	grid.Init(x, y);
-	sp.RequestConfigure();
+	
 	pp.SetMotorEnable(true);
 
 	for (;;) {
