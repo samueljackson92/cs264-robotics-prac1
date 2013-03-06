@@ -34,8 +34,11 @@ void PController::Turn(double angle) {
 		error = angle - yaw;
 		turnrate = error * gain;
 
-		pp->SetSpeed(0, dtor(turnrate));
-
+		pp->SetSpeed(0, dtor(turnrate));		
+		
+		cout << "Yaw: " << yaw << endl;
+		cout << "Turnrate: " << turnrate << endl;
+		cout << "Angle Error: " << error <<endl;
 	} while(abs(error) > 2);
 
 	cout << "Angle Error: " << error << endl;
@@ -45,7 +48,7 @@ void PController::Turn(double angle) {
 void PController::Move(double x, double y) {
 	using namespace PlayerCc;
 	double dx, dy, angle, speed, turnrate;
-	const double gain = 0.15;
+	const double gain = 0.3;
 
 	dx = x - pp->GetXPos();
 	dy = y - pp->GetYPos();
@@ -59,7 +62,7 @@ void PController::Move(double x, double y) {
 
 		//correct angle while moving
 		angle = atan2(dy, dx) * 180 / M_PI;
-		turnrate = dtor((angle - rtod(pp->GetYaw())) * 0.5);
+		turnrate = 0;//dtor((angle - rtod(pp->GetYaw())) * 0.5);
 
 		pp->SetSpeed(speed, turnrate);
 	} while (abs(dx) > 0.3 || abs(dy) > 0.3);

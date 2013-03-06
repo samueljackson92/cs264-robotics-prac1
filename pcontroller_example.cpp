@@ -52,9 +52,9 @@ int main(int argc, char *argv[])
 	pp.SetMotorEnable(true);
 	robot.Read();
 
-	pc.MoveSetDistance(1.8);
-	pc.Turn(-90);
-	pc.MoveSetDistance(1.2);
+	pc.MoveToPosition(2,2);
+	//pc.Turn(90);
+	//pc.MoveSetDistance(1.2);
 
 }
 
