@@ -47,18 +47,7 @@ if __name__ == "__main__":
 
 	flatdat = [item for sublist in dat for item in sublist ]
 	average = average_list(flatdat)
-	#threshold = math.ceil(math.floor(average) * weight(flatdat)) 
-
-	array_list = np.array(flatdat)
-	print array_list.std()
-	print array_list.mean()
-
-	moredat = [item for item in flatdat if item <= array_list.mean() and item > 0]
-	threshold = math.ceil(np.array(moredat).mean())+1
-
-	upper_lim = None
-	#threshold = (array_list.mean() - array_list.std())/2
-	#upper_lim = (array_list.mean() + array_list.std())
+	threshold = math.ceil(math.floor(average) * weight(flatdat)) 
 
 	print "\nSTATS---------------------------------"
 	print "Average Density: %0.3f" % average
@@ -74,7 +63,7 @@ if __name__ == "__main__":
 	hm1, imgplot1 = createHeatmap(img)
 	plt.subplot(122)
 	plt.title('With Lower Threshold : ' + str(threshold))
-	hm2, imgplot2 = createHeatmap(img, threshold, upper_lim)
+	hm2, imgplot2 = createHeatmap(img, threshold, None)
 
 	plt.colorbar()
 	plt.show()
