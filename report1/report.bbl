@@ -1,0 +1,19 @@
+\begin{thebibliography}{}
+
+\bibitem[Morse, 2000]{Morse:Thresholding}
+Morse, B.~S. (2000).
+\newblock Lecture 4: Thresholding.
+\newblock
+  "\url{http://homepages.inf.ed.ac.uk/rbf/CVonline/LOCAL_COPIES/MORSE/threshol%
+d.pdf}".
+
+\bibitem[Owen, 2010]{player-stage}
+Owen, J. (2010).
+\newblock {\em How to Use Player/Stage}, 2nd edition.
+
+\bibitem[Russell and Norvig, 2003]{Russell:2003:AIM:773294}
+Russell, S.~J. and Norvig, P. (2003).
+\newblock {\em Artificial Intelligence: A Modern Approach}.
+\newblock Pearson Education, 2 edition.
+
+\end{thebibliography}
