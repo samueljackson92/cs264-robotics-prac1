@@ -49,7 +49,7 @@ void PController::Turn(double angle) {
 		cout << "Angle Error: " << error <<endl;
 		cout << "Integral: " << integral << endl;
 		cout << "dt: " << delta << endl;
-	} while(abs(error) > 0.5);
+	} while(abs(error) > 0.1);
 
 	cout << "Done Turning!" << endl;
 }

@@ -56,10 +56,11 @@ int main(int argc, char *argv[])
 	Position2dProxy pp(&robot,0);
 
 	//create a pcontroller for the robot
-	PController pc(&robot, &pp, &grid);
+	PController pc(&robot, &pp);
 
 	double turnrate, speed, dx, dy;
 	double x, y, angle;
+	int count = 0;
 
 	robot.Read();
 
@@ -95,22 +96,16 @@ int main(int argc, char *argv[])
 		} else {
 			speed = 0.150;
 		}
+		
+		
 
 		//forward sensors
-		grid.SensorUpdate(sp[3], dtor(angle + 10));
-		grid.SensorUpdate(sp[4], dtor(angle - 10));
+
 		//grid.SensorUpdate((sp[3] + sp[4])/2, dtor(angle));
 
-		//side sensors
-		// grid.SensorUpdate(sp[0], dtor(angle + 90));
-		// grid.SensorUpdate(sp[15], dtor(angle + 90));
-
 		if(speed != 0) {
+			
 			grid.SensorUpdate((sp[0] + sp[15])/2, dtor(angle+90));
-
-			// grid.SensorUpdate(sp[7], dtor(angle - 90));
-			// grid.SensorUpdate(sp[8], dtor(angle - 90));
-
 			grid.SensorUpdate((sp[7] + sp[8])/2, dtor(angle-90));
 
 			//rear sensors
@@ -133,11 +128,22 @@ int main(int argc, char *argv[])
 			// grid.SensorUpdate(sp[9], dtor(angle - 130));
 			// grid.SensorUpdate((sp[9] + sp[10])/2, dtor(angle-135));
 		}
+		count++;
+		
+		if (count > 100) {
+		  
+		    if (sp[3] < 0.4 || sp[4] < 0.6) {
+		      pc.Turn(90);
+		    }
+		    
+		    pc.MoveSetDistance(0.6);
+		    count = 0;
+		}
 		
 		grid.PrintGrid();
 
 		//command the motors
-		pp.SetSpeed(speed, turnrate);
+		pp.SetSpeed(0, 0);
 	}
 }
 

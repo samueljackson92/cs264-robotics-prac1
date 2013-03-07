@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 
 	//pc.MoveToPosition(2,2);
 	pc.Turn(45);
-	pc.Turn(90);
+	pc.Turn(45);
 	//pc.MoveSetDistance(1.2);
 
 }
