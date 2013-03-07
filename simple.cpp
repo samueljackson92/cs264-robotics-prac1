@@ -49,10 +49,10 @@ int main(int argc, char *argv[])
 {
 	signal(SIGINT, signal_callback_handler);
 
-	PlayerClient robot("bart.islnet.dcs.aber.ac.uk");
-	//PlayerClient robot("localhost");
-	SonarProxy sp(&robot,0);
-	//RangerProxy sp(&robot,0);
+	//PlayerClient robot("bart.islnet.dcs.aber.ac.uk");
+	PlayerClient robot("localhost");
+	//SonarProxy sp(&robot,0);
+	RangerProxy sp(&robot,0);
 	Position2dProxy pp(&robot,0);
 
 	//create a pcontroller for the robot
@@ -97,53 +97,50 @@ int main(int argc, char *argv[])
 			speed = 0.150;
 		}
 		
-		
-
-		//forward sensors
-
-		//grid.SensorUpdate((sp[3] + sp[4])/2, dtor(angle));
 
 		if(speed != 0) {
-			
+
+			//forward sensors
+			grid.SensorUpdate(sp[3], dtor(angle+10));
+			grid.SensorUpdate(sp[4], dtor(angle-10));
+
+			//side sensors
 			grid.SensorUpdate((sp[0] + sp[15])/2, dtor(angle+90));
 			grid.SensorUpdate((sp[7] + sp[8])/2, dtor(angle-90));
 
 			//rear sensors
 			grid.SensorUpdate(sp[12], dtor(angle + 170));
 			grid.SensorUpdate(sp[11], dtor(angle - 170));
-			//grid.SensorUpdate((sp[11] + sp[12])/2, dtor(angle+180));
-
+	
 			//diagonal sensors
-			// grid.SensorUpdate(sp[1], dtor(angle + 50));
-			// grid.SensorUpdate(sp[2], dtor(angle + 30));
-			// // grid.SensorUpdate((sp[1] + sp[2])/2, dtor(angle+45));
-			// grid.SensorUpdate(sp[5], dtor(angle - 30));
-			// grid.SensorUpdate(sp[6], dtor(angle - 50));
-			// // grid.SensorUpdate((sp[5] + sp[6])/2, dtor(angle-45));
+			grid.SensorUpdate(sp[1], dtor(angle + 50));
+			grid.SensorUpdate(sp[2], dtor(angle + 30));
+			grid.SensorUpdate(sp[5], dtor(angle - 30));
+			grid.SensorUpdate(sp[6], dtor(angle - 50));
+			
 
-			// grid.SensorUpdate(sp[14], dtor(angle + 130));
-			// grid.SensorUpdate(sp[13], dtor(angle + 150));
-			// // grid.SensorUpdate((sp[13] + sp[14])/2, dtor(angle+135));
-			// grid.SensorUpdate(sp[10], dtor(angle - 150));
-			// grid.SensorUpdate(sp[9], dtor(angle - 130));
-			// grid.SensorUpdate((sp[9] + sp[10])/2, dtor(angle-135));
+			grid.SensorUpdate(sp[14], dtor(angle + 130));
+			grid.SensorUpdate(sp[13], dtor(angle + 150));
+
+			grid.SensorUpdate(sp[10], dtor(angle - 150));
+			grid.SensorUpdate(sp[9], dtor(angle - 130));
 		}
-		count++;
+		// count++;
 		
-		if (count > 100) {
+		// if (count > 100) {
 		  
-		    if (sp[3] < 0.4 || sp[4] < 0.6) {
-		      pc.Turn(90);
-		    }
+		//     if (sp[3] < 0.4 || sp[4] < 0.6) {
+		//       pc.Turn(90);
+		//     }
 		    
-		    pc.MoveSetDistance(0.6);
-		    count = 0;
-		}
+		//     pc.MoveSetDistance(0.6);
+		//     count = 0;
+		// }
 		
 		grid.PrintGrid();
 
 		//command the motors
-		pp.SetSpeed(0, 0);
+		pp.SetSpeed(speed, turnrate);
 	}
 }
 

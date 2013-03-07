@@ -28,15 +28,23 @@ void PController::Turn(double angle) {
 	const double gain = 0.78;
 	double turnrate, yaw, error;
 	double integral = 0;
-	clock_t t = clock();
-	double delta = ((double)t)/CLOCKS_PER_SEC;
+
+	timeval stop, start;
+	
+	//do stuff
+	sleep(0.3);
+	gettimeofday(&start, NULL);
 	
 	do {
-		//t = clock() - t;
-		//delta = ((double)t)/CLOCKS_PER_SEC;
-		delta = 0.5;
+		gettimeofday(&stop, NULL);
+		delta = (double) (stop.tv_usec - start.tv_usec) / 1000;
+
+		//delta = 0.5;
 		robot->Read();
 		yaw = rtod(pp->GetYaw());
+		
+
+
 
 		error = angle - yaw;
 		turnrate = error * gain;
@@ -49,6 +57,8 @@ void PController::Turn(double angle) {
 		cout << "Angle Error: " << error <<endl;
 		cout << "Integral: " << integral << endl;
 		cout << "dt: " << delta << endl;
+
+		gettimeofday(&start, NULL);
 	} while(abs(error) > 0.5);
 
 	cout << "Done Turning!" << endl;

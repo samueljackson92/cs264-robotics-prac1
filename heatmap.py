@@ -45,7 +45,7 @@ if __name__ == "__main__":
 		weights_list = [(float(maxdat - item)/ float(maxdat)) for item in listdat]
 		return average_list(weights_list)/2
 
-	flatdat = [item for sublist in dat for item in sublist ]
+	flatdat = [item for sublist in dat for item in sublist if item > 0 ]
 	average = average_list(flatdat)
 	threshold = math.ceil(math.floor(average) * weight(flatdat)) 
 
