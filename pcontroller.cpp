@@ -10,7 +10,8 @@
 #include <iostream>
 #include <libplayerc++/playerc++.h>
 #include <cmath>
-#include <time.h>
+#include <sys/time.h>
+
 
 #include "pcontroller.h"
 
@@ -23,33 +24,37 @@ PController::PController(PlayerCc::PlayerClient* robot,
 	this->pp = pp;
 }
 
+clock_t PController::getMilliSecs()
+{
+    timeval t;
+    gettimeofday(&t, NULL);
+    return (double) t.tv_usec / 1000;
+
+}
+
 void PController::Turn(double angle) {
 	using namespace PlayerCc;
 	const double gain = 0.78;
 	double turnrate, yaw, error;
 	double integral = 0;
+	double delta = 0;
 
-	timeval stop, start;
+	double stop, start;
 	
-	//do stuff
-	sleep(0.3);
-	gettimeofday(&start, NULL);
+	start = getMilliSecs();
+	stop = getMilliSecs();
 	
 	do {
-		gettimeofday(&stop, NULL);
-		delta = (double) (stop.tv_usec - start.tv_usec) / 1000;
+		stop = getMilliSecs();
+		delta = stop - start;
 
 		//delta = 0.5;
 		robot->Read();
 		yaw = rtod(pp->GetYaw());
 		
-
-
-
 		error = angle - yaw;
-		turnrate = error * gain;
 		integral += error * delta;
-		turnrate += integral * 0.04;
+		turnrate = error * gain + integral * 0.05;
 		pp->SetSpeed(0, dtor(turnrate));		
 		
 		cout << "Yaw: " << yaw << endl;
@@ -58,8 +63,8 @@ void PController::Turn(double angle) {
 		cout << "Integral: " << integral << endl;
 		cout << "dt: " << delta << endl;
 
-		gettimeofday(&start, NULL);
-	} while(abs(error) > 0.5);
+		start = getMilliSecs();
+	} while(abs(error) > 2);
 
 	cout << "Done Turning!" << endl;
 }

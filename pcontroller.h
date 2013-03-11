@@ -1,4 +1,5 @@
 
+
 /*
 	PController.h
 	Description: Implementation of a simple P-Controller system
@@ -27,6 +28,8 @@ class PController {
 		void Move(double x, double y);
 		void MoveSetDistance(double distance);
 		void MoveToPosition(double x, double y);
+		clock_t getMilliSecs();
+
 };
 
 #endif

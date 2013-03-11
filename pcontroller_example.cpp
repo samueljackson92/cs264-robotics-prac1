@@ -53,7 +53,6 @@ int main(int argc, char *argv[])
 	robot.Read();
 
 	//pc.MoveToPosition(2,2);
-	pc.Turn(45);
 	pc.Turn(90);
 	//pc.MoveSetDistance(1.2);
 

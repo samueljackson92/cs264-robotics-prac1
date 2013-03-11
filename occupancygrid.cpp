@@ -34,10 +34,12 @@ void OccupancyGrid::Init(double x, double y) {
 }
 
 double OccupancyGrid::GetCell(int x, int y) {
+	ExpandGrid(x, y);
 	return grid[y][x];
 }
 
 void OccupancyGrid::SetCell(int x, int y, double value) {
+	ExpandGrid(x, y);
 	grid[y][x] = value;
 }
 
@@ -87,7 +89,7 @@ void OccupancyGrid::SensorUpdate(double range, double angle) {
 
 		std::cout << "----------------------------------------" << std::endl;
 
-		ExpandGrid();
+		ExpandGrid(grid_x, grid_y);
 
 
 		double max_grid_r = (MAX_RANGE/MAP_SCALE);
@@ -116,14 +118,14 @@ int OccupancyGrid::ScaleToGrid(double num) {
 	return (num >= 0) ? floor(num) : ceil(num);
 }
 
-void OccupancyGrid::ExpandGrid() {
+void OccupancyGrid::ExpandGrid(int x, int y) {
 	//if point falls outside current grid
 	int new_width, new_height;
 	int x_expand = 0, y_expand = 0;
-	if((grid_x < 0 || grid_y < 0) ||(grid_x >= grid_width || grid_y >= grid_height)) {
+	if((x < 0 || y < 0) ||(x >= grid_width || y >= grid_height)) {
 		
-		x_expand = (grid_x < 0 || grid_x >= grid_width) ? EXPANSION_SIZE : 0;
-		y_expand = (grid_y < 0 || grid_y >= grid_height) ? EXPANSION_SIZE : 0;
+		x_expand = (x < 0 || x >= grid_width) ? EXPANSION_SIZE : 0;
+		y_expand = (y < 0 || y >= grid_height) ? EXPANSION_SIZE : 0;
 
 		new_width = grid_width + x_expand;
 		new_height = grid_height + y_expand;

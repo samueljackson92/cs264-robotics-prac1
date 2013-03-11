@@ -6,7 +6,7 @@
 #include <string>
 
 #define MAP_SCALE 0.6
-#define MAX_RANGE 1.8
+#define MAX_RANGE 1.2
 #define EXPANSION_SIZE 6
 
 class OccupancyGrid {
@@ -31,7 +31,7 @@ class OccupancyGrid {
 		void UpdateBotPosition(double x, double y);
 		void WriteGrid(const char* filename);
 	private:
-		void ExpandGrid();
+		void ExpandGrid(int x, int y);
 		void CalculateThreshold();
 		void ResizeGrid(int w, int h);
 		int ScaleToGrid(double num);
