@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
 	print "\nSTATS---------------------------------"
 	print "Average Density: %0.3f" % average
-	print "Suggested Lower Threshold:  %0.3f" % threshold
+	print "Suggested Lower Threshold:  %0.3f" % 5.6
 
 	img = dat[:,:]
 
@@ -62,8 +62,8 @@ if __name__ == "__main__":
 	plt.title('Without Threshold')
 	hm1, imgplot1 = createHeatmap(img)
 	plt.subplot(122)
-	plt.title('With Lower Threshold : ' + str(threshold))
-	hm2, imgplot2 = createHeatmap(img, threshold, None)
+	plt.title('With Lower Threshold : ' + str(5.6))
+	hm2, imgplot2 = createHeatmap(img, 5.6, None)
 
 	plt.colorbar()
 	plt.show()

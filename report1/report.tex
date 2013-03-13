@@ -20,13 +20,12 @@
 
 
 \section{Player and Stage}
-\cite{player-stage}
 The Player program together with the Stage plug-in provide a convenient controller and simulator pair used in the field of robotics. Player acts as a wrapper to the hardware specifics of a robot and its sensors and provides an interface for an application to communicate with a physical robot. This is extremely useful, as it allows the developer to easily port code between different types and models of robots with different configurations and sensors without worrying too much about the underlying hardware. It also allows the developer to jump right into developing a robot controller, rather than dealing with code to interface with the system.
 
-The Stage program is a plug-in for Player to create a simulation environment for robotics. Stage takes instructions from the Player application (which in turn is controlled by the developers code) and actuates a model of the robot. In response, Stage also simulates sensor data relative to the position, speed, angle etc. of the robot and feeds it back into Player. This is useful as development of robot controllers can be built and testing without having access to a physical robot. A simulation program such as Stage allows the core development of robot controllers on a smaller budget and without risk of damaging the robot through unforeseen bugs. The controllers can then be tested, tweaked and improved on a physical robot.
+The Stage program is a plug-in for Player to create a simulation environment for robotics. Stage takes instructions from the Player application (which in turn is controlled by the developers code) and actuates a model of the robot. In response, Stage also simulates sensor data relative to the position, speed, angle etc. of the robot and feeds it back into Player. This is useful as the development of a robot controller can be built and tested without having access to a physical robot. A simulation program such as Stage allows the core development of robot controllers on a smaller budget and without risk of damaging the robot through unforeseen bugs. The controllers can then be tested, tweaked and improved on a physical robot.
 
 \section{Occupancy Grid Mapping}
-Occupancy gird mapping is a robot mapping technique where the world is represented as a discrete number of equally sized, squares called cells. Each of these cells represents a position in a Cartesian coordinate system and can be labelled according to what a robot senses is at this position on the grid (such as if the cell is occupied by an object or not).
+Occupancy gird mapping is a robot mapping technique where the world is represented as a discrete number of equally sized, squares called cells. Each of these cells represents a position in a Cartesian coordinate system and can be labelled according to what a robot senses is at this position on the grid (such as if the cell is occupied by an obstacle or not).
 
 \subsection{Representing the world}
 In my presented solution, I have split the world into a collection of cells which are 60x60 cm spanning from position (0,0) to an unspecified height and width using a 2D vector representation. Initially, only a grid of 6 x 6 cells are created, but as the robot explores the grid is able to dynamically resize to ensure that the robot never "falls off the map". 
@@ -74,7 +73,7 @@ Resizing only occurs when a measured point is found to lay outside of the existi
 	\end{lstlisting}
 \end{center}
 
-Real world values for the robot's change in position are fed into the mapping system and the robot's position in the grid is updated relative to its position in the grid's coordinate system rather than Stage's coordinate system. This is because we require the index of each of cells to be positive so they can be applied to the 2D vector.
+Real world values for the robot's change in position are fed into the mapping system and the robot's position in the grid is updated relative to its position in the grid's coordinate system rather than Stage's coordinate system. This is because we require the index of each of cells to be positive so they can be used to index the 2D vector.
 
 \subsection{Sensing the world}
 As the robot moves though the environment it can sample data from each of it's sensors and feed the data into the mapping system for evaluation. The sonar sensors used by the Pioneer robots can only give information on the range (between 0-5 metres) of how far away something is relative to the position of the robot.
@@ -92,15 +91,20 @@ Where $x_{sensed}$ and $y_{sensed}$ are the position of the sensed point,$x_{rob
 void OccupancyGrid::SensorUpdate(double range, double angle) {
 	double sensor_x, sensor_y;
 
+	//offset sensor to side of robot
+	range += 0.3;
+	
 	if (range < MAX_RANGE) {
 
 		//new point hit by sensor
 		sensor_x = robot_x + (cos(angle) * range);
 		sensor_y = robot_y + (sin(angle) * range);
 
+		//cell index in grid
 		grid_x = ScaleToGrid(sensor_x);
 		grid_y = ScaleToGrid(sensor_y);
 
+		//calculate degree of certainty that a cell is an obstacle
 		double max_grid_r = (MAX_RANGE/MAP_SCALE);
 		double range_prob = (max_grid_r-range)/max_grid_r;
 
@@ -141,12 +145,19 @@ In my controller, I am using a random wander technique to move through the world
 	\end{lstlisting}
 \end{center}
 
-The above system works by trying to keep the robot a balanced distance between the side a further front sensors. If the distance on one side becomes too large then it turns back towards the other direction. If the distance in front of the robot becomes too small then it reacts by turning on the spot until it has enough room to move forward again. The following screen-shot shows an example output from the terminal once mapping is complete:
+The above system works by trying to keep the robot a balanced distance between the sides using further front sensors. If the distance on one side becomes too small then it turns back towards the other direction. If the distance in front of the robot becomes too small then it reacts by turning on the spot until it has enough room to move forward again. The following screen-shot shows an example output from the terminal once mapping is complete:
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{example_run.png}
 \caption{Console output from a typical simulation.}
+\label{fig:example-run}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{sim_run.png}
+\caption{Path of the robot using random wander.}
 \label{fig:example-run}
 \end{figure}
 
@@ -194,9 +205,9 @@ One issue is the inaccuracy of the sensors on the Pioneers and with sonar in gen
 
 One way is to limit the maximum range of a reading so that the pulse does not spread out too much. Another improvement is to only increment a cell by a value that is inversely proportional to the range of the measurement. This means that the value of the cell is directly proportional to the certainty we have about it being a wall. A final improvement that could be made is to use probability based on the contents of surrounding cells (i.e. if all neighbours are walls, this cell is more likely to be a wall). However this approach would prove to be fairly complex and would require a lot more investigation beyond the scope of this report.
 
-Another major issue with occupancy grid mapping is that the world (both simulated and real) cannot always be split into a perfect grid. A wall or obstacle may intersect a cell only partially or at an awkward angle. This means that some space which is actually empty will be marked as being occupied. This problem could be potentially be solved by splitting each cell into a smaller collection of cells and analysing each one using the same technique as before but on a smaller scale. This allows us to achieve a finer degree of accuracy for the reading, but at extra computational overhead.
+Another major issue with occupancy grid mapping is that the world (both simulated and real) cannot always be split into a perfect grid. A wall or obstacle may intersect a cell only partially or at an awkward angle. This means that some space which is actually empty will be marked as being occupied. This problem could be potentially be solved by splitting each cell into a smaller collection of cells and analysing each one using the same technique as before but on a smaller scale. This allows us to achieve a finer degree of accuracy for the reading, but at extra computational overhead. This approach could also be limited by the accuracy that the sensor can read too.
 
-Further improvements could also be made to the threshold value used in mapping. While the current value does a reasonable job of stripping out most of the incorrectly marked cells, it can be affected by outliers with unreasonably high values. It can also be affected if we map the same area more than once, thus giving some cells even greater values. To solve this we could use a clustering technique such as Otsu's method  or even K-means in order to find a decent threshold value to separate walls from empty space. However, this technique very much relies on a clear distinction between cells in both categories which may not necessarily be present in the collected data depending on the quality of mapping.
+Further improvements could also be made to the threshold value used in mapping. While the current value does a reasonable job of stripping out most of the incorrectly marked cells, it can be affected by outliers with unreasonably high values. It can also be affected if we map the same area more than once, thus giving some cells even double the value. To solve this we could use a clustering technique such as Otsu's method or even K-means in order to find a to separate walls from empty space. However, this technique very much relies on a clear distinction between cells in both categories which may not necessarily be present in the collected data depending on the quality of mapping.
 
 Finally, detection of moving obstacles has not really been considered as part of this report. However I feel that my approach could be developed further to account for moving obstacles. Currently if the robot detects a obstacle the degree of occupancy of a cell is incremented. As more readings hit the obstacle then the degree of occupancy increases and we become more certain that the obstacle exists. If the object disappears while still in range then the occupancy value does not get incremented and therefore, as other cells are marked, will slowly become a less prominent feature in the world until it eventually drops below the threshold and is removed from the map.
 \nocite{*}

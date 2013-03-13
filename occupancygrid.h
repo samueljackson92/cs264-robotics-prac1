@@ -6,7 +6,7 @@
 #include <string>
 
 #define MAP_SCALE 0.6
-#define MAX_RANGE 1.2
+#define MAX_RANGE 1.8
 #define EXPANSION_SIZE 6
 
 class OccupancyGrid {

@@ -49,10 +49,10 @@ int main(int argc, char *argv[])
 {
 	signal(SIGINT, signal_callback_handler);
 
-	PlayerClient robot("bart.islnet.dcs.aber.ac.uk");
-	//PlayerClient robot("localhost");
-	SonarProxy sp(&robot,0);
-	//RangerProxy sp(&robot,0);
+	//PlayerClient robot("bart.islnet.dcs.aber.ac.uk");
+	PlayerClient robot("localhost");
+	//SonarProxy sp(&robot,0);
+	RangerProxy sp(&robot,0);
 	Position2dProxy pp(&robot,0);
 
 	//create a pcontroller for the robot
@@ -83,19 +83,19 @@ int main(int argc, char *argv[])
 		grid.UpdateBotPosition(x,y);
 
 		//do simple collision avoidance
-// 		if(sp[3] < 0.6 || sp[4] < 0.6) {
-// 			int direction = (sp[3]<sp[4]) ? -1 : 1;
-// 		} else if((sp[0] + sp[1]) < (sp[6] + sp[7])) {
-// 			turnrate = dtor(-15); // turn 20 degrees per second
-// 		} else {
-// 			turnrate = dtor(15);
-// 		}
-// 
-// 		if(sp[3] < 0.6 || sp[4] < 0.6) {
-// 			speed = 0;
-// 		} else {
-// 			speed = 0.150;
-// 		}
+		if(sp[3] < 0.6 || sp[4] < 0.6) {
+			int direction = (sp[3]<sp[4]) ? -1 : 1;
+		} else if((sp[0] + sp[1]) < (sp[6] + sp[7])) {
+			turnrate = dtor(-15); // turn 20 degrees per second
+		} else {
+			turnrate = dtor(15);
+		}
+
+		if(sp[3] < 0.6 || sp[4] < 0.6) {
+			speed = 0;
+		} else {
+			speed = 0.150;
+		}
 // 		
 
 		if(speed != 0) {
@@ -126,17 +126,17 @@ int main(int argc, char *argv[])
 			grid.SensorUpdate(sp[9], dtor(angle - 130));
 		}
 		
-		count++;
+		// count++;
 		
-		if (count > 50) {
+		// if (count > 50) {
 		  
-		    if (sp[3] < 0.4 || sp[4] < 0.6) {
-		      pc.Turn(90);
-		    }
+		//     if (sp[3] < 0.4 || sp[4] < 0.6) {
+		//       pc.Turn(90);
+		//     }
 		    
-		    pc.MoveSetDistance(0.6);
-		    count = 0;
-		}
+		//     pc.MoveSetDistance(0.6);
+		//     count = 0;
+		// }
 		
 		grid.PrintGrid();
 
