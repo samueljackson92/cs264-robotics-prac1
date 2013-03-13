@@ -1,4 +1,3 @@
-
 /*
 	PController.cpp
 	Description: Implementation of a simple P-Controller system
@@ -45,7 +44,7 @@ void PController::Turn(double angle) {
 	stop = getMilliSecs();
 	
 	do {
-		stop = getMilliSecs();
+		
 		delta = stop - start;
 
 		//delta = 0.5;
@@ -55,7 +54,10 @@ void PController::Turn(double angle) {
 		error = angle - yaw;
 		integral += error * delta;
 		turnrate = error * gain + integral * 0.05;
-		pp->SetSpeed(0, dtor(turnrate));		
+		
+		start = getMilliSecs();
+		pp->SetSpeed(0, dtor(turnrate));
+		stop = getMilliSecs();
 		
 		cout << "Yaw: " << yaw << endl;
 		cout << "Turnrate: " << turnrate << endl;
@@ -63,7 +65,7 @@ void PController::Turn(double angle) {
 		cout << "Integral: " << integral << endl;
 		cout << "dt: " << delta << endl;
 
-		start = getMilliSecs();
+		
 	} while(abs(error) > 2);
 
 	cout << "Done Turning!" << endl;
