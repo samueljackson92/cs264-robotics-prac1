@@ -27,24 +27,17 @@ clock_t PController::getMilliSecs()
 {
     timeval t;
     gettimeofday(&t, NULL);
-    return (double) t.tv_usec / 1000;
+    return (double) (t.tv_usec / 1000);
 
 }
 
-void PController::Turn(double oangle) {
+void PController::Turn(double angle) {
 	using namespace PlayerCc;
-	const double gain = 0.53;
-	double turnrate, yaw, error;
+	const double gain = 1.2;
+	double turnrate=0, yaw=0, error=0;
 	double integral = 0;
 	double delta = 0;
-
-	double stop, start, angle;
-	
-	if(oangle < 0) {
-	  angle = oangle * -1;
-	} else {
-	  angle = oangle;
-	}
+	double stop=0, start=0;
 	
 	do {
 		//delta = 0.5;
@@ -54,21 +47,14 @@ void PController::Turn(double oangle) {
 		robot->Read();
 		stop = getMilliSecs();
 		
-		cout << start << endl;
-		cout << stop << endl;
-		
-		delta = abs((stop - start)) /1000;
+		delta = abs(stop - start)/1000;
 		
 		yaw = rtod(pp->GetYaw());
 		
 		error = angle - yaw;
 		
 		integral += error * delta;
-		turnrate = error * gain + integral * 0.07;
-
-		if (oangle < 0) {
-		  turnrate *= -1;
-		}
+		turnrate = (error * gain);// + (integral * 0.13);
 		
 		pp->SetSpeed(0, dtor(turnrate));
 		
@@ -79,7 +65,7 @@ void PController::Turn(double oangle) {
 		cout << "dt: " << delta << endl;
 
 		
-	} while(abs(error) > 1);
+	} while(abs(error) > 0);
 
 	cout << "Done Turning!" << endl;
 }

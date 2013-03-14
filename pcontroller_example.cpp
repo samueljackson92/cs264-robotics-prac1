@@ -40,7 +40,7 @@ using namespace PlayerCc;
 int main(int argc, char *argv[])
 {
 
-	PlayerClient robot("lisa.islnet.dcs.aber.ac.uk");
+	PlayerClient robot("bart.islnet.dcs.aber.ac.uk");
 	//PlayerClient robot("localhost");
 	SonarProxy sp(&robot,0);
 	//RangerProxy sp(&robot,0);
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 	robot.Read();
 
 	//pc.MoveToPosition(1,1);
-	pc.Turn(-90);
+	pc.Turn(90);
 	//pc.MoveSetDistance(1);
 	//pc.MoveSetDistance(1.2);
 
