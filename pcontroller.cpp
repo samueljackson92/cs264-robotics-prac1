@@ -41,7 +41,7 @@ void PController::Turn(double oangle) {
 	double stop, start, angle;
 	
 	if(oangle < 0) {
-	  angle = 360 + oangle;
+	  angle = oangle * -1;
 	} else {
 	  angle = oangle;
 	}
