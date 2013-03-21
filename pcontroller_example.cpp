@@ -40,7 +40,7 @@ using namespace PlayerCc;
 int main(int argc, char *argv[])
 {
 
-	PlayerClient robot("bart.islnet.dcs.aber.ac.uk");
+	PlayerClient robot("maggie.islnet.dcs.aber.ac.uk");
 	//PlayerClient robot("localhost");
 	SonarProxy sp(&robot,0);
 	//RangerProxy sp(&robot,0);
