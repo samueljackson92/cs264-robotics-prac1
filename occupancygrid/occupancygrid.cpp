@@ -5,7 +5,8 @@
 #include <stdlib.h>
 #include <libplayerc++/playerc++.h> 
 
-#include "../vectorutils/vectorutils.h"
+#include "../vectorutils/matrixutils.h"
+#include "cell.h"
 #include "occupancygrid.h"
 
 using namespace PlayerCc;
@@ -33,18 +34,21 @@ void OccupancyGrid::Init(double x, double y) {
 	old_y = y;
 }
 
-double OccupancyGrid::GetCell(int x, int y) {
+double OccupancyGrid::GetCellValue(int x, int y) {
 	ExpandGrid(x, y);
-	return grid[y][x];
+	Cell &c = grid[y][x];
+	c.SetX(x);
+	c.SetY(y);
+	return c.GetValue();
 }
 
-void OccupancyGrid::SetCell(int x, int y, double value) {
+void OccupancyGrid::SetCellValue(int x, int y, double value) {
 	ExpandGrid(x, y);
-	grid[y][x] = value;
+	grid[y][x].SetValue(value);
 }
 
 void OccupancyGrid::IncrementCell(int x, int y) {
-	SetCell(x,y, GetCell(x,y)+1);
+	SetCellValue(x,y, GetCellValue(x,y)+1);
 }
 
 void OccupancyGrid::UpdateBotPosition(double x, double y) {
@@ -95,7 +99,7 @@ void OccupancyGrid::SensorUpdate(double range, double angle) {
 		double max_grid_r = (MAX_RANGE/MAP_SCALE);
 		double range_prob = (max_grid_r-range)/max_grid_r;
 
-		SetCell(grid_x, grid_y, GetCell(grid_x, grid_y) + range_prob);
+		SetCellValue(grid_x, grid_y, GetCellValue(grid_x, grid_y) + range_prob);
 	}
 }
 
@@ -104,13 +108,30 @@ void OccupancyGrid::PrintGrid(){
 
 	for (int y = (grid_height-1); y >= 0; y--) {
 		for (int x = 0; x < grid_width; x++) {
-			int value = GetCell(x, y);
+			int value = GetCellValue(x, y);
 			printf(" %4d", value);
 		}
 		cout << endl;
 	}
+}
 
-	CalculateThreshold();
+void OccupancyGrid::PrintFinalGrid(){
+	using namespace std;
+	double threshold = CalculateThreshold();
+
+	for (int y = (grid_height-1); y >= 0; y--) {
+		for (int x = 0; x < grid_width; x++) {
+			int value = GetCellValue(x, y);
+
+			if(value < threshold)
+				cout << ".";
+			else {
+				cout << "#";
+			}
+		}
+		cout << endl;
+	}
+
 }
 
 int OccupancyGrid::ScaleToGrid(double num) {
@@ -144,9 +165,9 @@ void OccupancyGrid::ExpandGrid(int x, int y) {
 
 			for (int i = (grid_width-1); i >= 0; i--) {
 				for (int j = (grid_height-1); j >= 0; j--) {
-					int value = GetCell(i,j);
-					SetCell(i+x_expand,j+y_expand,value);
-					SetCell(i,j,0);
+					int value = GetCellValue(i,j);
+					SetCellValue(i+x_expand,j+y_expand,value);
+					SetCellValue(i,j,0);
 				}
 			}
 		}
@@ -170,7 +191,7 @@ void OccupancyGrid::WriteGrid(const char* filename) {
 
 	for (int y = (grid_height-1); y >= 0; y--) {
 		for (int x = 0; x < grid_width; x++) {
-			double value = GetCell(x, y);
+			double value = GetCellValue(x, y);
 			file << value;
 			if(x < (grid_width-1)) { file << ","; }
 		}
@@ -180,19 +201,24 @@ void OccupancyGrid::WriteGrid(const char* filename) {
 	file.close();
 }
 
-void OccupancyGrid::CalculateThreshold() {
+double OccupancyGrid::CalculateThreshold() {
 	using namespace std;
-	double average = 0, lower_q = 0;
-	vector<double> lq;
-	vector<double> vec = VectorUtils::Flatten(grid);
-	
-	average = VectorUtils::Mean(vec);
-	for (int i = 0; i < vec.size(); i++) {
-		if(vec[i] <= average) {
-			lq.push_back(vec[i]);
-		}
+	vector<double> vec;
+	for(std::vector<std::vector<Cell> >::iterator it = grid.begin(); it != grid.end(); ++it) {
+	    for (std::vector<Cell>::iterator jt = it->begin(); jt != it->end(); ++jt) {
+	    	vec.push_back(jt->GetValue());
+	    }
 	}
+	return MatrixUtils::Otsu(vec);
+}
 
-	lower_q = VectorUtils::Mean(lq);
-	cout << "Threshold: " << lower_q+1 << endl;
+Cell& OccupancyGrid::GetCurrentCell() {
+	int x = ScaleToGrid(robot_x);
+	int y = ScaleToGrid(robot_y);
+	
+	return GetCell(x,y);
+}
+
+Cell& OccupancyGrid::GetCell(int x, int y) {
+	return grid[y][x];
 }

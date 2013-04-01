@@ -1,5 +1,3 @@
-
-
 /*
 	PController.h
 	Description: Implementation of a simple P-Controller system
@@ -15,11 +13,15 @@
 #include <libplayerc++/playerc++.h>
 #include <cmath>
 
+class Mapper;
 class PController {
 	PlayerCc::PlayerClient* robot;
 	PlayerCc::Position2dProxy* pp;
-	
+	Mapper* parent;
+
 	public:
+		PController(PlayerCc::PlayerClient* robot, 
+			PlayerCc::Position2dProxy* pp, Mapper* parent);
 		PController(PlayerCc::PlayerClient* robot, 
 			PlayerCc::Position2dProxy* pp);
 		~PController();
@@ -28,7 +30,7 @@ class PController {
 		void Move(double x, double y);
 		void MoveSetDistance(double distance);
 		void MoveToPosition(double x, double y);
-		clock_t getMilliSecs();
+		double DoUpdate();
 
 };
 

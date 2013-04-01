@@ -9,10 +9,12 @@
 #define MAX_RANGE 1.8
 #define EXPANSION_SIZE 6
 
+#include "cell.h"
+
 class OccupancyGrid {
 	
 	//grid of cells
-	std::vector<std::vector<double> > grid;
+	std::vector<std::vector<Cell> > grid;
 	double robot_x, robot_y; //internal robot position
 	double start_x, start_y; //internal robot start point
 	double old_x, old_y;	 //previous internal robot positon
@@ -23,16 +25,19 @@ class OccupancyGrid {
 	public:
 		OccupancyGrid();
 		void Init(double x, double y);
-		double GetCell(int x, int y);
-		void SetCell(int x, int y, double value);
+		double GetCellValue(int x, int y);
+		void SetCellValue(int x, int y, double value);
 		void IncrementCell(int x, int y);
 		void SensorUpdate(double range, double angle);
 		void PrintGrid();
+		void PrintFinalGrid();
 		void UpdateBotPosition(double x, double y);
 		void WriteGrid(const char* filename);
+		Cell& GetCurrentCell();
+		Cell& GetCell();
 	private:
 		void ExpandGrid(int x, int y);
-		void CalculateThreshold();
+		double CalculateThreshold();
 		void ResizeGrid(int w, int h);
 		int ScaleToGrid(double num);
 };

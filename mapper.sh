@@ -1,0 +1,1 @@
+g++ -o mapper `pkg-config --cflags playerc++` mapper.h mapper.cpp pcontroller/pcontroller.h pcontroller/pcontroller.cpp occupancygrid/occupancygrid.h occupancygrid/occupancygrid.cpp occupancygrid/cell.h occupancygrid/cell.cpp vectorutils/vectorutils.h vectorutils/matrixutils.h `pkg-config --libs playerc++`
