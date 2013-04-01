@@ -62,8 +62,8 @@ if __name__ == "__main__":
 	plt.title('Without Threshold')
 	hm1, imgplot1 = createHeatmap(img)
 	plt.subplot(122)
-	plt.title('With Lower Threshold : ' + str(5.6))
-	hm2, imgplot2 = createHeatmap(img, 5.6, None)
+	plt.title('With Lower Threshold : ' + str(34))
+	hm2, imgplot2 = createHeatmap(img, 34, None)
 
 	plt.colorbar()
 	plt.show()
