@@ -8,10 +8,15 @@
 #ifndef __MAPPER_H_INCLUDED__
 #define __MAPPER_H_INCLUDED__
 
+#include <vector>
+#include <map>
+
 #include <libplayerc++/playerc++.h>
 
 #include "pcontroller/pcontroller.h"
+#include "occupancygrid/cell.h"
 #include "occupancygrid/occupancygrid.h"
+
 
 using namespace PlayerCc;
 
@@ -26,11 +31,12 @@ class Mapper {
 	public:
 		Mapper();
 		void Start();
-		void MoveToNextCell();
+		void MoveToNextCell(Cell start, Cell goal);
 		void UpdateGrid();
-		vector<Cell> FindPath(Cell start, Cell goal);
-		vector<Cell> GetNeighbours(Cell c);
-		vector<Cell> ReconstructPath(map<Cell, Cell> came_from, Cell current_node);
+		bool vec_contains(std::vector<Cell> vec, Cell c);
+		std::vector<Cell> FindPath(Cell start, Cell goal);
+		std::vector<Cell> GetNeighbours(Cell c);
+		std::vector<Cell> ReconstructPath(std::map<Cell, Cell> came_from, Cell current_node);
 		~Mapper();
 
 };

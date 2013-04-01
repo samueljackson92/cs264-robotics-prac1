@@ -26,7 +26,8 @@ class Cell {
 		void SetVisited(bool val);
 		bool IsDiscovered();
 		void SetDiscovered(bool val);
-		bool operator==(const Cell& other);
+		bool operator==(const Cell& other) const;
+		bool operator<(const Cell& other) const;
 };
 
 #endif

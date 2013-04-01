@@ -6,6 +6,7 @@
 */
 
 #include "cell.h"
+#include <cmath>
 
 Cell::Cell() {
 	this->x = 0;
@@ -53,6 +54,9 @@ void Cell::SetY(double y) {
 	this->y = y;
 }
 
-bool Cell::operator==(const Cell& other) {
+bool Cell::operator==(const Cell& other) const {
 	return (x == other.x && y == other.y);
+}
+bool Cell::operator<(const Cell& other) const {
+	return (x+y) < (other.x+other.y);
 }

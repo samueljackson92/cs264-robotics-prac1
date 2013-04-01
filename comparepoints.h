@@ -1,20 +1,23 @@
 
+#include <map>
+#include <cmath>
 #include "occupancygrid/cell.h"
 
 class ComparePoints{
 	Cell goal;
-	map<Cell, int> f_score;
+	std::map<Cell, int> f_score;
 	
-	ComparePoints(Cell g, map<Cell, int>& fs) 
-		: goal(g), f_score(fs) {
+	public:
+		ComparePoints(Cell g, std::map<Cell, int>& fs) 
+			: f_score(fs) {
+			goal = g;
+		}
 
-	}
+		bool operator()(Cell& c1, Cell& c2) {
+			return f_score[c1] < f_score[c2];
+		}
 
-	bool operator()(Cell& c1, Cell& c2) {
-		return f_score[c1] f_score[c2];
-	}
-
- 	static int Distance(Cell c1, Cell c2) {
-		return abs(c1.GetX() - c2.GetX()) + abs(c1.GetY() - c2.GetY());
-	}
+	 	static int Distance(Cell c1, Cell c2) {
+			return std::abs(c1.GetX() - c2.GetX()) + std::abs(c1.GetY() - c2.GetY());
+		}
 };

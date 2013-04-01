@@ -7,12 +7,12 @@
 
 #define _USE_MATH_DEFINES
 
-#include <iostream>
 #include <vector>
 #include <cmath>
 #include <queue>
 #include <map>
-#include <set>
+#include <algorithm>
+
 
 #include "occupancygrid/occupancygrid.h"
 #include "comparepoints.h"
@@ -51,7 +51,7 @@ void Mapper::Start() {
 			it != neighbours.end(); ++it) {
 			if(it->GetValue() == 0) {
 				//check if we've already found this neighbour
-				if(!it->IsVisted() && !it->IsDiscovered()) {
+				if(!it->IsVisited() && !it->IsDiscovered()) {
 					//add it to our frontier
 					it->SetDiscovered(true);
 					frontier.push_back(*it);
@@ -60,7 +60,9 @@ void Mapper::Start() {
 		}
 
 		//get next item from frontier
-		current = frontier.pop_back();
+		current = frontier.back();
+		frontier.pop_back();
+
 		Cell ourPos = grid.GetCurrentCell();
 		//move to cell
 		MoveToNextCell(ourPos, current);
@@ -73,18 +75,24 @@ void Mapper::Start() {
 }
 
 void Mapper::MoveToNextCell(Cell start, Cell goal) {
+	//find optimal path from current position to next square.
+
 	vector<Cell> path = FindPath(start, goal);
-	//move along path until goal.
+	//move along path util we reach next square.
+	for (vector<Cell>::iterator it = path.begin(); it != path.end(); ++it) {
+		pc.MoveToPosition(it->GetX(), it->GetY());
+	}
 }
 
 vector<Cell> Mapper::FindPath(Cell start, Cell goal) {
 	map<Cell, int> f_score;
 	map<Cell, int> g_score;
-	set<Cell> closed_set;
-	set<Cell> in_queue;
+	vector<Cell> closed_set;
+	vector<Cell> in_queue;
 	map<Cell, Cell> came_from;
+	vector<Cell> path;
 
-	priority_queue<Cell, vector<Cell>, ComparePoints> frontier(goal, f_score, g_score);
+	priority_queue<Cell, vector<Cell>, ComparePoints> frontier(ComparePoints(goal, f_score));
 	frontier.push(start);
 
 	g_score[start] = 0;
@@ -96,43 +104,54 @@ vector<Cell> Mapper::FindPath(Cell start, Cell goal) {
 		if(current == goal) {
 			return ReconstructPath(came_from, goal);
 		}
-		closed_set.insert(fronter.pop());
+		closed_set.push_back(frontier.top());
+		frontier.pop();
+
 		vector<Cell> neighbours = GetNeighbours(current);
 		for (vector<Cell>::iterator it = neighbours.begin();
 			it != neighbours.end(); ++it) {
 			Cell neighbour = *it;
 
 			int tentative_g_score = g_score[current] + 1;
-			if(closed_set.find(neighbour) != closed_set.end()) {
+			
+			if(vec_contains(closed_set, neighbour)) {
 				if(tentative_g_score >= g_score[neighbour]) {
 					continue;
 				}
 			}
 
-			if(in_queue.find(neighbour) == in_queue.end()
+			if(!vec_contains(in_queue, neighbour)
 				|| tentative_g_score < g_score[(neighbour)]) {
 				came_from[neighbour] = current;
 				g_score[neighbour] = tentative_g_score;
 				f_score[neighbour] = g_score[neighbour] + ComparePoints::Distance(*it, goal);
 			
-				if(in_queue.find(neighbour) == in_queue.end()) {
+				if(vec_contains(in_queue, neighbour)) {
 					frontier.push(neighbour);
-					in_queue.insert(neighbour);
+					in_queue.push_back(neighbour);
 				}
 			}
 		}
 	}
 
-	return NULL;
+	return path;
+}
+
+bool Mapper::vec_contains(vector<Cell> vec, Cell c) {
+	return find (vec.begin(), vec.end(), c) != vec.end();
 }
 
 vector<Cell> Mapper::ReconstructPath(map<Cell, Cell> came_from, 
 	Cell current_node) {
+
+	vector<Cell> vec;
 	if(came_from.find(current_node) != came_from.end()) {
-		vector<Cell> vec = ReconstructPath(came_from, came_from[current_node]);
-		return vec.push_back(current_node);
+		vec = ReconstructPath(came_from, came_from[current_node]);
+		vec.push_back(current_node);
+		return vec;
 	} else {
-		return current_node;
+		vec.push_back(current_node);
+		return vec;
 	}
 }
 
