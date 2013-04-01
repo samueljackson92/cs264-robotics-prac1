@@ -33,8 +33,8 @@
 #include <cmath>
 #include <signal.h>
 
-#include "pcontroller.h"
-#include "occupancygrid.h"
+#include "pcontroller/pcontroller.h"
+#include "occupancygrid/occupancygrid.h"
 
 using namespace std;
 using namespace PlayerCc;

@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <libplayerc++/playerc++.h> 
 
-#include "vectorutils.h"
+#include "../vectorutils/vectorutils.h"
 #include "occupancygrid.h"
 
 using namespace PlayerCc;
@@ -186,14 +186,13 @@ void OccupancyGrid::CalculateThreshold() {
 	vector<double> lq;
 	vector<double> vec = VectorUtils::Flatten(grid);
 	
-	average = VectorUtils::Average(vec);
-	vec = VectorUtils::Filter(vec, 0);
+	average = VectorUtils::Mean(vec);
 	for (int i = 0; i < vec.size(); i++) {
 		if(vec[i] <= average) {
 			lq.push_back(vec[i]);
 		}
 	}
 
-	lower_q = VectorUtils::Average(lq);
+	lower_q = VectorUtils::Mean(lq);
 	cout << "Threshold: " << lower_q+1 << endl;
 }
