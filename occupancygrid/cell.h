@@ -7,7 +7,7 @@
 
 #ifndef __CELL_H_INCLUDED__
 #define __CELL_H_INCLUDED__
-
+#include <iostream>
 class Cell {
 	double value;
 	double x,y;
@@ -28,6 +28,14 @@ class Cell {
 		void SetDiscovered(bool val);
 		bool operator==(const Cell& other) const;
 		bool operator<(const Cell& other) const;
+		friend std::ostream& operator<<(std::ostream& os, const Cell& c)
+		{
+		    os << "X: " << c.x << "Y: " << c.y << std::endl;
+		    os << "Value: " << c.value << std::endl;
+	     	os << "Visited: " << c.visited << std::endl;
+	     	os << "Discovered: " << c.discovered << std::endl;
+		    return os;
+		}
 };
 
 #endif

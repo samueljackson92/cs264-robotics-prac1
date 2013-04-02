@@ -35,10 +35,7 @@ void OccupancyGrid::Init(double x, double y) {
 }
 
 double OccupancyGrid::GetCellValue(int x, int y) {
-	ExpandGrid(x, y);
-	Cell &c = grid[y][x];
-	c.SetX(x);
-	c.SetY(y);
+	Cell c = GetCell(x,y);
 	return c.GetValue();
 }
 
@@ -73,25 +70,25 @@ void OccupancyGrid::SensorUpdate(double range, double angle) {
 		sensor_x = robot_x + (cos(angle) * range);
 		sensor_y = robot_y + (sin(angle) * range);
 
-		std::cout << "----------------------------------------" << std::endl;
-		std::cout << "Robot Angle: " << angle << std::endl;
-		std::cout << "Robot Range: " << range << std::endl;
-		std::cout << "Our Position:";
-		std::cout << " x: " << robot_x ;
-		std::cout << " y: " << robot_y << std::endl;
+		// std::cout << "----------------------------------------" << std::endl;
+		// std::cout << "Robot Angle: " << angle << std::endl;
+		// std::cout << "Robot Range: " << range << std::endl;
+		// std::cout << "Our Position:";
+		// std::cout << " x: " << robot_x ;
+		// std::cout << " y: " << robot_y << std::endl;
 
-		std::cout << "Our Range Point:";
-		std::cout << " x: " << sensor_x;
-		std::cout << " y: " << sensor_y << std::endl;
+		// std::cout << "Our Range Point:";
+		// std::cout << " x: " << sensor_x;
+		// std::cout << " y: " << sensor_y << std::endl;
 
 		grid_x = ScaleToGrid(sensor_x);
 		grid_y = ScaleToGrid(sensor_y);
 
-		std::cout << "Range Cell:";
-		std::cout << " x: " << grid_x;
-		std::cout << " y: " << grid_y << std::endl;
+		// std::cout << "Range Cell:";
+		// std::cout << " x: " << grid_x;
+		// std::cout << " y: " << grid_y << std::endl;
 
-		std::cout << "----------------------------------------" << std::endl;
+		// std::cout << "----------------------------------------" << std::endl;
 
 		ExpandGrid(grid_x, grid_y);
 
@@ -137,6 +134,10 @@ void OccupancyGrid::PrintFinalGrid(){
 int OccupancyGrid::ScaleToGrid(double num) {
 	num = num / MAP_SCALE;
 	return (num >= 0) ? floor(num) : ceil(num);
+}
+
+double OccupancyGrid::ScaleToWorld(int num) {
+	return num * MAP_SCALE;
 }
 
 void OccupancyGrid::ExpandGrid(int x, int y) {
@@ -215,10 +216,21 @@ double OccupancyGrid::CalculateThreshold() {
 Cell& OccupancyGrid::GetCurrentCell() {
 	int x = ScaleToGrid(robot_x);
 	int y = ScaleToGrid(robot_y);
-	
+
 	return GetCell(x,y);
 }
 
 Cell& OccupancyGrid::GetCell(int x, int y) {
-	return grid[y][x];
+	ExpandGrid(x,y);
+	Cell& c = grid[y][x];
+	c.SetX(x);
+	c.SetY(y);
+	return c;
+}
+
+int OccupancyGrid::GetGridHeight() {
+	return grid_height;
+}
+int OccupancyGrid::GetGridWidth() {
+	return grid_width;
 }

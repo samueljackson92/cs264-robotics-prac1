@@ -35,8 +35,8 @@ double PController::DoUpdate() {
 	timeval t1, t2;
 	double elapsedTime = 0;
 	gettimeofday(&t1, NULL);
-	robot->Read();
 	parent->UpdateGrid();
+	robot->Read();
 	gettimeofday(&t2, NULL);
 	
 	// compute and print the elapsed time in millisec
@@ -53,31 +53,17 @@ void PController::Turn(double angle) {
 	double integral = 0;
 	double delta = 0;
 	double stop=0, start=0;
-	bool minus = false;
-	
-	if (angle < 0) {
-	 minus = true;
-	 angle = 360 + angle;
-	 //angle -= 4;
-	} else {
-	 // angle += 4;
-	}
 	
 	do {
 		delta = DoUpdate();
 
 		yaw = rtod(pp->GetYaw());
-		
-		if (minus) {
-			yaw = (yaw == 0 ? 360 : yaw);
-		}
-		
-		error = (minus ? yaw - angle : angle - yaw);
+		error = angle - yaw;
 		
 		integral += error * delta;
 		turnrate = (error * gain) + (integral * 0.05);
 		
-		pp->SetSpeed(0, (minus ? dtor(-turnrate) : dtor(turnrate)));
+		pp->SetSpeed(0, dtor(turnrate));
 		
 		cout << "Yaw: " << yaw << endl;
 		cout << "Turnrate: " << turnrate << endl;
@@ -141,10 +127,7 @@ void PController::Move(double x, double y) {
 	double dx, dy, angle, speed, turnrate;
 	const double gain = 0.5;
 
-	dx = x - pp->GetXPos();
-	dy = y - pp->GetYPos();
-
-	double start, stop, delta, error, integral = 0;
+	double delta = 0, error =0, integral = 0;
 	angle = rtod(pp->GetYaw());
 	
 	do {
@@ -197,12 +180,12 @@ void PController::MoveToPosition(double x, double y){
 	using namespace PlayerCc;
 	double dx, dy, angle;
 
-	dx = x - pp->GetXPos();
-	dy = y - pp->GetYPos();
+	dx = pp->GetXPos() -x ;
+	dy = pp->GetYPos() -y;
 
 	angle = atan2(dy, dx) * 180 / M_PI;
 	cout << rtod(pp->GetYaw()) - angle << endl;
-	Turn(angle);
+	Turn(rtod(pp->GetYaw()) - angle);
 	Move(x, y);
 }
 

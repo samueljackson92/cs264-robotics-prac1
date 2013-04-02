@@ -35,6 +35,9 @@ class OccupancyGrid {
 		void WriteGrid(const char* filename);
 		Cell& GetCurrentCell();
 		Cell& GetCell(int x, int y);
+		double ScaleToWorld(int num);
+		int GetGridHeight();
+		int GetGridWidth();
 	private:
 		void ExpandGrid(int x, int y);
 		double CalculateThreshold();
