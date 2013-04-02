@@ -65,11 +65,11 @@ void PController::Turn(double angle) {
 		
 		pp->SetSpeed(0, dtor(turnrate));
 		
-		cout << "Yaw: " << yaw << endl;
-		cout << "Turnrate: " << turnrate << endl;
-		cout << "Angle Error: " << error <<endl;
-		cout << "Integral: " << integral << endl;
-		cout << "dt: " << delta << endl;
+		// cout << "Yaw: " << yaw << endl;
+		// cout << "Turnrate: " << turnrate << endl;
+		// cout << "Angle Error: " << error <<endl;
+		// cout << "Integral: " << integral << endl;
+		// cout << "dt: " << delta << endl;
 
 		
 	} while(abs(error) > 1);
@@ -145,10 +145,10 @@ void PController::Move(double x, double y) {
 		turnrate = 0;//dtor((angle - pp->GetYaw()) * 0.5);
 
 		
-		cout << "Speed: " << speed << endl;
-		cout << "Error: " << error <<endl;
-		cout << "Integral: " << integral << endl;
-		cout << "dt: " << delta << endl;
+		// cout << "Speed: " << speed << endl;
+		// cout << "Error: " << error <<endl;
+		// cout << "Integral: " << integral << endl;
+		// cout << "dt: " << delta << endl;
 
 		pp->SetSpeed(speed, turnrate);
 	} while (abs(dx) > 0.3 || abs(dy) > 0.3);
@@ -180,12 +180,12 @@ void PController::MoveToPosition(double x, double y){
 	using namespace PlayerCc;
 	double dx, dy, angle;
 
-	dx = pp->GetXPos() -x ;
-	dy = pp->GetYPos() -y;
+	dx = x - pp->GetXPos();
+	dy = y - pp->GetYPos();
 
 	angle = atan2(dy, dx) * 180 / M_PI;
-	cout << rtod(pp->GetYaw()) - angle << endl;
-	Turn(rtod(pp->GetYaw()) - angle);
+	cout << angle << endl;
+	Turn(pp->GetYaw() + angle);
 	Move(x, y);
 }
 

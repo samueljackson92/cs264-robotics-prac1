@@ -33,11 +33,14 @@ class OccupancyGrid {
 		void PrintFinalGrid();
 		void UpdateBotPosition(double x, double y);
 		void WriteGrid(const char* filename);
-		Cell& GetCurrentCell();
-		Cell& GetCell(int x, int y);
+		Cell GetCurrentCell();
+		Cell GetCell(int x, int y);
 		double ScaleToWorld(int num);
 		int GetGridHeight();
 		int GetGridWidth();
+
+		void SetDiscovered(int x, int y, bool val);
+		void SetVisited(int x, int y, bool val);
 	private:
 		void ExpandGrid(int x, int y);
 		double CalculateThreshold();

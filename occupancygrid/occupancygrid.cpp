@@ -20,8 +20,8 @@ OccupancyGrid::OccupancyGrid() {
 	start_x = EXPANSION_SIZE/2;
 	start_y = EXPANSION_SIZE/2;
 
-	robot_x = start_x*MAP_SCALE + 0.3;
-	robot_y = start_y*MAP_SCALE + 0.3;
+	robot_x = (start_x*MAP_SCALE) + 0.3;
+	robot_y = (start_y*MAP_SCALE) + 0.3;
 
 	grid_x = start_x;
 	grid_y = start_y;
@@ -52,7 +52,7 @@ void OccupancyGrid::UpdateBotPosition(double x, double y) {
 	double dx = x - old_x;
 	double dy = y - old_y;
 
-	std::cout << "dx: " << dx << "dy: " << dy << std::endl; 
+	// std::cout << "dx: " << dx << "dy: " << dy << std::endl; 
 	robot_x += dx;
 	robot_y += dy;
 
@@ -157,7 +157,7 @@ void OccupancyGrid::ExpandGrid(int x, int y) {
 		
 		//if we did a negative resize, shift data
 		if(grid_x < 0 || grid_y < 0) {
-			std::cout << "Moved in Y" << std::endl;
+			std::cout << "Y Expand!" << std::endl;
 			robot_x += (x_expand > 0) ? (x_expand+1)*MAP_SCALE : 0;
 			robot_y += (y_expand > 0) ? (y_expand+1)*MAP_SCALE : 0;
 
@@ -213,19 +213,26 @@ double OccupancyGrid::CalculateThreshold() {
 	return MatrixUtils::Otsu(vec);
 }
 
-Cell& OccupancyGrid::GetCurrentCell() {
+Cell OccupancyGrid::GetCurrentCell() {
 	int x = ScaleToGrid(robot_x);
 	int y = ScaleToGrid(robot_y);
 
 	return GetCell(x,y);
 }
 
-Cell& OccupancyGrid::GetCell(int x, int y) {
+Cell OccupancyGrid::GetCell(int x, int y) {
 	ExpandGrid(x,y);
-	Cell& c = grid[y][x];
-	c.SetX(x);
-	c.SetY(y);
-	return c;
+	grid[y][x].SetX(x);
+	grid[y][x].SetY(y);
+	return grid[y][x];
+}
+
+void OccupancyGrid::SetDiscovered(int x, int y, bool val) {
+	grid[y][x].SetDiscovered(true);
+}
+
+void OccupancyGrid::SetVisited(int x, int y, bool val) {
+	grid[y][x].SetVisited(true);
 }
 
 int OccupancyGrid::GetGridHeight() {

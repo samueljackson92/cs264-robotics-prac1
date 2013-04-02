@@ -37,7 +37,7 @@ class Mapper {
 		void UpdateGrid();
 		bool vec_contains(std::vector<Cell> vec, Cell c);
 		std::vector<Cell> FindPath(Cell start, Cell goal);
-		std::vector<Cell*> GetNeighbours(Cell current);
+		std::vector<Cell> GetNeighbours(Cell current);
 		std::vector<Cell> ReconstructPath(std::map<Cell, Cell> came_from, Cell start, Cell current_node);
 		~Mapper();
 

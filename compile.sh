@@ -1,1 +1,1 @@
-g++ -o simulator `pkg-config --cflags playerc++` simple.cpp pcontroller/pcontroller.h pcontroller/pcontroller.cpp occupancygrid/occupancygrid.h occupancygrid/occupancygrid.cpp vectorutils/vectorutils.h vectorutils/matrixutils.h `pkg-config --libs playerc++`
+g++ -o simulator `pkg-config --cflags playerc++` simple.cpp pcontroller/pcontroller.h pcontroller/pcontroller.cpp occupancygrid/occupancygrid.h occupancygrid/occupancygrid.cpp occupancygrid/cell.h occupancygrid/cell.cpp vectorutils/vectorutils.h vectorutils/matrixutils.h `pkg-config --libs playerc++`
