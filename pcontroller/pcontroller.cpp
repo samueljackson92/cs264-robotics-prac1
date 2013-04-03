@@ -45,7 +45,7 @@ double PController::DoUpdate() {
 	return elapsedTime /1000;
 }
 
-void SimTurn(double angle) {
+void PController::SimTurn(double angle) {
 	using namespace PlayerCc;
 	const double gain = 0.3;
 	double turnrate=0, yaw=0, error=0;
@@ -81,12 +81,12 @@ void SimTurn(double angle) {
 }
 
 void PController::Turn(double angle) {
-	SimTurn(angle);
+	PioneerTurn(angle);
 }
 
 void PController::PioneerTurn(double angle) {
 	using namespace PlayerCc;
-	const double gain = 0.5;
+	const double gain = 0.6;
 	double turnrate=0, yaw=0, error=0;
 	double integral = 0;
 	double delta = 0;
@@ -96,9 +96,9 @@ void PController::PioneerTurn(double angle) {
 	if (angle < 0) {
 	 minus = true;
 	 angle = 360 + angle;
-	 angle -= 4;
+	// angle -= 4;
 	} else {
-	  angle += 4;
+	  //angle += 4;
 	}
 	
 	do {
@@ -113,7 +113,7 @@ void PController::PioneerTurn(double angle) {
 		error = (minus ? yaw - angle : angle - yaw);
 		
 		integral += error * delta;
-		turnrate = (error * gain) + (integral * 0.05);
+		turnrate = (error * gain) + (integral * 0.1);
 		
 		pp->SetSpeed(0, (minus ? dtor(-turnrate) : dtor(turnrate)));
 		
@@ -124,7 +124,7 @@ void PController::PioneerTurn(double angle) {
 		cout << "dt: " << delta << endl;
 
 		
-	} while(abs(error) > 0);
+	} while(abs(error) > 1);
 
 	cout << "Done Turning!" << endl;
 }

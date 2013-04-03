@@ -21,7 +21,7 @@
 using namespace std;
 using namespace PlayerCc;
 
-Mapper::Mapper() : robot("localhost"), sp(&robot,0), 
+Mapper::Mapper() : robot("maggie.islnet"), sp(&robot,0), 
 pp(&robot,0), pc(&robot, &pp, this) {
 	robot.Read();
 
@@ -40,6 +40,23 @@ pp(&robot,0), pc(&robot, &pp, this) {
 
 void Mapper::Start() {
 
+      for (;;){
+	  pc.MoveSetDistance(1);
+	  pc.Turn(-90);
+	  
+	  pc.MoveSetDistance(1);
+	  pc.Turn(-180);
+	  
+	  pc.MoveSetDistance(1);
+	  pc.Turn(-270);
+	  
+	  pc.MoveSetDistance(1);
+	  pc.Turn(-0);
+	  
+      }
+	/*
+  
+  
 	//Gather some inital readings.
 	for (int i=0; i<10; i++) {
 		UpdateGrid();
@@ -103,7 +120,9 @@ void Mapper::Start() {
 		grid.SetVisited(nextCell.GetX(), nextCell.GetY(), true);
 
 		current = nextCell;
+		
 	}
+	*/
 }
 
 void Mapper::MoveToNextCell(Cell start, Cell goal) {
@@ -162,9 +181,9 @@ void Mapper::UpdateGrid() {
 	grid.SensorUpdate(sp[10], dtor(angle - 150));
 	grid.SensorUpdate(sp[9], dtor(angle - 130));
 
-	cout << endl;
-	grid.PrintGrid();
-	cout << endl;
+	//cout << endl;
+	//grid.PrintGrid();
+	//cout << endl;
 }
 
 Mapper::~Mapper(){

@@ -24,7 +24,8 @@ class PController;
 class Mapper {
 	OccupancyGrid grid;
 	PlayerClient robot;
-	RangerProxy sp;
+	SonarProxy sp;
+	//RangerProxy sp;
 	Position2dProxy pp;
 	PController pc;
 
