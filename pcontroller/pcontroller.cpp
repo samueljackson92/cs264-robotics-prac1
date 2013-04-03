@@ -45,8 +45,7 @@ double PController::DoUpdate() {
 	return elapsedTime /1000;
 }
 
-
-void PController::Turn(double angle) {
+void SimTurn(double angle) {
 	using namespace PlayerCc;
 	const double gain = 0.3;
 	double turnrate=0, yaw=0, error=0;
@@ -58,6 +57,10 @@ void PController::Turn(double angle) {
 		delta = DoUpdate();
 
 		yaw = rtod(pp->GetYaw());
+
+		if(yaw < 0) {
+			yaw = 180 + (180+yaw);
+		}
 		error = angle - yaw;
 		
 		integral += error * delta;
@@ -77,50 +80,54 @@ void PController::Turn(double angle) {
 	cout << "Done Turning!" << endl;
 }
 
-// void PController::Turn(double angle) {
-// 	using namespace PlayerCc;
-// 	const double gain = 0.5;
-// 	double turnrate=0, yaw=0, error=0;
-// 	double integral = 0;
-// 	double delta = 0;
-// 	double stop=0, start=0;
-// 	bool minus = false;
+void PController::Turn(double angle) {
+	SimTurn(angle);
+}
+
+void PController::PioneerTurn(double angle) {
+	using namespace PlayerCc;
+	const double gain = 0.5;
+	double turnrate=0, yaw=0, error=0;
+	double integral = 0;
+	double delta = 0;
+	double stop=0, start=0;
+	bool minus = false;
 	
-// 	if (angle < 0) {
-// 	 minus = true;
-// 	 angle = 360 + angle;
-// 	 angle -= 4;
-// 	} else {
-// 	  angle += 4;
-// 	}
+	if (angle < 0) {
+	 minus = true;
+	 angle = 360 + angle;
+	 angle -= 4;
+	} else {
+	  angle += 4;
+	}
 	
-// 	do {
-// 		delta = DoUpdate();
+	do {
+		delta = DoUpdate();
 
-// 		yaw = rtod(pp->GetYaw());
+		yaw = rtod(pp->GetYaw());
 		
-// 		if (minus) {
-// 			yaw = (yaw == 0 ? 360 : yaw);
-// 		}
+		if (minus) {
+			yaw = (yaw == 0 ? 360 : yaw);
+		}
 		
-// 		error = (minus ? yaw - angle : angle - yaw);
+		error = (minus ? yaw - angle : angle - yaw);
 		
-// 		integral += error * delta;
-// 		turnrate = (error * gain) + (integral * 0.05);
+		integral += error * delta;
+		turnrate = (error * gain) + (integral * 0.05);
 		
-// 		pp->SetSpeed(0, (minus ? dtor(-turnrate) : dtor(turnrate)));
+		pp->SetSpeed(0, (minus ? dtor(-turnrate) : dtor(turnrate)));
 		
-// 		cout << "Yaw: " << yaw << endl;
-// 		cout << "Turnrate: " << turnrate << endl;
-// 		cout << "Angle Error: " << error <<endl;
-// 		cout << "Integral: " << integral << endl;
-// 		cout << "dt: " << delta << endl;
+		cout << "Yaw: " << yaw << endl;
+		cout << "Turnrate: " << turnrate << endl;
+		cout << "Angle Error: " << error <<endl;
+		cout << "Integral: " << integral << endl;
+		cout << "dt: " << delta << endl;
 
 		
-// 	} while(abs(error) > 0);
+	} while(abs(error) > 0);
 
-// 	cout << "Done Turning!" << endl;
-// }
+	cout << "Done Turning!" << endl;
+}
 
 void PController::Move(double x, double y) {
 	using namespace PlayerCc;

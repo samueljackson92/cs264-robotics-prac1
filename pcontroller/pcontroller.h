@@ -26,6 +26,8 @@ class PController {
 			PlayerCc::Position2dProxy* pp);
 		~PController();
 
+		void SimTurn(double angle);
+		void PioneerTurn(double angle);
 		void Turn(double angle);
 		void Move(double x, double y);
 		void MoveSetDistance(double distance);

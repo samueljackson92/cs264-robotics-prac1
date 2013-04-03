@@ -55,13 +55,38 @@ void Mapper::Start() {
 
 	frontier.push_back(start);
 
-	Cell current = start;
+	//0 = NORTH, 1 = WEST, 2 = SOUTH, 3 = EAST
+	int direction = 2;
 
-	//while there are still unexpored cells.
+	Cell current = start;
+	Cell nextCell;
+
+	//while there are still unexplored cells.
 	while(!frontier.empty()) {
+
+		pc.Turn(180);
 
 		//find the 4 neighbours
 		vector<Cell> neighbours = GetNeighbours(current);
+
+		// nextCell = frontier.back();
+		// frontier.pop_back();
+
+		//select new direction if required.
+		for (int i=0; i < 4; i++) {
+			direction = (direction + i) % 4;
+			if(neighbours[direction].GetValue() == 0 && !neighbours[direction].IsVisited()) {
+				if (i == 3) {
+					//dead end
+					//find cell on frontier
+				}
+				break;
+			}
+		}
+
+		nextCell = neighbours[direction];
+		grid.SetDiscovered(nextCell.GetX(), nextCell.GetY(), true);
+
 		for(vector<Cell>::iterator it = neighbours.begin(); it != neighbours.end(); ++it) {
 			Cell neighbour = *it;
 			if(neighbour.GetValue() == 0) {
@@ -72,14 +97,12 @@ void Mapper::Start() {
 				}
 			}
 		}
+		cout << current << endl;
+		cout << nextCell << endl;
+		MoveToNextCell(current, nextCell);
+		grid.SetVisited(nextCell.GetX(), nextCell.GetY(), true);
 
-		Cell oldPos = current;
-		current = frontier.back();
-		frontier.pop_back();
-
-		cout << "AT: " << oldPos << endl;
-		cout << "HEADING: " << current << endl;
-		MoveToNextCell(oldPos, current);
+		current = nextCell;
 	}
 }
 
@@ -101,8 +124,8 @@ vector<Cell> Mapper::GetNeighbours(Cell current) {
 	double y = current.GetY();
 
 	neighbours.push_back(grid.GetCell(x+1,y));
-	neighbours.push_back(grid.GetCell(x-1,y));
 	neighbours.push_back(grid.GetCell(x,y+1));
+	neighbours.push_back(grid.GetCell(x-1,y));
 	neighbours.push_back(grid.GetCell(x,y-1));
 
 	return neighbours;
@@ -139,9 +162,9 @@ void Mapper::UpdateGrid() {
 	grid.SensorUpdate(sp[10], dtor(angle - 150));
 	grid.SensorUpdate(sp[9], dtor(angle - 130));
 
-	// cout << endl;
-	// grid.PrintGrid();
-	// cout << endl;
+	cout << endl;
+	grid.PrintGrid();
+	cout << endl;
 }
 
 Mapper::~Mapper(){
