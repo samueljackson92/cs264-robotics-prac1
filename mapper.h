@@ -24,12 +24,12 @@ class PController;
 class Mapper {
 	OccupancyGrid grid;
 	PlayerClient robot;
-	SonarProxy sp;
-	//RangerProxy sp;
+	//SonarProxy sp;
+	RangerProxy sp;
 	Position2dProxy pp;
 	PController pc;
 
-	double start_x, start_y;
+	double robot_x, robot_y;
 
 	public:
 		Mapper();
@@ -37,9 +37,7 @@ class Mapper {
 		void MoveToNextCell(Cell start, Cell goal);
 		void UpdateGrid();
 		bool vec_contains(std::vector<Cell> vec, Cell c);
-		std::vector<Cell> FindPath(Cell start, Cell goal);
-		std::vector<Cell> GetNeighbours(Cell current);
-		std::vector<Cell> ReconstructPath(std::map<Cell, Cell> came_from, Cell start, Cell current_node);
+		std::vector<Cell*> GetNeighbours(Cell* current);
 		~Mapper();
 
 };

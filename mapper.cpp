@@ -21,7 +21,7 @@
 using namespace std;
 using namespace PlayerCc;
 
-Mapper::Mapper() : robot("maggie.islnet"), sp(&robot,0), 
+Mapper::Mapper() : robot("localhost"), sp(&robot,0), 
 pp(&robot,0), pc(&robot, &pp, this) {
 	robot.Read();
 
@@ -29,8 +29,8 @@ pp(&robot,0), pc(&robot, &pp, this) {
 	double y = pp.GetYPos();
 
 	//init start position
-	start_x = x;
-	start_y = y;
+	robot_x = x;
+	robot_y = y;
 
 	//init occupancy gird.
 	grid.Init(x, y);
@@ -39,52 +39,33 @@ pp(&robot,0), pc(&robot, &pp, this) {
 }
 
 void Mapper::Start() {
-
-      for (;;){
-	  pc.MoveSetDistance(1);
-	  pc.Turn(-90);
-	  
-	  pc.MoveSetDistance(1);
-	  pc.Turn(-180);
-	  
-	  pc.MoveSetDistance(1);
-	  pc.Turn(-270);
-	  
-	  pc.MoveSetDistance(1);
-	  pc.Turn(-0);
-	  
-      }
-	/*
-  
-  
+  	
 	//Gather some inital readings.
 	for (int i=0; i<10; i++) {
 		UpdateGrid();
 	}
 
 	//frontier to store cells tobe explored.
-	vector<Cell> frontier;
+	vector<Cell*> frontier;
 
 	//The cell we are currently at
-	Cell start = grid.GetCurrentCell();
-	grid.SetVisited(start.GetX(), start.GetY(), true);
-	grid.SetDiscovered(start.GetX(), start.GetY(), true);
+	Cell* start = grid.GetCurrentCell();
+	start->SetDiscovered(true);
+	start->SetVisited(true);
 
 	frontier.push_back(start);
 
-	//0 = NORTH, 1 = WEST, 2 = SOUTH, 3 = EAST
-	int direction = 2;
+	//0 = NORTH, 1 = EAST, 2 = SOUTH, 3 = WEST
+	int direction = 1;
 
-	Cell current = start;
-	Cell nextCell;
+	Cell* current = start;
+	Cell* nextCell;
 
 	//while there are still unexplored cells.
 	while(!frontier.empty()) {
-
-		pc.Turn(180);
-
 		//find the 4 neighbours
-		vector<Cell> neighbours = GetNeighbours(current);
+
+		vector<Cell*> neighbours = GetNeighbours(current);
 
 		// nextCell = frontier.back();
 		// frontier.pop_back();
@@ -92,60 +73,65 @@ void Mapper::Start() {
 		//select new direction if required.
 		for (int i=0; i < 4; i++) {
 			direction = (direction + i) % 4;
-			if(neighbours[direction].GetValue() == 0 && !neighbours[direction].IsVisited()) {
-				if (i == 3) {
-					//dead end
-					//find cell on frontier
+			if(neighbours[direction]->GetValue() == 0) {
+				if(i == 3) {
+					//if backtracking
 				}
 				break;
 			}
 		}
 
 		nextCell = neighbours[direction];
-		grid.SetDiscovered(nextCell.GetX(), nextCell.GetY(), true);
+		nextCell->SetDiscovered(true);
 
-		for(vector<Cell>::iterator it = neighbours.begin(); it != neighbours.end(); ++it) {
-			Cell neighbour = *it;
-			if(neighbour.GetValue() == 0) {
-				if(!neighbour.IsDiscovered() && !neighbour.IsVisited()) {
+		cout << "NEIGHBOURS -----------------" << endl;
+		for(vector<Cell*>::iterator it = neighbours.begin(); it != neighbours.end(); ++it) {
+			Cell *neighbour = *it;
+			if(neighbour->GetValue() == 0) {
+				// cout << *neighbour;
+				if(!neighbour->IsDiscovered() && !neighbour->IsVisited()) {
 					//add new cell to frontier and mark discovered
-					grid.SetDiscovered(neighbour.GetX(), neighbour.GetY(), true);
-					frontier.push_back(neighbour);
+					neighbour->SetDiscovered(true);
+					frontier.push_back(*it);
 				}
 			}
 		}
-		cout << current << endl;
-		cout << nextCell << endl;
-		MoveToNextCell(current, nextCell);
-		grid.SetVisited(nextCell.GetX(), nextCell.GetY(), true);
 
+		cout << "BEFORE:" << endl;
+		cout << *current << endl;
+		cout << *nextCell << endl;
+
+		MoveToNextCell(*current, *nextCell);
+		nextCell->SetVisited(true);
 		current = nextCell;
-		
+
+		current  = grid.GetCurrentCell();
+		cout << "AFTER:" << endl;
+		cout << *current << endl;
+		cout << *nextCell << endl;
+
 	}
-	*/
 }
 
 void Mapper::MoveToNextCell(Cell start, Cell goal) {
 	double dx = (goal.GetX() - start.GetX()) * MAP_SCALE;
 	double dy = (goal.GetY() - start.GetY()) * MAP_SCALE;
 
-	cout << "Oldx: " << pp.GetXPos() << " Oldy: " << pp.GetYPos()  << endl;
-	double x = pp.GetXPos() + dx;
-	double y = pp.GetYPos() + dy;
+	robot_x += dx;
+	robot_y += dy;
 
-	cout << "x: " << x << "y: " << y << endl;
-	pc.MoveToPosition(x, y);
+	pc.MoveToPosition(robot_x, robot_y);
 }
 
-vector<Cell> Mapper::GetNeighbours(Cell current) {
-	vector<Cell> neighbours;
-	double x = current.GetX();
-	double y = current.GetY();
+vector<Cell*> Mapper::GetNeighbours(Cell* current) {
+	vector<Cell*> neighbours;
+	double x = current->GetX();
+	double y = current->GetY();
 
-	neighbours.push_back(grid.GetCell(x+1,y));
 	neighbours.push_back(grid.GetCell(x,y+1));
-	neighbours.push_back(grid.GetCell(x-1,y));
+	neighbours.push_back(grid.GetCell(x+1,y));
 	neighbours.push_back(grid.GetCell(x,y-1));
+	neighbours.push_back(grid.GetCell(x-1,y));
 
 	return neighbours;
 }
@@ -181,9 +167,9 @@ void Mapper::UpdateGrid() {
 	grid.SensorUpdate(sp[10], dtor(angle - 150));
 	grid.SensorUpdate(sp[9], dtor(angle - 130));
 
-	//cout << endl;
-	//grid.PrintGrid();
-	//cout << endl;
+	cout << endl;
+	grid.PrintGrid();
+	cout << endl;
 }
 
 Mapper::~Mapper(){

@@ -14,11 +14,10 @@
 class OccupancyGrid {
 	
 	//grid of cells
-	std::vector<std::vector<Cell> > grid;
+	Cell*** grid;
 	double robot_x, robot_y; //internal robot position
 	double start_x, start_y; //internal robot start point
 	double old_x, old_y;	 //previous internal robot positon
-	int grid_x, grid_y;		 //range grid position
 	int grid_height, grid_width;
 	int threshold;
 
@@ -31,18 +30,17 @@ class OccupancyGrid {
 		void SensorUpdate(double range, double angle);
 		void PrintGrid();
 		void PrintFinalGrid();
+		void PrintDebug();
 		void UpdateBotPosition(double x, double y);
 		void WriteGrid(const char* filename);
-		Cell GetCurrentCell();
-		Cell GetCell(int x, int y);
+		Cell* GetCurrentCell();
+		Cell* GetCell(int x, int y);
+		void SetCell(int x, int y, Cell* c);
 		double ScaleToWorld(int num);
 		int GetGridHeight();
 		int GetGridWidth();
-
-		void SetDiscovered(int x, int y, bool val);
-		void SetVisited(int x, int y, bool val);
 	private:
-		void ExpandGrid(int x, int y);
+		void ExpandGrid(int& x, int& y);
 		double CalculateThreshold();
 		void ResizeGrid(int w, int h);
 		int ScaleToGrid(double num);

@@ -47,41 +47,39 @@ double PController::DoUpdate() {
 
 void PController::SimTurn(double angle) {
 	using namespace PlayerCc;
-	const double gain = 0.3;
+	const double gain = 0.5;
 	double turnrate=0, yaw=0, error=0;
-	double integral = 0;
-	double delta = 0;
-	double stop=0, start=0;
+
+	robot->Read();
+	yaw = rtod(pp->GetYaw());
+
+	double target = yaw + angle;
+	double diff = 0;
+	int signum = (angle > 0) - (angle < 0);
 	
 	do {
-		delta = DoUpdate();
+		DoUpdate();
 
 		yaw = rtod(pp->GetYaw());
 
-		if(yaw < 0) {
-			yaw = 180 + (180+yaw);
-		}
-		error = angle - yaw;
-		
-		integral += error * delta;
-		turnrate = (error * gain) + (integral * 0.05);
-		
+		error = fmod(abs(target-yaw),360);
+
+		turnrate = (error * gain);
+		turnrate *= signum;
+
 		pp->SetSpeed(0, dtor(turnrate));
 		
 		// cout << "Yaw: " << yaw << endl;
 		// cout << "Turnrate: " << turnrate << endl;
 		// cout << "Angle Error: " << error <<endl;
-		// cout << "Integral: " << integral << endl;
-		// cout << "dt: " << delta << endl;
 
-		
 	} while(abs(error) > 1);
 
 	cout << "Done Turning!" << endl;
 }
 
 void PController::Turn(double angle) {
-	PioneerTurn(angle);
+	SimTurn(angle);
 }
 
 void PController::PioneerTurn(double angle) {
@@ -158,7 +156,7 @@ void PController::Move(double x, double y) {
 		// cout << "dt: " << delta << endl;
 
 		pp->SetSpeed(speed, turnrate);
-	} while (abs(dx) > 0.3 || abs(dy) > 0.3);
+	} while (abs(dx) > 0.1 || abs(dy) > 0.1);
 
 	cout << "X Error: " << dx << endl;
 	cout << "Y Error: " << dy << endl;
@@ -187,12 +185,20 @@ void PController::MoveToPosition(double x, double y){
 	using namespace PlayerCc;
 	double dx, dy, angle;
 
-	dx = x - pp->GetXPos();
-	dy = y - pp->GetYPos();
+	dx = abs(pp->GetXPos()) - abs(x);
+	dy = abs(pp->GetYPos()) - abs(y);
 
-	angle = atan2(dy, dx) * 180 / M_PI;
+	//calculate angle to new point
+	angle = rtod(atan2(dy, dx) - pp->GetYaw());
+
+	//correct direction
+	angle = (abs(angle) > 180) ? abs(angle) - 360 : angle;
+
+	cout << "Oldx: " << pp->GetXPos() << " Oldy: " << pp->GetYPos()  << endl;
+	cout << "x: " << x << "y: " << y << endl;
+	cout << "dx: " << dx << "dy: " << dy << endl;
 	cout << angle << endl;
-	Turn(pp->GetYaw() + angle);
+	Turn(angle);
 	Move(x, y);
 }
 
