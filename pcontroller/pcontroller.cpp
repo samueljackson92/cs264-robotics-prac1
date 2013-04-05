@@ -185,8 +185,8 @@ void PController::MoveToPosition(double x, double y){
 	using namespace PlayerCc;
 	double dx, dy, angle;
 
-	dx = abs(pp->GetXPos()) - abs(x);
-	dy = abs(pp->GetYPos()) - abs(y);
+	dx =  x - pp->GetXPos();
+	dy =  y - pp->GetYPos();
 
 	//calculate angle to new point
 	angle = rtod(atan2(dy, dx) - pp->GetYaw());

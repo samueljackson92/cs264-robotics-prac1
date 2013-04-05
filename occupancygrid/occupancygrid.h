@@ -14,7 +14,7 @@
 class OccupancyGrid {
 	
 	//grid of cells
-	Cell*** grid;
+	std::vector<std::vector<Cell*> > grid;
 	double robot_x, robot_y; //internal robot position
 	double start_x, start_y; //internal robot start point
 	double old_x, old_y;	 //previous internal robot positon
@@ -35,7 +35,6 @@ class OccupancyGrid {
 		void WriteGrid(const char* filename);
 		Cell* GetCurrentCell();
 		Cell* GetCell(int x, int y);
-		void SetCell(int x, int y, Cell* c);
 		double ScaleToWorld(int num);
 		int GetGridHeight();
 		int GetGridWidth();

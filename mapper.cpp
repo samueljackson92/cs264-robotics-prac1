@@ -34,7 +34,6 @@ pp(&robot,0), pc(&robot, &pp, this) {
 
 	//init occupancy gird.
 	grid.Init(x, y);
-	
 	pp.SetMotorEnable(true);
 }
 
@@ -57,6 +56,7 @@ void Mapper::Start() {
 
 	//0 = NORTH, 1 = EAST, 2 = SOUTH, 3 = WEST
 	int direction = 1;
+	bool backtracking = false;
 
 	Cell* current = start;
 	Cell* nextCell;
@@ -71,13 +71,18 @@ void Mapper::Start() {
 		// frontier.pop_back();
 
 		//select new direction if required.
-		for (int i=0; i < 4; i++) {
+		for (int i=0; i <= 4; i++) {
 			direction = (direction + i) % 4;
 			if(neighbours[direction]->GetValue() == 0) {
-				if(i == 3) {
-					//if backtracking
+				if(backtracking && i >= 4) {
+					break;
+				} else if(!neighbours[direction]->IsVisited()) {
+					backtracking = false;
+					break;
+				} else if (i==3 && !backtracking) {
+					backtracking = true;
+					break;
 				}
-				break;
 			}
 		}
 
@@ -143,6 +148,7 @@ void Mapper::UpdateGrid() {
 	double angle = rtod(pp.GetYaw());
 
 	grid.UpdateBotPosition(x,y);
+
 	grid.SensorUpdate(sp[3], dtor(angle+10));
 	grid.SensorUpdate(sp[4], dtor(angle-10));
 
@@ -167,9 +173,9 @@ void Mapper::UpdateGrid() {
 	grid.SensorUpdate(sp[10], dtor(angle - 150));
 	grid.SensorUpdate(sp[9], dtor(angle - 130));
 
-	cout << endl;
-	grid.PrintGrid();
-	cout << endl;
+	// cout << endl;
+	// grid.PrintGrid();
+	// cout << endl;
 }
 
 Mapper::~Mapper(){

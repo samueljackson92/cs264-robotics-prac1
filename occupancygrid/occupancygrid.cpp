@@ -14,10 +14,10 @@ using namespace PlayerCc;
 OccupancyGrid::OccupancyGrid() {
 	threshold = 0;
 
- 	grid = new Cell**[EXPANSION_SIZE];
-  	for (int i = 0; i < EXPANSION_SIZE; ++i) {
-    	grid[i] = new Cell*[EXPANSION_SIZE];
-  	}
+	grid_height = 0;
+	grid_width = 0;
+	
+	ResizeGrid(EXPANSION_SIZE, EXPANSION_SIZE);
 
 	grid_height = EXPANSION_SIZE;
 	grid_width = EXPANSION_SIZE;
@@ -27,13 +27,6 @@ OccupancyGrid::OccupancyGrid() {
 
 	robot_x = (start_x*MAP_SCALE) + 0.3;
 	robot_y = (start_y*MAP_SCALE) + 0.3;
-
-
-	for (int i = 0; i< grid_height; i++) {
-		for (int j = 0; j< grid_width; j++) {
-			grid[i][j] = new Cell();
-		}
-	}
 }
 
 void OccupancyGrid::Init(double x, double y) {
@@ -190,14 +183,19 @@ void OccupancyGrid::ExpandGrid(int& x, int& y) {
 			robot_x += (x_expand > 0) ? (x_expand)*MAP_SCALE : 0;
 			robot_y += (y_expand > 0) ? (y_expand)*MAP_SCALE : 0;
 
-			for (int i = (grid_width-1); i >= 0; i--) {
-				for (int j = (grid_height-1); j >= 0; j--) {
+			for (int j = (grid_height-1); j >= 0; j--) {
+				for (int i = (grid_width-1); i >= 0; i--) {
 
-					Cell* old = GetCell(i,j);
-					Cell* newc = new Cell();
+					Cell* old = grid[j][i];
+					Cell* newc = grid[j+y_expand][i+x_expand];
 
-					SetCell(i+x_expand, j+y_expand, old);
-					SetCell(i,j, newc);
+					old->SetX(i+x_expand);
+					old->SetY(j+y_expand);
+					grid[j+y_expand][i+x_expand] = old;
+	
+					newc->SetX(i);
+					newc->SetY(j);
+					grid[j][i] = newc;
 				}
 			}
 
@@ -214,24 +212,20 @@ void OccupancyGrid::ExpandGrid(int& x, int& y) {
 
 void OccupancyGrid::ResizeGrid(int w, int h) {
 
-	grid = (Cell***)realloc(grid, h * sizeof(Cell**));
+	grid.resize(h);
 	for (int i = 0; i < h; i++) {
-		std::cout << i << std::endl; 
-		grid[i] = (Cell**)realloc(grid[i], w * sizeof(Cell*));
+		grid[i].resize(w);
 	}
 
-
- 	//init new cells
- 	for(int i = 0; i < h; i++) {
- 		for (int j = 0; j < w; j++) {
- 			if(i>=grid_height || j >= grid_width) {
-				std::cout << i <<","<< j << std::endl;
+	for(int i = 0; i < h; i++) {
+		for (int j =0; j < w; j++) {
+			if(i >= grid_height || j >= grid_width) {
 				grid[i][j] = new Cell();
- 			}
- 			///std::cout << grid[i][j]->GetValue();
- 		}
- 		std::cout << std::endl;
- 	}
+				grid[i][j]->SetX(j);
+				grid[i][j]->SetY(i);
+			}
+		}
+	}
 }
 
 void OccupancyGrid::WriteGrid(const char* filename) {
@@ -280,19 +274,7 @@ Cell* OccupancyGrid::GetCell(int x, int y) {
 	// 	std::cout << "x:" << x << " y:" << y << std::endl;
 	// }
 
-	grid[y][x]->SetX(x);
-	grid[y][x]->SetY(y);
-
 	return grid[y][x];
-}
-
-void OccupancyGrid::SetCell(int x, int y, Cell* c) {
-	ExpandGrid(x,y);
-
-	c->SetX(x);
-	c->SetY(y);
-	
-	grid[y][x] = c;
 }
 
 double OccupancyGrid::GetCellValue(int x, int y) {

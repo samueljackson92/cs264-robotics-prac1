@@ -9,8 +9,8 @@
 #include <cmath>
 
 Cell::Cell() {
-	this->x = 0;
-	this->y = 0;
+	this->x = -1;
+	this->y = -1;
 	this->value = 0;
 	this->visited = false;
 	this->discovered = false;
