@@ -16,7 +16,7 @@ OccupancyGrid::OccupancyGrid() {
 
 	grid_height = 0;
 	grid_width = 0;
-	
+
 	ResizeGrid(EXPANSION_SIZE, EXPANSION_SIZE);
 
 	grid_height = EXPANSION_SIZE;
@@ -25,8 +25,8 @@ OccupancyGrid::OccupancyGrid() {
 	start_x = (EXPANSION_SIZE/2)-1;
 	start_y = (EXPANSION_SIZE/2)-1;
 
-	robot_x = (start_x*MAP_SCALE) + 0.3;
-	robot_y = (start_y*MAP_SCALE) + 0.3;
+	robot_x = (start_x*MAP_SCALE)+0.3;
+	robot_y = (start_y*MAP_SCALE)+0.3;
 }
 
 void OccupancyGrid::Init(double x, double y) {
@@ -55,7 +55,9 @@ void OccupancyGrid::SensorUpdate(double range, double angle) {
 	double sensor_x, sensor_y;
 	int grid_x, grid_y;
 
-	range += 0.3;
+	//correct for sensor distance from actual robot position. (+0.3)
+	//Also damped slightly.
+	range += 0.25;
 	if (range < MAX_RANGE) {
 
 		//new point hit by sensor

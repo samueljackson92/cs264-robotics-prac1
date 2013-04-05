@@ -179,23 +179,31 @@ void PController::MoveSetDistance(double distance) {
 	Move(x,y);
 }
 
-void PController::MoveToPosition(double x, double y){
+void PController::MoveToPosition(double& x, double& y){
 	using namespace PlayerCc;
-	double dx, dy, angle;
-
+	double dx, dy, angle, yaw;
+	int signum;
 	dx =  x - pp->GetXPos();
 	dy =  y - pp->GetYPos();
 
 	//calculate angle to new point
-	angle = rtod(atan2(dy, dx) - pp->GetYaw());
+	yaw = rtod(pp->GetYaw());
+	angle = rtod(atan2(dy, dx));
+	angle = angle - yaw;
 
 	//correct direction
-	angle = (abs(angle) > 180) ? abs(angle) - 360 : angle;
+	cout <<endl<< angle << endl << rtod(pp->GetYaw())<<endl;
+	signum = (angle < 0) ? -1: 1;
+	angle = (abs(angle) > 180) ? (abs(angle) - 360) * signum: angle;
+
+	//modify x and y movement based on angle change
+	dx = (cos(angle) != 0)  ? dx / cos(angle) : dx;
+	dy = (sin(angle) != 0) ? dy / sin(angle) : dy; 
 
 	cout << "Oldx: " << pp->GetXPos() << " Oldy: " << pp->GetYPos()  << endl;
 	cout << "x: " << x << "y: " << y << endl;
 	cout << "dx: " << dx << "dy: " << dy << endl;
-	cout << angle << endl;
+
 	Turn(angle);
 	Move(x, y);
 }

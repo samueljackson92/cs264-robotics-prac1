@@ -102,18 +102,13 @@ void Mapper::Start() {
 			}
 		}
 
-		cout << "BEFORE:" << endl;
+		cout << "MOVING FROM/TOO:" << endl;
 		cout << *current << endl;
 		cout << *nextCell << endl;
 
 		MoveToNextCell(*current, *nextCell);
 		nextCell->SetVisited(true);
 		current = nextCell;
-
-		current  = grid.GetCurrentCell();
-		cout << "AFTER:" << endl;
-		cout << *current << endl;
-		cout << *nextCell << endl;
 
 	}
 }
