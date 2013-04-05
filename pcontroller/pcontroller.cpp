@@ -146,8 +146,11 @@ void PController::Move(double x, double y) {
 		speed = error * gain + integral * 0.007;
 
 		//correct angle while moving
-		angle = atan2(dy, dx) * 180 / M_PI;
-		turnrate = 0;//dtor((angle - pp->GetYaw()) * 0.5);
+		angle = rtod(atan2(dy, dx) - pp->GetYaw());
+
+		//correct direction
+		angle = (abs(angle) > 180) ? abs(angle) - 360 : angle;
+		turnrate = dtor(angle * 0.5);
 
 		
 		// cout << "Speed: " << speed << endl;
