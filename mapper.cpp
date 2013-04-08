@@ -22,7 +22,7 @@ using namespace std;
 using namespace PlayerCc;
 
 Mapper::Mapper() : robot("localhost"), sp(&robot,0), 
-pp(&robot,0), pc(&robot, &pp, this) {
+pp(&robot,0), pc(&robot, &pp, &sp, this) {
 	robot.Read();
 
 	double x = pp.GetXPos();
@@ -38,7 +38,7 @@ pp(&robot,0), pc(&robot, &pp, this) {
 }
 
 void Mapper::Start() {
-  	
+
 	//Gather some inital readings.
 	for (int i=0; i<10; i++) {
 		UpdateGrid();
@@ -46,6 +46,7 @@ void Mapper::Start() {
 
 	//frontier to store cells tobe explored.
 	vector<Cell*> frontier;
+	vector<Cell*> path;
 
 	//The cell we are currently at
 	Cell* start = grid.GetCurrentCell();
@@ -67,29 +68,21 @@ void Mapper::Start() {
 
 		vector<Cell*> neighbours = GetNeighbours(current);
 
-		// nextCell = frontier.back();
-		// frontier.pop_back();
-
 		//select new direction if required.
 		for (int i=0; i <= 4; i++) {
 			direction = (direction + i) % 4;
-			if(neighbours[direction]->GetValue() == 0) {
-				if(backtracking && i >= 4) {
-					break;
-				} else if(!neighbours[direction]->IsVisited()) {
-					backtracking = false;
-					break;
-				} else if (i==3 && !backtracking) {
-					backtracking = true;
-					break;
-				}
+			if(neighbours[direction]->GetValue() == 0 && !neighbours[direction]->IsVisited()) {
+				//valid cell to move too.
+				backtracking = false;
+				nextCell = neighbours[direction];
+				nextCell->SetDiscovered(true);
+				break;
+			} else if(i >= 4) {
+				//find cell on frontier
+				backtracking = true;
 			}
 		}
 
-		nextCell = neighbours[direction];
-		nextCell->SetDiscovered(true);
-
-		cout << "NEIGHBOURS -----------------" << endl;
 		for(vector<Cell*>::iterator it = neighbours.begin(); it != neighbours.end(); ++it) {
 			Cell *neighbour = *it;
 			if(neighbour->GetValue() == 0) {
@@ -106,32 +99,118 @@ void Mapper::Start() {
 		cout << *current << endl;
 		cout << *nextCell << endl;
 
-		MoveToNextCell(*current, *nextCell);
-		nextCell->SetVisited(true);
-		current = nextCell;
+		if(backtracking) {
+			nextCell = frontier.back();
+			frontier.pop_back();
+
+			path = FindPath(current, nextCell);
+
+		} else {		
+			MoveToNextCell(*current, *nextCell);
+			nextCell->SetVisited(true);
+			current = nextCell;	
+		}
 
 	}
 }
 
-void Mapper::MoveToNextCell(Cell start, Cell goal) {
-	double dx = (goal.GetX() - start.GetX()) * MAP_SCALE;
-	double dy = (goal.GetY() - start.GetY()) * MAP_SCALE;
+vector<Cell*> Mapper::FindPath(Cell* start, Cell* goal) {
+	map<Cell*, int> f_score;
+	map<Cell*, int> g_score;
+	vector<Cell*> closed_set;
+	vector<Cell*> in_queue;
+	map<Cell*, Cell*> came_from;
+	vector<Cell*> path;
 
-	robot_x += dx;
-	robot_y += dy;
+	priority_queue<Cell*, vector<Cell*>, ComparePoints> frontier(ComparePoints(goal, f_score));
+	frontier.push(start);
+
+	g_score[start] = 0;
+	f_score[start] = g_score[start] + ComparePoints::Distance(start, goal);
+
+	Cell* current;
+	while (!frontier.empty()) {
+		current = frontier.top();
+		if(*current == *goal) {
+			return ReconstructPath(came_from, goal);
+		}
+		closed_set.push_back(current);
+		frontier.pop();
+
+		vector<Cell*> neighbours = GetNeighbours(current);
+		for (vector<Cell*>::iterator it = neighbours.begin();
+			it != neighbours.end(); ++it) {
+			Cell* neighbour = *it;
+
+			if(neighbour->GetValue() == 0) {
+				int tentative_g_score = g_score[current] + 1;
+
+				if(vec_contains(closed_set, neighbour)) {
+					if(tentative_g_score >= g_score[neighbour]) {
+						continue;
+					}
+				}
+
+				if(!vec_contains(in_queue, neighbour)
+					|| tentative_g_score < g_score[(neighbour)]) {
+					came_from[neighbour] = current;
+					g_score[neighbour] = tentative_g_score;
+					f_score[neighbour] = g_score[neighbour] + ComparePoints::Distance(neighbour, goal);
+
+					if(!vec_contains(in_queue, neighbour)) {
+						frontier.push(neighbour);
+						in_queue.push_back(neighbour);
+					}
+				}
+			}
+		}
+	}
+
+	return path;
+
+
+}
+
+bool Mapper::vec_contains(vector<Cell*> vec, Cell* c) {
+	return find (vec.begin(), vec.end(), c) != vec.end();
+}
+
+vector<Cell*> Mapper::ReconstructPath(map<Cell*, Cell*> came_from, 
+	Cell* current_node) {
+
+	vector<Cell*> vec;
+	if(came_from.find(current_node) != came_from.end()) {
+		vec = ReconstructPath(came_from, came_from[current_node]);
+		vec.push_back(current_node);
+		return vec;
+	} else {
+		vec.push_back(current_node);
+		return vec;
+	}
+}
+
+void Mapper::MoveToNextCell(Cell start, Cell goal) {
+	double dx = goal.GetX() - start.GetX();
+	double dy = goal.GetY() - start.GetY();
+
+	if(grid.GetCell(start.GetX() +(2*dx), start.GetY() +(2*dy))->GetValue() > 0) {
+		dx = (dx != 0) ? dx + (0.1/MAP_SCALE) : dx;
+		dy = (dy != 0) ? dy + (0.1/MAP_SCALE) : dy;
+	}
+
+	robot_x += dx * MAP_SCALE;
+	robot_y += dy * MAP_SCALE;
 
 	pc.MoveToPosition(robot_x, robot_y);
 }
 
 vector<Cell*> Mapper::GetNeighbours(Cell* current) {
 	vector<Cell*> neighbours;
-	double x = current->GetX();
-	double y = current->GetY();
 
-	neighbours.push_back(grid.GetCell(x,y+1));
-	neighbours.push_back(grid.GetCell(x+1,y));
-	neighbours.push_back(grid.GetCell(x,y-1));
-	neighbours.push_back(grid.GetCell(x-1,y));
+	neighbours.push_back(grid.GetCell(current->GetX(),current->GetY()+1));
+	neighbours.push_back(grid.GetCell(current->GetX()+1,current->GetY()));
+	neighbours.push_back(grid.GetCell(current->GetX(),current->GetY()-1));
+	neighbours.push_back(grid.GetCell(current->GetX()-1,current->GetY()));
 
 	return neighbours;
 }

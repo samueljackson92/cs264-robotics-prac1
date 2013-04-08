@@ -24,11 +24,12 @@ PController::PController(PlayerCc::PlayerClient* robot,
 }
 
 PController::PController(PlayerCc::PlayerClient* robot, 
-	PlayerCc::Position2dProxy* pp, Mapper* parent){
+	PlayerCc::Position2dProxy* pp, RangerProxy* sp, Mapper* parent){
 
 	this->robot = robot;
 	this->pp = pp;
 	this->parent = parent;
+	this->sp = sp;
 }
 
 double PController::DoUpdate() {
@@ -134,10 +135,19 @@ void PController::Move(double x, double y) {
 
 	double delta = 0, error =0, integral = 0;
 	angle = rtod(pp->GetYaw());
-	
+	bool wall = false;
 	do {
 		delta = DoUpdate();
 		
+		// //stop moving if we get too close
+		// for (int i = 0; i< 15; i++) {
+		// 	if((*sp)[i] < 0.4) {
+		// 		cout << "Wall detected at close range!" << endl;
+		// 		wall = true;
+		// 		break;
+		// 	}
+		// }
+
 		dx = x - pp->GetXPos();
 		dy = y - pp->GetYPos();
 		
@@ -154,7 +164,7 @@ void PController::Move(double x, double y) {
 		// cout << "dt: " << delta << endl;
 
 		pp->SetSpeed(speed, turnrate);
-	} while (abs(dx) > 0.1 || abs(dy) > 0.1);
+	} while ((abs(dx) > 0.1 || abs(dy) > 0.1) && !wall);
 
 	cout << "X Error: " << dx << endl;
 	cout << "Y Error: " << dy << endl;
@@ -179,7 +189,7 @@ void PController::MoveSetDistance(double distance) {
 	Move(x,y);
 }
 
-void PController::MoveToPosition(double& x, double& y){
+void PController::MoveToPosition(double x, double y){
 	using namespace PlayerCc;
 	double dx, dy, angle, yaw;
 	int signum;

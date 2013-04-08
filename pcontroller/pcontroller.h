@@ -17,11 +17,12 @@ class Mapper;
 class PController {
 	PlayerCc::PlayerClient* robot;
 	PlayerCc::Position2dProxy* pp;
+	PlayerCc::RangerProxy* sp;
 	Mapper* parent;
 
 	public:
 		PController(PlayerCc::PlayerClient* robot, 
-			PlayerCc::Position2dProxy* pp, Mapper* parent);
+			PlayerCc::Position2dProxy* pp, PlayerCc::RangerProxy* sp, Mapper* parent);
 		PController(PlayerCc::PlayerClient* robot, 
 			PlayerCc::Position2dProxy* pp);
 		~PController();

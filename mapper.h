@@ -36,8 +36,10 @@ class Mapper {
 		void Start();
 		void MoveToNextCell(Cell start, Cell goal);
 		void UpdateGrid();
-		bool vec_contains(std::vector<Cell> vec, Cell c);
+		bool vec_contains(std::vector<Cell*> vec, Cell* c);
 		std::vector<Cell*> GetNeighbours(Cell* current);
+		std::vector<Cell*> FindPath(Cell* current, Cell* goal);
+		std::vector<Cell*> ReconstructPath(std::map<Cell*, Cell*> came_from, Cell* current_node);
 		~Mapper();
 
 };
