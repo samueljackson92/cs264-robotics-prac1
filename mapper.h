@@ -16,7 +16,7 @@
 #include "pcontroller/pcontroller.h"
 #include "occupancygrid/cell.h"
 #include "occupancygrid/occupancygrid.h"
-
+#include "probabilitydist/point.h"
 
 using namespace PlayerCc;
 
@@ -39,7 +39,7 @@ class Mapper {
 		void Start();
 
 		//Localising Functions
-		void Localize();
+		Point Localize();
 		std::vector<std::vector<double> > loadData(std::string filename);
 		std::vector<double> GetMapNeighbours(int x, int y);
 		void RandomWander();
@@ -52,9 +52,6 @@ class Mapper {
 		std::vector<Cell*> FindPath(Cell* current, Cell* goal);
 		std::vector<Cell*> ReconstructPath(std::map<Cell*, Cell*> came_from, Cell* current_node);
 		~Mapper();
-	private:
-		double string_to_double(const std::string& s );
-
 };
 
 #endif

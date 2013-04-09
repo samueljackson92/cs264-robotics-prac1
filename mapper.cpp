@@ -16,6 +16,7 @@
 #include <iostream>
 #include <fstream>
 
+#include "maploader/maploader.h"
 #include "occupancygrid/occupancygrid.h"
 #include "probabilitydist/point.h"
 #include "probabilitydist/probabilitydist.h"
@@ -301,9 +302,11 @@ void Mapper::RandomWander() {
 	pp.SetSpeed(speed, turnrate);
 }
 
-void Mapper::Localize() {
+Point Mapper::Localize() {
 	//Our known map
-	mapData = loadData("output.txt");
+	MapLoader ml;
+
+	mapData = ml.LoadMap("output.txt");
 	map_height = mapData.size();
 	if(map_height>0) {
 		map_width = mapData[0].size();
@@ -365,6 +368,8 @@ void Mapper::Localize() {
 		pd.Normalize();
 		potential_locations = pd.EstimatePosition();
 	}
+
+	return potential_locations[0];
 	
 }
 
@@ -385,40 +390,6 @@ vector<double> Mapper::GetMapNeighbours(int x, int y) {
 	}
 
 	return neighbours;
-}
-
-vector<vector<double> > Mapper::loadData(string filename) {
-	ifstream f;
-	vector<double> vec;
-	vector<vector<double> > mapData;
-	string line;
-	string field;
-
-	f.open(filename.c_str());
-
-   	while (getline(f,line)) {
-        vec.clear();
-        stringstream ss(line);
-
-        while (getline(ss,field,',')) {
-            vec.push_back(string_to_double(field));
-        }
-        mapData.push_back(vec);
-    }
-
-	f.close();
-
-	return mapData;
-}
-
-double Mapper::string_to_double(const std::string& s )
-{
-	std::istringstream i(s);
-	double x;
-	if (!(i >> x)) {
-		return 0;
-	}
-	return x;
 }
 
 Mapper::~Mapper(){
