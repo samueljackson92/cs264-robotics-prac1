@@ -36,13 +36,13 @@ class OccupancyGrid {
 		Cell* GetCurrentCell();
 		Cell* GetCell(int x, int y);
 		double ScaleToWorld(int num);
+		int ScaleToGrid(double num);
 		int GetGridHeight();
 		int GetGridWidth();
+		void ResizeGrid(int w, int h);
 	private:
 		void ExpandGrid(int& x, int& y);
 		double CalculateThreshold();
-		void ResizeGrid(int w, int h);
-		int ScaleToGrid(double num);
 };
 
 #endif

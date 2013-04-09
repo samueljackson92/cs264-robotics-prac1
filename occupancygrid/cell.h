@@ -27,6 +27,7 @@ class Cell {
 		bool IsDiscovered();
 		void SetDiscovered(bool val);
 		bool operator==(const Cell& other) const;
+		bool operator!=(const Cell& other) const;
 		bool operator<(const Cell& other) const;
 		friend std::ostream& operator<<(std::ostream& os, const Cell& c)
 		{

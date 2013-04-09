@@ -30,10 +30,21 @@ class Mapper {
 	PController pc;
 
 	double robot_x, robot_y;
+	double start_x, start_y;
+	int map_height, map_width;
+	std::vector<std::vector<double> > mapData;
 
 	public:
 		Mapper();
 		void Start();
+
+		//Localising Functions
+		void Localize();
+		std::vector<std::vector<double> > loadData(std::string filename);
+		std::vector<double> GetMapNeighbours(int x, int y);
+		void RandomWander();
+
+		//Mapping Functions
 		void MoveToNextCell(Cell start, Cell goal);
 		void UpdateGrid();
 		bool vec_contains(std::vector<Cell*> vec, Cell* c);
@@ -41,6 +52,8 @@ class Mapper {
 		std::vector<Cell*> FindPath(Cell* current, Cell* goal);
 		std::vector<Cell*> ReconstructPath(std::map<Cell*, Cell*> came_from, Cell* current_node);
 		~Mapper();
+	private:
+		double string_to_double(const std::string& s );
 
 };
 

@@ -12,9 +12,13 @@
 #include <queue>
 #include <map>
 #include <algorithm>
-
+#include <sstream>
+#include <iostream>
+#include <fstream>
 
 #include "occupancygrid/occupancygrid.h"
+#include "probabilitydist/point.h"
+#include "probabilitydist/probabilitydist.h"
 #include "comparepoints.h"
 #include "mapper.h"
 
@@ -31,6 +35,12 @@ pp(&robot,0), pc(&robot, &pp, &sp, this) {
 	//init start position
 	robot_x = x;
 	robot_y = y;
+
+	start_x = x;
+	start_y = y;
+
+	map_width = 0;
+	map_height = 0;
 
 	//init occupancy gird.
 	grid.Init(x, y);
@@ -65,7 +75,6 @@ void Mapper::Start() {
 	//while there are still unexplored cells.
 	while(!frontier.empty()) {
 		//find the 4 neighbours
-
 		vector<Cell*> neighbours = GetNeighbours(current);
 
 		//select new direction if required.
@@ -100,11 +109,27 @@ void Mapper::Start() {
 		cout << *nextCell << endl;
 
 		if(backtracking) {
-			nextCell = frontier.back();
-			frontier.pop_back();
+			//get next non visited cell on frontier.
+			while(!frontier.empty()) {
+				nextCell = frontier.back();
+				frontier.pop_back();
+				if(!nextCell->IsVisited()) {
+					break;
+				}
+			}
 
+			//find path from this square to us.
 			path = FindPath(current, nextCell);
 
+			//move along path to new square.
+			for(int i =0; i < path.size(); i++) {
+				nextCell = path[i];
+				MoveToNextCell(*current, *nextCell);
+				nextCell->SetVisited(true);
+				current = nextCell;
+			}
+
+			direction = 0;
 		} else {		
 			MoveToNextCell(*current, *nextCell);
 			nextCell->SetVisited(true);
@@ -167,8 +192,6 @@ vector<Cell*> Mapper::FindPath(Cell* start, Cell* goal) {
 	}
 
 	return path;
-
-
 }
 
 bool Mapper::vec_contains(vector<Cell*> vec, Cell* c) {
@@ -198,8 +221,11 @@ void Mapper::MoveToNextCell(Cell start, Cell goal) {
 		dy = (dy != 0) ? dy + (0.1/MAP_SCALE) : dy;
 	}
 
-	robot_x += dx * MAP_SCALE;
-	robot_y += dy * MAP_SCALE;
+	dx *= MAP_SCALE;
+	dy *= MAP_SCALE;
+
+	robot_x += dx;
+	robot_y += dy;
 
 	pc.MoveToPosition(robot_x, robot_y);
 }
@@ -250,6 +276,149 @@ void Mapper::UpdateGrid() {
 	// cout << endl;
 	// grid.PrintGrid();
 	// cout << endl;
+}
+
+void Mapper::RandomWander() {
+	double speed = 0;
+	double turnrate = 0;
+
+	if(sp[3] < 0.6 || sp[4] < 0.6) {
+		int direction = (sp[3]<sp[4]) ? -1 : 1;
+	} else if((sp[0] + sp[1]) < (sp[6] + sp[7])) {
+		turnrate = dtor(-15); // turn 20 degrees per second
+	} else {
+		turnrate = dtor(15);
+	}
+
+	if(sp[3] < 0.6 || sp[4] < 0.6) {
+		speed = 0;
+	} else {
+		speed = 0.150;
+	}
+
+	UpdateGrid();
+
+	pp.SetSpeed(speed, turnrate);
+}
+
+void Mapper::Localize() {
+	//Our known map
+	mapData = loadData("output.txt");
+	map_height = mapData.size();
+	if(map_height>0) {
+		map_width = mapData[0].size();
+	}
+	
+	Cell* current = grid.GetCurrentCell();
+
+	//create new probability distribution.
+	ProbabilityDist pd(current->GetX(), current->GetY(), map_width, map_height);
+
+	//Vector to hold neighours;
+	vector<Cell*> neighbours;
+	vector<double> mapNeighbours;
+	vector<Point> potential_locations;
+
+	
+	Cell* nextPos = NULL;
+
+	//until converged
+	while (potential_locations.size() != 1) {
+		//update our current occupancy gird.
+		current = grid.GetCurrentCell();
+		RandomWander();
+		nextPos = grid.GetCurrentCell();
+
+		//Update offset of distribution by movement
+		if(*current != *nextPos) {
+			pd.MotionUpdate(current->GetX() - nextPos->GetX(), 
+				current->GetY() - nextPos->GetY());
+		}
+		
+		neighbours = GetNeighbours(current);
+
+		//loop over each cell in grid.
+		for(int i = 0; i < grid.GetGridHeight(); i++) {
+			for (int j = 0; j < grid.GetGridWidth(); j++) {
+				mapNeighbours = GetMapNeighbours(j,i);
+
+				//iterate over neighbours; update weights
+				bool matches = true;
+				if(mapNeighbours.size() != neighbours.size()) {
+					matches = false;
+				} else {
+					for (int k = 0; k < neighbours.size(); k++) {
+						if (!(neighbours[k]->GetValue() > 0  && mapNeighbours[k] > 0) 
+							&& !(neighbours[k]->GetValue() == 0 && mapNeighbours[k] == 0)) {
+							matches = false;
+							break;
+						}
+					}
+				}
+
+				//update prob-dist with whether it matched or not
+				pd.SampleUpdate(j,i, matches);
+			}
+		}
+
+		//renormalize the sample after update.
+		pd.Normalize();
+		potential_locations = pd.EstimatePosition();
+	}
+	
+}
+
+vector<double> Mapper::GetMapNeighbours(int x, int y) {
+	vector<double> neighbours;
+
+	if(x-1 >= 0) {
+		neighbours.push_back(mapData[y][x-1]);
+	}
+	if(x+1 < map_width) {
+		neighbours.push_back(mapData[y][x+1]);
+	}
+	if(y-1 >= 0) {
+		neighbours.push_back(mapData[y-1][x]);
+	}
+	if(y-1 < map_height) {
+		neighbours.push_back(mapData[y+1][x]);
+	}
+
+	return neighbours;
+}
+
+vector<vector<double> > Mapper::loadData(string filename) {
+	ifstream f;
+	vector<double> vec;
+	vector<vector<double> > mapData;
+	string line;
+	string field;
+
+	f.open(filename.c_str());
+
+   	while (getline(f,line)) {
+        vec.clear();
+        stringstream ss(line);
+
+        while (getline(ss,field,',')) {
+            vec.push_back(string_to_double(field));
+        }
+        mapData.push_back(vec);
+    }
+
+	f.close();
+
+	return mapData;
+}
+
+double Mapper::string_to_double(const std::string& s )
+{
+	std::istringstream i(s);
+	double x;
+	if (!(i >> x)) {
+		return 0;
+	}
+	return x;
 }
 
 Mapper::~Mapper(){

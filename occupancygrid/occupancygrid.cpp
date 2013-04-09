@@ -155,7 +155,7 @@ int OccupancyGrid::ScaleToGrid(double num) {
 }
 
 double OccupancyGrid::ScaleToWorld(int num) {
-	return num * MAP_SCALE;
+	return ((num - start_x) *MAP_SCALE);
 }
 
 void OccupancyGrid::ExpandGrid(int& x, int& y) {
@@ -235,7 +235,7 @@ void OccupancyGrid::WriteGrid(const char* filename) {
 	ofstream file;
 	file.open(filename);
 
-	for (int y = (grid_height-1); y >= 0; y--) {
+	for (int y = 0; y < grid_height; y++) {
 		for (int x = 0; x < grid_width; x++) {
 			double value = GetCellValue(x, y);
 			file << value;
