@@ -217,11 +217,6 @@ void Mapper::MoveToNextCell(Cell start, Cell goal) {
 	double dx = goal.GetX() - start.GetX();
 	double dy = goal.GetY() - start.GetY();
 
-	if(grid.GetCell(start.GetX() +(2*dx), start.GetY() +(2*dy))->GetValue() > 0) {
-		dx = (dx != 0) ? dx + (0.1/MAP_SCALE) : dx;
-		dy = (dy != 0) ? dy + (0.1/MAP_SCALE) : dy;
-	}
-
 	dx *= MAP_SCALE;
 	dy *= MAP_SCALE;
 
@@ -274,9 +269,9 @@ void Mapper::UpdateGrid() {
 	grid.SensorUpdate(sp[10], dtor(angle - 150));
 	grid.SensorUpdate(sp[9], dtor(angle - 130));
 
-	// cout << endl;
-	// grid.PrintGrid();
-	// cout << endl;
+	cout << endl;
+	grid.PrintGrid();
+	cout << endl;
 }
 
 void Mapper::RandomWander() {

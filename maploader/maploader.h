@@ -13,10 +13,14 @@ class MapLoader {
 	public:
 		std::vector<std::vector<int> > LoadBinaryMap(std::string filename);
 		std::vector<std::vector<double> > LoadMap(std::string filename);
-		std::vector<Point> FindNewCells(std::vector<std::vector<int> > map1, 
-											std::vector<std::vector<int> >map2);
-		std::vector<std::vector<int> > ConvertToBinaryMap();
-		double StringToDouble(const std::string& s );
+		std::vector<Point> FindNewCells(const std::vector<std::vector<int> >& map1, 
+											const std::vector<std::vector<int> >& map2);
+		std::vector<std::vector<int> > ConvertToBinaryMap(const std::vector<std::vector<double> >& mapData, double threshold);
+		std::vector<Point> FindHidingSpots(const std::vector<std::vector<int> >& mapData, int threshold);
+		
+		private:
+			std::vector<double> GetMapNeighbours(const std::vector<std::vector<int> >& mapData, int x, int y);
+			double StringToDouble(const std::string& s );
 };
 
 #endif

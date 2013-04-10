@@ -57,33 +57,16 @@ void OccupancyGrid::SensorUpdate(double range, double angle) {
 
 	//correct for sensor distance from actual robot position. (+0.3)
 	//Also damped slightly.
-	range += 0.25;
+	range += MAP_SCALE/2;
 	if (range < MAX_RANGE) {
 
 		//new point hit by sensor
 		sensor_x = robot_x + (cos(angle) * range);
 		sensor_y = robot_y + (sin(angle) * range); 
 
-		// std::cout << "----------------------------------------" << std::endl;
-		// std::cout << "Robot Angle: " << angle << std::endl;
-		// std::cout << "Robot Range: " << range << std::endl;
-		// std::cout << "Our Position:";
-		// std::cout << " x: " << robot_x ;
-		// std::cout << " y: " << robot_y << std::endl;
-
-		// std::cout << "Our Range Point:";
-		// std::cout << " x: " << sensor_x;
-		// std::cout << " y: " << sensor_y << std::endl;
-
 		grid_x = ScaleToGrid(sensor_x);
 		grid_y = ScaleToGrid(sensor_y);
-		 
-		// std::cout << "Range Cell:";
-		// std::cout << " x: " << grid_x;
-		// std::cout << " y: " << grid_y << std::endl;
-
-		// std::cout << "---vector resize pointer -------------------------------------" << std::endl;
-
+		
 		ExpandGrid(grid_x, grid_y);
 
 		double max_grid_r = (MAX_RANGE/MAP_SCALE);

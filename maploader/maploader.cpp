@@ -55,8 +55,8 @@ std::vector<std::vector<double> > MapLoader::LoadMap(std::string filename) {
 	return mapData;
 }
 
-std::vector<Point> MapLoader::FindNewCells(std::vector<std::vector<int> > map1, 
-	std::vector<std::vector<int> >map2) {
+std::vector<Point> MapLoader::FindNewCells(const std::vector<std::vector<int> >& map1, 
+	const std::vector<std::vector<int> >& map2) {
 
 	std::vector<Point> diffPoints;
 	for(int i=0; i< map1.size(); i++) {
@@ -72,7 +72,7 @@ std::vector<Point> MapLoader::FindNewCells(std::vector<std::vector<int> > map1,
 }
 
 std::vector<std::vector<int> > ConvertToBinaryMap(
-	std::vector<std::vector<double> > mapData, double threshold) {
+	const std::vector<std::vector<double> >& mapData, double threshold) {
 	std::vector<std::vector<int> > newMap;
 
 	for(int i =0; i < mapData.size(); i++) {
@@ -83,6 +83,57 @@ std::vector<std::vector<int> > ConvertToBinaryMap(
 
 	return newMap;
 }
+
+std::vector<Point> MapLoader::FindHidingSpots(const std::vector<std::vector<int> >& mapData, int threshold) {
+	std::vector<Point> spots;
+	for (int i =0; i<mapData.size(); i++) {
+		for (int j = 0; j<mapData[i].size(); j++) {
+			//if valid square
+			if(mapData[i][j] <= threshold) {
+				std::vector<double> neighbours = GetMapNeighbours(mapData,j,i);
+				int count = 0;
+
+				//has four neighbours surrounding it
+				if(neighbours.size() == 4) {
+					//iterate over neighours, count walls
+					for(std::vector<double>::iterator it = neighbours.begin(); it != neighbours.end(); ++it) {
+						if (*it > threshold) {
+							count++;
+						}
+					}
+				}
+
+				//if it has three walls, good hiding spot
+				if (count == 3) {
+					Point p(j,i);
+					spots.push_back(p);
+				}
+			}
+		}
+	}
+
+	return spots;
+}
+
+std::vector<double> MapLoader::GetMapNeighbours(const std::vector<std::vector<int> >& mapData, int x, int y) {
+	std::vector<double> neighbours;
+
+	if(x-1 >= 0) {
+		neighbours.push_back(mapData[y][x-1]);
+	}
+	if(x+1 < mapData[0].size()) {
+		neighbours.push_back(mapData[y][x+1]);
+	}
+	if(y-1 >= 0) {
+		neighbours.push_back(mapData[y-1][x]);
+	}
+	if(y-1 < mapData.size()) {
+		neighbours.push_back(mapData[y+1][x]);
+	}
+
+	return neighbours;
+}
+
 
 double MapLoader::StringToDouble(const std::string& s )
 {

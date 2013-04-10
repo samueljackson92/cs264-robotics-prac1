@@ -29,6 +29,7 @@ class Mapper {
 	Position2dProxy pp;
 	PController pc;
 
+	double threshold;
 	double robot_x, robot_y;
 	double start_x, start_y;
 	int map_height, map_width;

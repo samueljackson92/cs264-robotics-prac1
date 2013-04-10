@@ -130,7 +130,7 @@ void PController::PioneerTurn(double angle) {
 
 void PController::Move(double x, double y) {
 	using namespace PlayerCc;
-	double dx, dy, angle, speed, turnrate;
+	double dx, dy, angle, speed;
 	const double gain = 0.5;
 
 	double delta = 0, error =0, integral = 0;
@@ -138,32 +138,20 @@ void PController::Move(double x, double y) {
 	bool wall = false;
 	do {
 		delta = DoUpdate();
-		
-		// //stop moving if we get too close
-		// for (int i = 0; i< 15; i++) {
-		// 	if((*sp)[i] < 0.4) {
-		// 		cout << "Wall detected at close range!" << endl;
-		// 		wall = true;
-		// 		break;
-		// 	}
-		// }
 
 		dx = x - pp->GetXPos();
 		dy = y - pp->GetYPos();
 		
 		error = sqrt(pow(dx,2) + pow(dy,2));
 		integral += error * delta;
-		speed = error * gain + integral * 0.007;
+		speed = error * gain; //+ integral * 0.007;
 
-		turnrate =0;
-
-		
 		// cout << "Speed: " << speed << endl;
 		// cout << "Error: " << error <<endl;
 		// cout << "Integral: " << integral << endl;
 		// cout << "dt: " << delta << endl;
 
-		pp->SetSpeed(speed, turnrate);
+		pp->SetSpeed(speed, 0);
 	} while ((abs(dx) > 0.1 || abs(dy) > 0.1) && !wall);
 
 	cout << "X Error: " << dx << endl;
@@ -193,6 +181,7 @@ void PController::MoveToPosition(double x, double y){
 	using namespace PlayerCc;
 	double dx, dy, angle, yaw;
 	int signum;
+
 	dx =  x - pp->GetXPos();
 	dy =  y - pp->GetYPos();
 
@@ -204,11 +193,11 @@ void PController::MoveToPosition(double x, double y){
 	//correct direction
 	cout <<endl<< angle << endl << rtod(pp->GetYaw())<<endl;
 	signum = (angle < 0) ? -1: 1;
-	angle = (abs(angle) > 180) ? (abs(angle) - 360) * signum: angle;
+	angle = (abs(angle) > 180) ? (abs(angle) - 360) * signum : angle;
 
 	//modify x and y movement based on angle change
-	dx = (cos(angle) != 0)  ? dx / cos(angle) : dx;
-	dy = (sin(angle) != 0) ? dy / sin(angle) : dy; 
+	//dx = (cos(angle) != 0)  ? dx / cos(angle) : dx;
+	//dy = (sin(angle) != 0) ? dy / sin(angle) : dy; 
 
 	cout << "Oldx: " << pp->GetXPos() << " Oldy: " << pp->GetYPos()  << endl;
 	cout << "x: " << x << "y: " << y << endl;
