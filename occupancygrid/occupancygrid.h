@@ -40,9 +40,10 @@ class OccupancyGrid {
 		int GetGridHeight();
 		int GetGridWidth();
 		void ResizeGrid(int w, int h);
+		double CalculateThreshold();
 	private:
 		void ExpandGrid(int& x, int& y);
-		double CalculateThreshold();
+
 };
 
 #endif

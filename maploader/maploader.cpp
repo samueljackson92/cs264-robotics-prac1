@@ -71,12 +71,15 @@ std::vector<Point> MapLoader::FindNewCells(const std::vector<std::vector<int> >&
 	return diffPoints;
 }
 
-std::vector<std::vector<int> > ConvertToBinaryMap(
+std::vector<std::vector<int> > MapLoader::ConvertToBinaryMap(
 	const std::vector<std::vector<double> >& mapData, double threshold) {
+
 	std::vector<std::vector<int> > newMap;
 
+	newMap.resize(mapData.size());
 	for(int i =0; i < mapData.size(); i++) {
-		for(int j =0; j < mapData.size(); j++) {
+		newMap[i].resize(mapData[i].size());
+		for(int j =0; j < mapData[i].size(); j++) {
 			newMap[i][j] = (mapData[i][j] > threshold) ? 1 : 0;
 		}
 	}

@@ -126,18 +126,6 @@ int main(int argc, char *argv[])
 			grid.SensorUpdate(sp[9], dtor(angle - 130));
 		}
 		
-		// count++;
-		
-		// if (count > 50) {
-		  
-		//     if (sp[3] < 0.4 || sp[4] < 0.6) {
-		//       pc.Turn(90);
-		//     }
-		    
-		//     pc.MoveSetDistance(0.6);
-		//     count = 0;
-		// }
-		
 		grid.PrintGrid();
 
 		//command the motors

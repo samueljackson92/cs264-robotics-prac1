@@ -25,8 +25,8 @@ OccupancyGrid::OccupancyGrid() {
 	start_x = (EXPANSION_SIZE/2)-1;
 	start_y = (EXPANSION_SIZE/2)-1;
 
-	robot_x = (start_x*MAP_SCALE)+0.3;
-	robot_y = (start_y*MAP_SCALE)+0.3;
+	robot_x = (start_x*MAP_SCALE)+MAP_SCALE/2;
+	robot_y = (start_y*MAP_SCALE)+MAP_SCALE/2;
 }
 
 void OccupancyGrid::Init(double x, double y) {
@@ -42,7 +42,6 @@ void OccupancyGrid::UpdateBotPosition(double x, double y) {
 	double dx = x - old_x;
 	double dy = y - old_y;
 
-	// std::cout << "dx: " << dx << "dy: " << dy << std::endl; 
 	robot_x += dx;
 	robot_y += dy;
 
@@ -71,8 +70,8 @@ void OccupancyGrid::SensorUpdate(double range, double angle) {
 
 		double max_grid_r = (MAX_RANGE/MAP_SCALE);
 		double range_prob = (max_grid_r-range)/max_grid_r;
-
-		SetCellValue(grid_x, grid_y, GetCellValue(grid_x, grid_y) + range_prob);
+		double val = GetCellValue(grid_x, grid_y) + range_prob;
+		SetCellValue(grid_x, grid_y, val);
 	}
 }
 
@@ -115,7 +114,7 @@ void OccupancyGrid::PrintDebug(){
 	int ry = ScaleToGrid(robot_y);
 	cout << rx<<endl;
 	cout << ry<<endl;
-	for (int y = (grid_height-1); y >= 0; y--) {
+	for (int y = 0; y < grid_height; y++) {
 		for (int x = 0; x < grid_width; x++) {
 			Cell* c = GetCell(x, y);
 
@@ -251,14 +250,7 @@ Cell* OccupancyGrid::GetCurrentCell() {
 }
 
 Cell* OccupancyGrid::GetCell(int x, int y) {
-	
 	ExpandGrid(x,y);
-	// if (grid[y][x].GetX() != x || grid[y][x].GetY() != y) {
-	// 	std::cout << "chaging: " << std::endl;
-	// 	std::cout << "ox:" << grid[y][x].GetX() << " oy:" << grid[y][x].GetX() << std::endl;
-	// 	std::cout << "x:" << x << " y:" << y << std::endl;
-	// }
-
 	return grid[y][x];
 }
 

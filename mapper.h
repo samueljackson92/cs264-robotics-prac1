@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <map>
+#include <string>
 
 #include <libplayerc++/playerc++.h>
 
@@ -33,15 +34,16 @@ class Mapper {
 	double robot_x, robot_y;
 	double start_x, start_y;
 	int map_height, map_width;
-	std::vector<std::vector<double> > mapData;
+	bool backtracking;
+
+	std::vector<std::vector<int> > mapData;
 
 	public:
 		Mapper();
 		void Start();
 
 		//Localising Functions
-		Point Localize();
-		std::vector<std::vector<double> > loadData(std::string filename);
+		Point Localize(std::string filename);
 		std::vector<double> GetMapNeighbours(int x, int y);
 		void RandomWander();
 

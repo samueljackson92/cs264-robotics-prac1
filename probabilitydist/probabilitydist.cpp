@@ -42,7 +42,6 @@ void ProbabilityDist::SampleUpdate(int x, int y, bool hit) {
 	x = (x%dist_width+dist_width)%dist_width;
 	y = (y%dist_height+dist_height)%dist_height;
 
-	std::cout << x << "," << y << std::endl;
 	dist[y][x] *= modifier;
 }
 
@@ -65,9 +64,10 @@ void ProbabilityDist::Normalize() {
 std::vector<Point> ProbabilityDist::EstimatePosition() {
 	double max = 0;
 	std::vector<Point> maxes;
-	Point p;
+
 	for (int i = 0; i < dist_height; i++) {
 		for (int j = 0; j < dist_width; j++) {
+			Point p;
 			p.SetX(j+x_offset);
 			p.SetY(i+y_offset);
 			if (dist[i][j] > max) {
@@ -80,17 +80,24 @@ std::vector<Point> ProbabilityDist::EstimatePosition() {
 		}
 	}
 
-	for (int i = 0; i<maxes.size(); i++) {
-		std::cout << "X: " << maxes[i].GetX() << "Y: " << maxes[i].GetY() << std::endl;
+	if(maxes.size() == 1) {
+		maxPoint = maxes[0];
 	}
+
+	std::cout << x_offset << "," << y_offset << std::endl;
+	std::cout << max << std::endl;
 	return maxes;
 }
 
 void ProbabilityDist::OutputDist() {
 	for (int i = 0; i < dist.size(); i++) {
 		for (int j = 0; j < dist[i].size(); j++) {
-			std::cout << std::setprecision(3) << dist[i][j] << " ";
+			std::cout << dist[i][j] << " ";
 		}
 		std::cout << std::endl;
 	}
+}
+
+Point ProbabilityDist::GetMaxPoint() {
+	return maxPoint;
 }

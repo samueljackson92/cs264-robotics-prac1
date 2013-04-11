@@ -43,6 +43,9 @@ pp(&robot,0), pc(&robot, &pp, &sp, this) {
 	map_width = 0;
 	map_height = 0;
 
+	backtracking = false;
+	threshold = 0;
+
 	//init occupancy gird.
 	grid.Init(x, y);
 	pp.SetMotorEnable(true);
@@ -68,7 +71,7 @@ void Mapper::Start() {
 
 	//0 = NORTH, 1 = EAST, 2 = SOUTH, 3 = WEST
 	int direction = 1;
-	bool backtracking = false;
+	backtracking = false;
 
 	Cell* current = start;
 	Cell* nextCell;
@@ -81,7 +84,7 @@ void Mapper::Start() {
 		//select new direction if required.
 		for (int i=0; i <= 4; i++) {
 			direction = (direction + i) % 4;
-			if(neighbours[direction]->GetValue() == 0 && !neighbours[direction]->IsVisited()) {
+			if(neighbours[direction]->GetValue() <= threshold && !neighbours[direction]->IsVisited()) {
 				//valid cell to move too.
 				backtracking = false;
 				nextCell = neighbours[direction];
@@ -95,7 +98,7 @@ void Mapper::Start() {
 
 		for(vector<Cell*>::iterator it = neighbours.begin(); it != neighbours.end(); ++it) {
 			Cell *neighbour = *it;
-			if(neighbour->GetValue() == 0) {
+			if(neighbour->GetValue() <= threshold) {
 				// cout << *neighbour;
 				if(!neighbour->IsDiscovered() && !neighbour->IsVisited()) {
 					//add new cell to frontier and mark discovered
@@ -111,26 +114,27 @@ void Mapper::Start() {
 
 		if(backtracking) {
 			//get next non visited cell on frontier.
+			threshold = grid.CalculateThreshold()/2;
 			while(!frontier.empty()) {
 				nextCell = frontier.back();
 				frontier.pop_back();
-				if(!nextCell->IsVisited()) {
+				if(!nextCell->IsVisited() && nextCell->GetValue() <= threshold)  {
+					//find path from this square to us.
+
+					path = FindPath(current, nextCell);
+
+					//move along path to new square.
+					//start at path +1 to miss current cell
+					for(int i = 1; i < path.size(); i++) {
+						nextCell = path[i];
+						MoveToNextCell(*current, *nextCell);
+						nextCell->SetVisited(true);
+						current = nextCell;
+					}
+
 					break;
 				}
 			}
-
-			//find path from this square to us.
-			path = FindPath(current, nextCell);
-
-			//move along path to new square.
-			for(int i =0; i < path.size(); i++) {
-				nextCell = path[i];
-				MoveToNextCell(*current, *nextCell);
-				nextCell->SetVisited(true);
-				current = nextCell;
-			}
-
-			direction = 0;
 		} else {		
 			MoveToNextCell(*current, *nextCell);
 			nextCell->SetVisited(true);
@@ -148,6 +152,7 @@ vector<Cell*> Mapper::FindPath(Cell* start, Cell* goal) {
 	map<Cell*, Cell*> came_from;
 	vector<Cell*> path;
 
+	cout << *start << *goal << endl;
 	priority_queue<Cell*, vector<Cell*>, ComparePoints> frontier(ComparePoints(goal, f_score));
 	frontier.push(start);
 
@@ -168,7 +173,7 @@ vector<Cell*> Mapper::FindPath(Cell* start, Cell* goal) {
 			it != neighbours.end(); ++it) {
 			Cell* neighbour = *it;
 
-			if(neighbour->GetValue() == 0) {
+			if(neighbour->GetValue() <= threshold) {
 				int tentative_g_score = g_score[current] + 1;
 
 				if(vec_contains(closed_set, neighbour)) {
@@ -245,38 +250,46 @@ void Mapper::UpdateGrid() {
 
 	grid.UpdateBotPosition(x,y);
 
-	grid.SensorUpdate(sp[3], dtor(angle+10));
-	grid.SensorUpdate(sp[4], dtor(angle-10));
+	if(!backtracking) {
+		grid.SensorUpdate(sp[3], dtor(angle+10));
+		grid.SensorUpdate(sp[4], dtor(angle-10));
 
-	//side sensors
-	grid.SensorUpdate((sp[0] + sp[15])/2, dtor(angle+90));
-	grid.SensorUpdate((sp[7] + sp[8])/2, dtor(angle-90));
+		//side sensors
+		grid.SensorUpdate(sp[0], dtor(angle+90));
+		grid.SensorUpdate(sp[15], dtor(angle+90));
+		grid.SensorUpdate(sp[7], dtor(angle-90));
+		grid.SensorUpdate(sp[8], dtor(angle-90));
 
-	//rear sensors
-	grid.SensorUpdate(sp[12], dtor(angle + 170));
-	grid.SensorUpdate(sp[11], dtor(angle - 170));
+		//rear sensors
+		grid.SensorUpdate(sp[12], dtor(angle + 170));
+		grid.SensorUpdate(sp[11], dtor(angle - 170));
 
-	//diagonal sensors
-	grid.SensorUpdate(sp[1], dtor(angle + 50));
-	grid.SensorUpdate(sp[2], dtor(angle + 30));
-	grid.SensorUpdate(sp[5], dtor(angle - 30));
-	grid.SensorUpdate(sp[6], dtor(angle - 50));
-	
+		//diagonal sensors
+		grid.SensorUpdate(sp[1], dtor(angle + 50));
+		grid.SensorUpdate(sp[2], dtor(angle + 30));
+		grid.SensorUpdate(sp[5], dtor(angle - 30));
+		grid.SensorUpdate(sp[6], dtor(angle - 50));
+		
 
-	grid.SensorUpdate(sp[14], dtor(angle + 130));
-	grid.SensorUpdate(sp[13], dtor(angle + 150));
+		grid.SensorUpdate(sp[14], dtor(angle + 130));
+		grid.SensorUpdate(sp[13], dtor(angle + 150));
 
-	grid.SensorUpdate(sp[10], dtor(angle - 150));
-	grid.SensorUpdate(sp[9], dtor(angle - 130));
+		grid.SensorUpdate(sp[10], dtor(angle - 150));
+		grid.SensorUpdate(sp[9], dtor(angle - 130));
 
-	cout << endl;
-	grid.PrintGrid();
-	cout << endl;
+		cout << endl;
+		grid.PrintDebug();
+		cout << endl;
+
+		cout << threshold << endl;
+	}
 }
 
 void Mapper::RandomWander() {
 	double speed = 0;
 	double turnrate = 0;
+
+	robot.Read();
 
 	if(sp[3] < 0.6 || sp[4] < 0.6) {
 		int direction = (sp[3]<sp[4]) ? -1 : 1;
@@ -297,11 +310,13 @@ void Mapper::RandomWander() {
 	pp.SetSpeed(speed, turnrate);
 }
 
-Point Mapper::Localize() {
+Point Mapper::Localize(std::string filename) {
 	//Our known map
 	MapLoader ml;
+	threshold = 10;
+	vector<vector<double> > md = ml.LoadMap(filename);
+	mapData = ml.ConvertToBinaryMap(md, threshold);
 
-	mapData = ml.LoadMap("output.txt");
 	map_height = mapData.size();
 	if(map_height>0) {
 		map_width = mapData[0].size();
@@ -310,47 +325,49 @@ Point Mapper::Localize() {
 	Cell* current = grid.GetCurrentCell();
 
 	//create new probability distribution.
-	ProbabilityDist pd(current->GetX(), current->GetY(), map_width, map_height);
+	ProbabilityDist pd(2, 2, map_width, map_height);
 
 	//Vector to hold neighours;
 	vector<Cell*> neighbours;
 	vector<double> mapNeighbours;
-	vector<Point> potential_locations;
-
 	
-	Cell* nextPos = NULL;
+	Cell* oldPos = current;
+	vector<Point> points;
 
 	//until converged
-	while (potential_locations.size() != 1) {
+	while (points.size() != 1) {
 		//update our current occupancy gird.
 		current = grid.GetCurrentCell();
 		RandomWander();
-		nextPos = grid.GetCurrentCell();
 
 		//Update offset of distribution by movement
-		if(*current != *nextPos) {
-			pd.MotionUpdate(current->GetX() - nextPos->GetX(), 
-				current->GetY() - nextPos->GetY());
+		if(*current != *oldPos) {
+			pd.MotionUpdate(current->GetX(), current->GetY());
+			oldPos = current;
 		}
-		
+
 		neighbours = GetNeighbours(current);
 
 		//loop over each cell in grid.
-		for(int i = 0; i < grid.GetGridHeight(); i++) {
-			for (int j = 0; j < grid.GetGridWidth(); j++) {
+		for(int i = 0; i < map_height; i++) {
+			for (int j = 0; j < map_width; j++) {
+				bool matches = false;
+				mapNeighbours.clear();
 				mapNeighbours = GetMapNeighbours(j,i);
 
-				//iterate over neighbours; update weights
-				bool matches = true;
 				if(mapNeighbours.size() != neighbours.size()) {
 					matches = false;
 				} else {
-					for (int k = 0; k < neighbours.size(); k++) {
-						if (!(neighbours[k]->GetValue() > 0  && mapNeighbours[k] > 0) 
-							&& !(neighbours[k]->GetValue() == 0 && mapNeighbours[k] == 0)) {
-							matches = false;
-							break;
+					int count = 0;
+					for(int k=0; k< mapNeighbours.size(); k++) {
+						if(mapNeighbours[k] == 1 && neighbours[k]->GetValue() > 0
+							|| mapNeighbours[k] == 0 && neighbours[k]->GetValue() == 0) {
+							count++;
 						}
+					}
+
+					if(count == 4) {
+						matches = true;
 					}
 				}
 
@@ -361,10 +378,31 @@ Point Mapper::Localize() {
 
 		//renormalize the sample after update.
 		pd.Normalize();
-		potential_locations = pd.EstimatePosition();
+		//pd.OutputDist();
+		points = pd.EstimatePosition();
+
+		for (int i = 0; i < map_height; i++) {
+			for (int j = 0; j < map_width;j++) {
+				bool match = false;
+				for (int k = 0; k < points.size(); k++) {
+					if(points[k].GetX() == j && points[k].GetY() == i) {
+						match = true;
+						break;
+					}
+				}
+				if(match) {
+					cout << "P";
+				} else {
+					cout << mapData[i][j];
+				}
+			}
+			cout << endl;
+		}
 	}
 
-	return potential_locations[0];
+	cout << map_width << "," << map_height << endl;
+	cout << *(grid.GetCurrentCell()) << endl;
+	return pd.GetMaxPoint();
 	
 }
 
@@ -380,7 +418,7 @@ vector<double> Mapper::GetMapNeighbours(int x, int y) {
 	if(y-1 >= 0) {
 		neighbours.push_back(mapData[y-1][x]);
 	}
-	if(y-1 < map_height) {
+	if(y+1 < map_height) {
 		neighbours.push_back(mapData[y+1][x]);
 	}
 
@@ -391,11 +429,5 @@ Mapper::~Mapper(){
 	grid.PrintFinalGrid();
 	//export grid on destruction.
    	grid.WriteGrid("output.csv");
-}
-
-int main(int argc, char *argv[])
-{
-	Mapper m;
-	m.Start();
 }
 

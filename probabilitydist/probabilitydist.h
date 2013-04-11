@@ -20,6 +20,8 @@ class ProbabilityDist {
 	int x_offset, y_offset;
 	int dist_height, dist_width;
 
+	Point maxPoint;
+
 	std::vector<std::vector<double> > dist;
 
 public:
@@ -30,6 +32,7 @@ public:
 	void SampleUpdate(int x, int y, bool hit);
 	void Normalize();
 	std::vector<Point> EstimatePosition();
+	Point GetMaxPoint();
 };
 
 #endif
