@@ -33,17 +33,18 @@ class Mapper {
 	double threshold;
 	double robot_x, robot_y;
 	double start_x, start_y;
-	int map_height, map_width;
 	bool backtracking;
+	bool localized;
 
+	int map_height, map_width;
 	std::vector<std::vector<int> > mapData;
 
 	public:
 		Mapper();
-		void Start();
+		void Start(bool localize);
 
 		//Localising Functions
-		Point Localize(std::string filename);
+		Point Localize();
 		std::vector<double> GetMapNeighbours(int x, int y);
 		void RandomWander();
 
@@ -51,9 +52,14 @@ class Mapper {
 		void MoveToNextCell(Cell start, Cell goal);
 		void UpdateGrid();
 		bool vec_contains(std::vector<Cell*> vec, Cell* c);
+		
+		//General functions
+		void MoveToCell(Cell* start, Cell* goal);
 		std::vector<Cell*> GetNeighbours(Cell* current);
 		std::vector<Cell*> FindPath(Cell* current, Cell* goal);
 		std::vector<Cell*> ReconstructPath(std::map<Cell*, Cell*> came_from, Cell* current_node);
+		
+
 		~Mapper();
 };
 

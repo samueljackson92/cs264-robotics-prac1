@@ -5,32 +5,6 @@
 #include "../probabilitydist/point.h"
 #include "maploader.h"
 
-std::vector<std::vector<int> > MapLoader::LoadBinaryMap(std::string filename) {
-	std::ifstream f;
-	std::vector<int> vec;
-	std::vector<std::vector<int> > mapData;
-	std::string line;
-	std::string field;
-
-	f.open(filename.c_str());
-
-   	while (getline(f,line)) {
-        vec.clear();
-        std::stringstream ss(line);
-
-        while (getline(ss,field,',')) {
-        	double num = StringToDouble(field);
-        	int val = (num > 0) ? 1 : 0;
-            vec.push_back(val);
-        }
-        mapData.push_back(vec);
-    }
-
-	f.close();
-
-	return mapData;
-}
-
 std::vector<std::vector<double> > MapLoader::LoadMap(std::string filename) {
 	std::ifstream f;
 	std::vector<double> vec;
@@ -75,47 +49,83 @@ std::vector<std::vector<int> > MapLoader::ConvertToBinaryMap(
 	const std::vector<std::vector<double> >& mapData, double threshold) {
 
 	std::vector<std::vector<int> > newMap;
-
 	newMap.resize(mapData.size());
 	for(int i =0; i < mapData.size(); i++) {
-		newMap[i].resize(mapData[i].size());
 		for(int j =0; j < mapData[i].size(); j++) {
-			newMap[i][j] = (mapData[i][j] > threshold) ? 1 : 0;
+			int val;
+			if(mapData[i][j] >= 0) {
+				val = (mapData[i][j] > threshold) ? 1 : 0;
+			} else {
+				val = -1;
+			}
+
+			newMap[i].push_back(val);
 		}
 	}
 
 	return newMap;
 }
 
-std::vector<Point> MapLoader::FindHidingSpots(const std::vector<std::vector<int> >& mapData, int threshold) {
-	std::vector<Point> spots;
-	for (int i =0; i<mapData.size(); i++) {
-		for (int j = 0; j<mapData[i].size(); j++) {
-			//if valid square
-			if(mapData[i][j] <= threshold) {
-				std::vector<double> neighbours = GetMapNeighbours(mapData,j,i);
-				int count = 0;
+Point MapLoader::FindHidingSpots(const std::vector<std::vector<int> >& mapData, int threshold) {
+	int minScore = 16;
+	Point p;
+	for (int i =0; i< mapData.size(); i++) {
+		for (int j = 0; j< mapData[i].size(); j++) {
+			
+			int score = 0;
 
-				//has four neighbours surrounding it
-				if(neighbours.size() == 4) {
-					//iterate over neighours, count walls
-					for(std::vector<double>::iterator it = neighbours.begin(); it != neighbours.end(); ++it) {
-						if (*it > threshold) {
-							count++;
-						}
+			//if valid square
+			if(mapData[i][j] == 0) {
+				for(int k = j; k <= j+4; k++) {
+					if(j+4 >= mapData[i].size()) {
+						break;
+					} else if (mapData[i][k] <= threshold  && mapData[i][k] > -1) {
+						score++;
+					} else {
+						break;
 					}
 				}
 
-				//if it has three walls, good hiding spot
-				if (count == 3) {
-					Point p(j,i);
-					spots.push_back(p);
+				for(int k = i; k <= i+4; k++) {
+					if(i+4 >= mapData.size()) {
+						break;
+					} else if (mapData[k][j] <= threshold  && mapData[k][j] > -1) {
+						score++;
+					} else {
+						break;
+					}
+				}
+
+				for(int k = j; k >= j-4; k--) {
+					if(j-4 < 0) {
+						break;
+					} else if (mapData[i][k] <= threshold  && mapData[i][k] > -1) {
+						score++;
+					} else {
+						break;
+					}
+				}
+
+				for(int k = i; k >= i-4; k--) {
+					if(i-4 < 0) {
+						break;
+					} else if (mapData[k][j] <= threshold  && mapData[k][j] > -1) {
+						score++;
+					} else {
+						break;
+					}
+				}
+
+				if(score <= minScore) {
+					minScore = score;
+					p.SetX(j);
+					p.SetY(i);
 				}
 			}
 		}
 	}
 
-	return spots;
+	return p;
 }
 
 std::vector<double> MapLoader::GetMapNeighbours(const std::vector<std::vector<int> >& mapData, int x, int y) {

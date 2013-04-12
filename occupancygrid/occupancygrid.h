@@ -18,8 +18,10 @@ class OccupancyGrid {
 	double robot_x, robot_y; //internal robot position
 	double start_x, start_y; //internal robot start point
 	double old_x, old_y;	 //previous internal robot positon
+	
 	int grid_height, grid_width;
 	int threshold;
+	int last_expansion;
 
 	public:
 		OccupancyGrid();
@@ -41,6 +43,7 @@ class OccupancyGrid {
 		int GetGridWidth();
 		void ResizeGrid(int w, int h);
 		double CalculateThreshold();
+		void LoadValues(const std::vector<std::vector<double> >& map);
 	private:
 		void ExpandGrid(int& x, int& y);
 

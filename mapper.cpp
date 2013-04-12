@@ -44,6 +44,8 @@ pp(&robot,0), pc(&robot, &pp, &sp, this) {
 	map_height = 0;
 
 	backtracking = false;
+	localized = false;
+
 	threshold = 0;
 
 	//init occupancy gird.
@@ -51,34 +53,65 @@ pp(&robot,0), pc(&robot, &pp, &sp, this) {
 	pp.SetMotorEnable(true);
 }
 
-void Mapper::Start() {
+void Mapper::Start(bool localize) {
+	//frontier to store cells tobe explored.
+	vector<Cell*> frontier;
+
+	Cell* start = grid.GetCurrentCell();
+	start->SetDiscovered(true);
+	start->SetVisited(true);
+	start->SetValue(0);
+
+	frontier.push_back(start);
+
+	Cell* current = start;
+	Cell* nextCell;
+
+	//0 = NORTH, 1 = EAST, 2 = SOUTH, 3 = WEST
+	int direction = 1;
+	backtracking = false;
+
+	if(localize) {
+		MapLoader ml;
+
+		//load our existing map
+		std::vector<std::vector<double> > rawMap = ml.LoadMap("good_output2.csv");
+		mapData = ml.ConvertToBinaryMap(rawMap, 10);
+
+		rawMap = ml.LoadMap("good_output3.csv");
+		std::vector<std::vector<int> > mapData2 = ml.ConvertToBinaryMap(rawMap, 10);
+
+		vector<Point> cells = ml.FindNewCells(mapData, mapData2);
+
+		cout << cells.size() << endl;
+
+		map_height = mapData.size();
+
+		Point spot = ml.FindHidingSpots(mapData,10);
+
+		if (map_height >0) {
+			map_width = mapData[0].size();
+		}
+	} else {
+		localized = true;
+	}
 
 	//Gather some inital readings.
 	for (int i=0; i<10; i++) {
 		UpdateGrid();
 	}
 
-	//frontier to store cells tobe explored.
-	vector<Cell*> frontier;
-	vector<Cell*> path;
+	Point p;
 
-	//The cell we are currently at
-	Cell* start = grid.GetCurrentCell();
-	start->SetDiscovered(true);
-	start->SetVisited(true);
-
-	frontier.push_back(start);
-
-	//0 = NORTH, 1 = EAST, 2 = SOUTH, 3 = WEST
-	int direction = 1;
-	backtracking = false;
-
-	Cell* current = start;
-	Cell* nextCell;
+	if(!localized) {
+		p = Localize();
+	}
 
 	//while there are still unexplored cells.
-	while(!frontier.empty()) {
+	while(!frontier.empty() && (localize && !localized)) {
 		//find the 4 neighbours
+		current->SetValue(0);
+
 		vector<Cell*> neighbours = GetNeighbours(current);
 
 		//select new direction if required.
@@ -88,6 +121,7 @@ void Mapper::Start() {
 				//valid cell to move too.
 				backtracking = false;
 				nextCell = neighbours[direction];
+				nextCell->SetValue(0);
 				nextCell->SetDiscovered(true);
 				break;
 			} else if(i >= 4) {
@@ -102,6 +136,7 @@ void Mapper::Start() {
 				// cout << *neighbour;
 				if(!neighbour->IsDiscovered() && !neighbour->IsVisited()) {
 					//add new cell to frontier and mark discovered
+					neighbour->SetValue(0);
 					neighbour->SetDiscovered(true);
 					frontier.push_back(*it);
 				}
@@ -118,27 +153,21 @@ void Mapper::Start() {
 			while(!frontier.empty()) {
 				nextCell = frontier.back();
 				frontier.pop_back();
+
 				if(!nextCell->IsVisited() && nextCell->GetValue() <= threshold)  {
 					//find path from this square to us.
-
-					path = FindPath(current, nextCell);
-
-					//move along path to new square.
-					//start at path +1 to miss current cell
-					for(int i = 1; i < path.size(); i++) {
-						nextCell = path[i];
-						MoveToNextCell(*current, *nextCell);
-						nextCell->SetVisited(true);
-						current = nextCell;
-					}
-
+					MoveToCell(current, nextCell);
 					break;
 				}
 			}
 		} else {		
 			MoveToNextCell(*current, *nextCell);
 			nextCell->SetVisited(true);
-			current = nextCell;	
+			current = nextCell;
+		}
+
+		if(!localized) {
+			p = Localize();
 		}
 
 	}
@@ -162,6 +191,7 @@ vector<Cell*> Mapper::FindPath(Cell* start, Cell* goal) {
 	Cell* current;
 	while (!frontier.empty()) {
 		current = frontier.top();
+
 		if(*current == *goal) {
 			return ReconstructPath(came_from, goal);
 		}
@@ -198,6 +228,22 @@ vector<Cell*> Mapper::FindPath(Cell* start, Cell* goal) {
 	}
 
 	return path;
+}
+
+void Mapper::MoveToCell(Cell* start, Cell* goal) {
+	vector<Cell*> path;
+
+	Cell* current = start;
+	Cell* nextCell;
+
+	path = FindPath(start, goal);
+
+	for(int i = 1; i < path.size(); i++) {
+		nextCell = path[i];
+		MoveToNextCell(*current, *nextCell);
+		nextCell->SetVisited(true);
+		current = nextCell;
+	}
 }
 
 bool Mapper::vec_contains(vector<Cell*> vec, Cell* c) {
@@ -278,10 +324,10 @@ void Mapper::UpdateGrid() {
 		grid.SensorUpdate(sp[9], dtor(angle - 130));
 
 		cout << endl;
-		grid.PrintDebug();
+		grid.PrintGrid();
 		cout << endl;
 
-		cout << threshold << endl;
+		//cout << threshold << endl;
 	}
 }
 
@@ -310,100 +356,60 @@ void Mapper::RandomWander() {
 	pp.SetSpeed(speed, turnrate);
 }
 
-Point Mapper::Localize(std::string filename) {
-	//Our known map
-	MapLoader ml;
-	threshold = 10;
-	vector<vector<double> > md = ml.LoadMap(filename);
-	mapData = ml.ConvertToBinaryMap(md, threshold);
+Point Mapper::Localize() {
+	int grid_width = 0;
+	int grid_height = 0;
 
-	map_height = mapData.size();
-	if(map_height>0) {
-		map_width = mapData[0].size();
-	}
-	
-	Cell* current = grid.GetCurrentCell();
+	Point me;
 
-	//create new probability distribution.
-	ProbabilityDist pd(2, 2, map_width, map_height);
+	if(grid_height != grid.GetGridHeight() 
+		|| grid_width != grid.GetGridWidth()) {
 
-	//Vector to hold neighours;
-	vector<Cell*> neighbours;
-	vector<double> mapNeighbours;
-	
-	Cell* oldPos = current;
-	vector<Point> points;
+		int matches = 0;
 
-	//until converged
-	while (points.size() != 1) {
-		//update our current occupancy gird.
-		current = grid.GetCurrentCell();
-		RandomWander();
+		//loop over exisitng map
+		for(int i =0; i < map_height - grid.GetGridHeight(); i++) {
+			for (int j =0; j < map_width - grid.GetGridWidth(); j++) {
 
-		//Update offset of distribution by movement
-		if(*current != *oldPos) {
-			pd.MotionUpdate(current->GetX(), current->GetY());
-			oldPos = current;
-		}
+				int count = 0;
+				//at each point, check if our grid matches
+				for(int k = 0; k < grid.GetGridHeight(); k++) {
+					for (int l = 0; l < grid.GetGridWidth(); l++) {
+						double mval = mapData[i+k][j+l];
+						double gval = grid.GetCell(l,k)->GetValue();
 
-		neighbours = GetNeighbours(current);
-
-		//loop over each cell in grid.
-		for(int i = 0; i < map_height; i++) {
-			for (int j = 0; j < map_width; j++) {
-				bool matches = false;
-				mapNeighbours.clear();
-				mapNeighbours = GetMapNeighbours(j,i);
-
-				if(mapNeighbours.size() != neighbours.size()) {
-					matches = false;
-				} else {
-					int count = 0;
-					for(int k=0; k< mapNeighbours.size(); k++) {
-						if(mapNeighbours[k] == 1 && neighbours[k]->GetValue() > 0
-							|| mapNeighbours[k] == 0 && neighbours[k]->GetValue() == 0) {
+						if((gval == 0 && mval == 0) 
+							|| (gval > 0 && mval > 0)) {
+							count++;
+						} else if(gval < 0) {
 							count++;
 						}
 					}
-
-					if(count == 4) {
-						matches = true;
-					}
 				}
 
-				//update prob-dist with whether it matched or not
-				pd.SampleUpdate(j,i, matches);
+				//if we match every square
+				if(count == (grid.GetGridWidth()*grid.GetGridHeight())) {
+					Cell* loc = grid.GetCurrentCell();
+					me.SetX(loc->GetX()+j);
+					me.SetY(loc->GetY()+i);
+					matches++;
+				}
 			}
 		}
 
-		//renormalize the sample after update.
-		pd.Normalize();
-		//pd.OutputDist();
-		points = pd.EstimatePosition();
+		grid_width = grid.GetGridWidth();
+		grid_height = grid.GetGridHeight();
 
-		for (int i = 0; i < map_height; i++) {
-			for (int j = 0; j < map_width;j++) {
-				bool match = false;
-				for (int k = 0; k < points.size(); k++) {
-					if(points[k].GetX() == j && points[k].GetY() == i) {
-						match = true;
-						break;
-					}
-				}
-				if(match) {
-					cout << "P";
-				} else {
-					cout << mapData[i][j];
-				}
-			}
-			cout << endl;
+		cout << matches << endl;
+
+		if(matches == 1) {
+			localized = true;
 		}
 	}
 
-	cout << map_width << "," << map_height << endl;
-	cout << *(grid.GetCurrentCell()) << endl;
-	return pd.GetMaxPoint();
-	
+	cout << *grid.GetCurrentCell();
+	cout << "Point x: " << me.GetX() << " y: " << me.GetY() << endl;
+	return me;
 }
 
 vector<double> Mapper::GetMapNeighbours(int x, int y) {
@@ -429,5 +435,13 @@ Mapper::~Mapper(){
 	grid.PrintFinalGrid();
 	//export grid on destruction.
    	grid.WriteGrid("output.csv");
+}
+
+int main(int argc, char *argv[])
+{
+
+	Point p;
+	Mapper m;
+	m.Start(true);
 }
 

@@ -27,6 +27,8 @@ OccupancyGrid::OccupancyGrid() {
 
 	robot_x = (start_x*MAP_SCALE)+MAP_SCALE/2;
 	robot_y = (start_y*MAP_SCALE)+MAP_SCALE/2;
+
+	last_expansion = 0;
 }
 
 void OccupancyGrid::Init(double x, double y) {
@@ -70,7 +72,11 @@ void OccupancyGrid::SensorUpdate(double range, double angle) {
 
 		double max_grid_r = (MAX_RANGE/MAP_SCALE);
 		double range_prob = (max_grid_r-range)/max_grid_r;
-		double val = GetCellValue(grid_x, grid_y) + range_prob;
+		double val = GetCellValue(grid_x, grid_y);
+
+		val = (val < 0) ? 0 : val;
+		val += range_prob;
+
 		SetCellValue(grid_x, grid_y, val);
 	}
 }
@@ -145,6 +151,8 @@ void OccupancyGrid::ExpandGrid(int& x, int& y) {
 
 	int new_width, new_height;
 	int x_expand = 0, y_expand = 0;
+	last_expansion = 1;
+
 	if((x < 0 || y < 0) ||(x >= grid_width || y >= grid_height)) {
 		
 		x_expand = (x < 0 || x >= grid_width) ? EXPANSION_SIZE : 0;
@@ -163,6 +171,8 @@ void OccupancyGrid::ExpandGrid(int& x, int& y) {
 		//if we did a negative resize, shift data
 		if(x < 0 || y < 0) {
 			std::cout << "Y Expand!" << std::endl;
+
+			last_expansion = -1;
 
 			robot_x += (x_expand > 0) ? (x_expand)*MAP_SCALE : 0;
 			robot_y += (y_expand > 0) ? (y_expand)*MAP_SCALE : 0;
@@ -235,7 +245,9 @@ double OccupancyGrid::CalculateThreshold() {
 
 	for(int i = 0; i < grid_height; i++) {
 		for(int j = 0; j < grid_width; j++) {
-			vec.push_back(grid[i][j]->GetValue());
+			double val = grid[i][j]->GetValue();
+			val = (val < 0) ? 0 : val;
+			vec.push_back(val);
 		}
 	}
 
@@ -269,4 +281,14 @@ int OccupancyGrid::GetGridHeight() {
 }
 int OccupancyGrid::GetGridWidth() {
 	return grid_width;
+}
+
+void OccupancyGrid::LoadValues(const std::vector<std::vector<double> >& map) {
+	ResizeGrid(map.size(), map[0].size());
+
+	for(int i =0; i < map.size(); i++) {
+		for (int j = 0; j < map[i].size(); j++) {
+			SetCellValue(j, i, map[i][j]);
+		}
+	}
 }
