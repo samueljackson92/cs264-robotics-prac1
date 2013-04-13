@@ -14,6 +14,7 @@
 
 #include <libplayerc++/playerc++.h>
 
+#include "maploader/maploader.h"
 #include "pcontroller/pcontroller.h"
 #include "occupancygrid/cell.h"
 #include "occupancygrid/occupancygrid.h"
@@ -23,7 +24,10 @@ using namespace PlayerCc;
 
 class PController;
 class Mapper {
+
 	OccupancyGrid grid;
+	MapLoader ml;
+	
 	PlayerClient robot;
 	//SonarProxy sp;
 	RangerProxy sp;
@@ -38,13 +42,19 @@ class Mapper {
 
 	int map_height, map_width;
 	std::vector<std::vector<int> > mapData;
+	std::string mapName;
 
 	public:
 		Mapper();
 		void Start(bool localize);
+		void StartMapping(bool localize);
+		void SaveMap(std::string filename);
+		void Hide();
+		void FindRobot(std::string filename);
 
 		//Localising Functions
 		Point Localize();
+		void LoadMapData(std::string filename);
 		std::vector<double> GetMapNeighbours(int x, int y);
 		void RandomWander();
 

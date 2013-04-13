@@ -16,7 +16,6 @@
 #include <iostream>
 #include <fstream>
 
-#include "maploader/maploader.h"
 #include "occupancygrid/occupancygrid.h"
 #include "probabilitydist/point.h"
 #include "probabilitydist/probabilitydist.h"
@@ -54,9 +53,14 @@ pp(&robot,0), pc(&robot, &pp, &sp, this) {
 }
 
 void Mapper::Start(bool localize) {
-	//frontier to store cells tobe explored.
+	StartMapping(localize);
+}
+
+void Mapper::StartMapping(bool localize) {
+	//frontier to store cells to be explored.
 	vector<Cell*> frontier;
 
+	
 	Cell* start = grid.GetCurrentCell();
 	start->SetDiscovered(true);
 	start->SetVisited(true);
@@ -72,26 +76,8 @@ void Mapper::Start(bool localize) {
 	backtracking = false;
 
 	if(localize) {
-		MapLoader ml;
-
 		//load our existing map
-		std::vector<std::vector<double> > rawMap = ml.LoadMap("good_output2.csv");
-		mapData = ml.ConvertToBinaryMap(rawMap, 10);
 
-		rawMap = ml.LoadMap("good_output3.csv");
-		std::vector<std::vector<int> > mapData2 = ml.ConvertToBinaryMap(rawMap, 10);
-
-		vector<Point> cells = ml.FindNewCells(mapData, mapData2);
-
-		cout << cells.size() << endl;
-
-		map_height = mapData.size();
-
-		Point spot = ml.FindHidingSpots(mapData,10);
-
-		if (map_height >0) {
-			map_width = mapData[0].size();
-		}
 	} else {
 		localized = true;
 	}
@@ -101,10 +87,10 @@ void Mapper::Start(bool localize) {
 		UpdateGrid();
 	}
 
-	Point p;
+	Point myLocation;
 
 	if(!localized) {
-		p = Localize();
+		myLocation = Localize();
 	}
 
 	//while there are still unexplored cells.
@@ -167,11 +153,29 @@ void Mapper::Start(bool localize) {
 		}
 
 		if(!localized) {
-			p = Localize();
+			myLocation = Localize();
 		}
 
 	}
+
+	if(localize && localized) {
+		grid.SetRobotPosition(myLocation.GetX(), myLocation.GetY());
+		Hide();
+	}
 }
+
+void Mapper::Hide() {
+	Point hidingSpot;
+	vector<vector<double> > rawMap = ml.LoadMap(mapName);
+	hidingSpot = ml.FindHidingSpots(mapData);
+
+	grid.LoadValues(rawMap);
+	
+	Cell* current = grid.GetCurrentCell();
+	Cell* goal = grid.GetCell(hidingSpot.GetX(), hidingSpot.GetY());
+	MoveToCell(current, goal);
+}
+
 
 vector<Cell*> Mapper::FindPath(Cell* start, Cell* goal) {
 	map<Cell*, int> f_score;
@@ -431,17 +435,27 @@ vector<double> Mapper::GetMapNeighbours(int x, int y) {
 	return neighbours;
 }
 
-Mapper::~Mapper(){
-	grid.PrintFinalGrid();
-	//export grid on destruction.
-   	grid.WriteGrid("output.csv");
+void Mapper::LoadMapData(std::string filename) {
+	mapName = filename;
+	mapData = ml.ConvertToBinaryMap(ml.LoadMap(filename), 10);
+
+	if (map_height > 0) {
+		map_width = mapData[0].size();
+	}
 }
 
-int main(int argc, char *argv[])
-{
-
-	Point p;
-	Mapper m;
-	m.Start(true);
+void Mapper::SaveMap(std::string filename) {
+	grid.WriteGrid(filename);
 }
 
+void Mapper::FindRobot(std::string filename) {
+	vector<vector<int> > oldMap = ml.ConvertToBinaryMap(ml.LoadMap(filename), threshold);
+	vector<Point> pos = ml.FindNewCells(oldMap, mapData);
+
+	cout << "Found robot positions at: " << endl;
+	for (int i = 0; i < pos.size(); i++) {
+		cout << " - x: " << pos[i].GetX() << " y: " << pos[i].GetY() << endl;
+	}
+}
+
+Mapper::~Mapper(){}

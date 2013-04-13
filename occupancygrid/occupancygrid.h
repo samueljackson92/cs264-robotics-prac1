@@ -26,6 +26,7 @@ class OccupancyGrid {
 	public:
 		OccupancyGrid();
 		void Init(double x, double y);
+		void SetRobotPosition(int x, int y);
 		double GetCellValue(int x, int y);
 		void SetCellValue(int x, int y, double value);
 		void IncrementCell(int x, int y);
@@ -34,7 +35,7 @@ class OccupancyGrid {
 		void PrintFinalGrid();
 		void PrintDebug();
 		void UpdateBotPosition(double x, double y);
-		void WriteGrid(const char* filename);
+		void WriteGrid(std::string filename);
 		Cell* GetCurrentCell();
 		Cell* GetCell(int x, int y);
 		double ScaleToWorld(int num);

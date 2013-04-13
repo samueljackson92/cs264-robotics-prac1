@@ -3,6 +3,7 @@
 #include <fstream>
 #include <cmath>
 #include <cstdlib>
+#include <string>
 #include <libplayerc++/playerc++.h> 
 
 #include "../vectorutils/matrixutils.h"
@@ -222,10 +223,10 @@ void OccupancyGrid::ResizeGrid(int w, int h) {
 	}
 }
 
-void OccupancyGrid::WriteGrid(const char* filename) {
+void OccupancyGrid::WriteGrid(std::string filename) {
 	using namespace std;
 	ofstream file;
-	file.open(filename);
+	file.open(filename.c_str());
 
 	for (int y = 0; y < grid_height; y++) {
 		for (int x = 0; x < grid_width; x++) {
@@ -279,8 +280,26 @@ void OccupancyGrid::SetCellValue(int x, int y, double value) {
 int OccupancyGrid::GetGridHeight() {
 	return grid_height;
 }
+
 int OccupancyGrid::GetGridWidth() {
 	return grid_width;
+}
+
+void OccupancyGrid::SetRobotPosition(int x, int y) {
+	double new_x = (x*MAP_SCALE);
+	double new_y = (y*MAP_SCALE);
+
+	double x_diff = robot_x - floor(robot_x);
+	double y_diff = robot_y - floor(robot_y);
+
+	new_x += x_diff;
+	new_y += y_diff;
+
+	old_x = new_x;
+	old_y = new_y;
+
+	robot_x = new_x;
+	robot_y = new_y;
 }
 
 void OccupancyGrid::LoadValues(const std::vector<std::vector<double> >& map) {

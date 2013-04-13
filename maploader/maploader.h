@@ -15,7 +15,7 @@ class MapLoader {
 		std::vector<Point> FindNewCells(const std::vector<std::vector<int> >& map1, 
 											const std::vector<std::vector<int> >& map2);
 		std::vector<std::vector<int> > ConvertToBinaryMap(const std::vector<std::vector<double> >& mapData, double threshold);
-		Point FindHidingSpots(const std::vector<std::vector<int> >& mapData, int threshold);
+		Point FindHidingSpots(const std::vector<std::vector<int> >& mapData);
 		
 		private:
 			std::vector<double> GetMapNeighbours(const std::vector<std::vector<int> >& mapData, int x, int y);
