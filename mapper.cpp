@@ -75,10 +75,7 @@ void Mapper::StartMapping(bool localize) {
 	int direction = 1;
 	backtracking = false;
 
-	if(localize) {
-		//load our existing map
-
-	} else {
+	if(!localize) {
 		localized = true;
 	}
 
@@ -94,9 +91,10 @@ void Mapper::StartMapping(bool localize) {
 	}
 
 	//while there are still unexplored cells.
-	while(!frontier.empty() && (localize && !localized)) {
+	while((!frontier.empty() && !localize) || (!frontier.empty() && !localized)) {
 		//find the 4 neighbours
 		current->SetValue(0);
+		threshold = grid.CalculateThreshold()/2;
 
 		vector<Cell*> neighbours = GetNeighbours(current);
 
@@ -135,7 +133,6 @@ void Mapper::StartMapping(bool localize) {
 
 		if(backtracking) {
 			//get next non visited cell on frontier.
-			threshold = grid.CalculateThreshold()/2;
 			while(!frontier.empty()) {
 				nextCell = frontier.back();
 				frontier.pop_back();
@@ -143,6 +140,7 @@ void Mapper::StartMapping(bool localize) {
 				if(!nextCell->IsVisited() && nextCell->GetValue() <= threshold)  {
 					//find path from this square to us.
 					MoveToCell(current, nextCell);
+					current = nextCell;
 					break;
 				}
 			}
@@ -159,6 +157,7 @@ void Mapper::StartMapping(bool localize) {
 	}
 
 	if(localize && localized) {
+		cout << "Moving to hiding spot!!" << endl;
 		grid.SetRobotPosition(myLocation.GetX(), myLocation.GetY());
 		Hide();
 	}
@@ -171,6 +170,8 @@ void Mapper::Hide() {
 
 	grid.LoadValues(rawMap);
 	
+	threshold = grid.CalculateThreshold();
+
 	Cell* current = grid.GetCurrentCell();
 	Cell* goal = grid.GetCell(hidingSpot.GetX(), hidingSpot.GetY());
 	MoveToCell(current, goal);
@@ -328,10 +329,8 @@ void Mapper::UpdateGrid() {
 		grid.SensorUpdate(sp[9], dtor(angle - 130));
 
 		cout << endl;
-		grid.PrintGrid();
+		//grid.PrintGrid();
 		cout << endl;
-
-		//cout << threshold << endl;
 	}
 }
 
@@ -365,6 +364,8 @@ Point Mapper::Localize() {
 	int grid_height = 0;
 
 	Point me;
+	me.SetX(-1);
+	me.SetY(-1);
 
 	if(grid_height != grid.GetGridHeight() 
 		|| grid_width != grid.GetGridWidth()) {
@@ -382,8 +383,7 @@ Point Mapper::Localize() {
 						double mval = mapData[i+k][j+l];
 						double gval = grid.GetCell(l,k)->GetValue();
 
-						if((gval == 0 && mval == 0) 
-							|| (gval > 0 && mval > 0)) {
+						if((gval == 0 && mval == 0) || (gval > 0 && mval > 0)) {
 							count++;
 						} else if(gval < 0) {
 							count++;
@@ -438,9 +438,10 @@ vector<double> Mapper::GetMapNeighbours(int x, int y) {
 void Mapper::LoadMapData(std::string filename) {
 	mapName = filename;
 	mapData = ml.ConvertToBinaryMap(ml.LoadMap(filename), 10);
+	map_height = mapData.size();
 
 	if (map_height > 0) {
-		map_width = mapData[0].size();
+		map_width = mapData[0].size();	
 	}
 }
 
@@ -448,8 +449,9 @@ void Mapper::SaveMap(std::string filename) {
 	grid.WriteGrid(filename);
 }
 
-void Mapper::FindRobot(std::string filename) {
-	vector<vector<int> > oldMap = ml.ConvertToBinaryMap(ml.LoadMap(filename), threshold);
+void Mapper::FindRobot(std::string o, std::string n) {
+	mapData = ml.ConvertToBinaryMap(ml.LoadMap(n), threshold);
+	vector<vector<int> > oldMap = ml.ConvertToBinaryMap(ml.LoadMap(o), threshold);
 	vector<Point> pos = ml.FindNewCells(oldMap, mapData);
 
 	cout << "Found robot positions at: " << endl;

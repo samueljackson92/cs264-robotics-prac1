@@ -50,7 +50,7 @@ class Mapper {
 		void StartMapping(bool localize);
 		void SaveMap(std::string filename);
 		void Hide();
-		void FindRobot(std::string filename);
+		void FindRobot(std::string o, std::string n);
 
 		//Localising Functions
 		Point Localize();

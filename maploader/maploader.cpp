@@ -79,7 +79,7 @@ Point MapLoader::FindHidingSpots(const std::vector<std::vector<int> >& mapData) 
 				for(int k = j; k <= j+4; k++) {
 					if(j+4 >= mapData[i].size()) {
 						break;
-					} else if (mapData[i][k] == 0) {
+					} else if (mapData[i][k] <= 0) {
 						score++;
 					} else {
 						break;
@@ -89,7 +89,7 @@ Point MapLoader::FindHidingSpots(const std::vector<std::vector<int> >& mapData) 
 				for(int k = i; k <= i+4; k++) {
 					if(i+4 >= mapData.size()) {
 						break;
-					} else if (mapData[k][j] == 0) {
+					} else if (mapData[k][j] <= 0) {
 						score++;
 					} else {
 						break;
@@ -99,7 +99,7 @@ Point MapLoader::FindHidingSpots(const std::vector<std::vector<int> >& mapData) 
 				for(int k = j; k >= j-4; k--) {
 					if(j-4 < 0) {
 						break;
-					} else if (mapData[i][k] == 0) {
+					} else if (mapData[i][k] <= 0) {
 						score++;
 					} else {
 						break;
@@ -109,7 +109,7 @@ Point MapLoader::FindHidingSpots(const std::vector<std::vector<int> >& mapData) 
 				for(int k = i; k >= i-4; k--) {
 					if(i-4 < 0) {
 						break;
-					} else if (mapData[k][j] == 0) {
+					} else if (mapData[k][j] <= 0) {
 						score++;
 					} else {
 						break;
