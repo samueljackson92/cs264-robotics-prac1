@@ -25,7 +25,9 @@
 using namespace std;
 using namespace PlayerCc;
 
-Mapper::Mapper() : robot("localhost"), sp(&robot,0), 
+#define ROBOT_ADDRESS ".islnet"
+
+Mapper::Mapper() : robot(ROBOT_ADDRESS), sp(&robot,0), 
 pp(&robot,0), pc(&robot, &pp, &sp, this) {
 	robot.Read();
 

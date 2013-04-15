@@ -29,8 +29,8 @@ class Mapper {
 	MapLoader ml;
 	
 	PlayerClient robot;
-	//SonarProxy sp;
-	RangerProxy sp;
+	SonarProxy sp;
+	//RangerProxy sp;
 	Position2dProxy pp;
 	PController pc;
 

@@ -24,7 +24,7 @@ PController::PController(PlayerCc::PlayerClient* robot,
 }
 
 PController::PController(PlayerCc::PlayerClient* robot, 
-	PlayerCc::Position2dProxy* pp, RangerProxy* sp, Mapper* parent){
+	PlayerCc::Position2dProxy* pp, SonarProxy* sp, Mapper* parent){
 
 	this->robot = robot;
 	this->pp = pp;
