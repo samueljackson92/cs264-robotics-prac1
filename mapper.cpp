@@ -42,6 +42,9 @@ pp(&robot,0), pc(&robot, &pp, &sp, this) {
 	map_width = 0;
 	map_height = 0;
 
+	grid_width = 0;
+	grid_height = 0;
+
 	backtracking = false;
 	localized = false;
 
@@ -243,6 +246,11 @@ void Mapper::MoveToCell(Cell* start, Cell* goal) {
 
 	path = FindPath(start, goal);
 
+	cout << "Path to follow:" << endl;
+	for (int i=0; i<path.size(); i++) {
+		cout << *path[i];
+	}
+
 	for(int i = 1; i < path.size(); i++) {
 		nextCell = path[i];
 		MoveToNextCell(*current, *nextCell);
@@ -360,9 +368,6 @@ void Mapper::RandomWander() {
 }
 
 Point Mapper::Localize() {
-	int grid_width = 0;
-	int grid_height = 0;
-
 	Point me;
 	me.SetX(-1);
 	me.SetY(-1);

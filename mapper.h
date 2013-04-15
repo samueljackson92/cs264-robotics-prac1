@@ -40,6 +40,8 @@ class Mapper {
 	bool backtracking;
 	bool localized;
 
+	int grid_width, grid_height;
+
 	int map_height, map_width;
 	std::vector<std::vector<int> > mapData;
 	std::string mapName;

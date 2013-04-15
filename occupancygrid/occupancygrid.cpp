@@ -228,11 +228,15 @@ void OccupancyGrid::WriteGrid(std::string filename) {
 	ofstream file;
 	file.open(filename.c_str());
 
-	for (int y = 0; y < grid_height; y++) {
-		for (int x = 0; x < grid_width; x++) {
-			double value = GetCellValue(x, y);
-			file << value;
-			if(x < (grid_width-1)) { file << ","; }
+	for (int y = -2; y < grid_height+2; y++) {
+		for (int x = -2; x < grid_width+2; x++) {
+			if(x < 0 || y < 0 || x >= grid_width || y >= grid_height) {
+				file << -1;
+			} else {
+				double value = GetCellValue(x, y);
+				file << value;
+			}
+			if(x < (grid_width+1)) { file << ","; }
 		}
 		file << "\n";
 	}
