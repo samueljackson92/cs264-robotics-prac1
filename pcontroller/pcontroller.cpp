@@ -48,7 +48,7 @@ double PController::DoUpdate() {
 
 void PController::SimTurn(double angle) {
 	using namespace PlayerCc;
-	const double gain = 0.5;
+	const double gain = 1.1;
 	double turnrate=0, yaw=0, error=0;
 
 	robot->Read();
@@ -70,11 +70,11 @@ void PController::SimTurn(double angle) {
 
 		pp->SetSpeed(0, dtor(turnrate));
 		
-		// cout << "Yaw: " << yaw << endl;
-		// cout << "Turnrate: " << turnrate << endl;
-		// cout << "Angle Error: " << error <<endl;
+		cout << "Yaw: " << yaw << endl;
+		cout << "Turnrate: " << turnrate << endl;
+		cout << "Angle Error: " << error <<endl;
 
-	} while(abs(error) > 1);
+	} while(abs(error) > 5);
 
 	cout << "Done Turning!" << endl;
 }

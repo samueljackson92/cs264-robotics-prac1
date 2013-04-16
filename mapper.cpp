@@ -25,7 +25,7 @@
 using namespace std;
 using namespace PlayerCc;
 
-#define ROBOT_ADDRESS ".islnet"
+#define ROBOT_ADDRESS "lisa.islnet"
 
 Mapper::Mapper() : robot(ROBOT_ADDRESS), sp(&robot,0), 
 pp(&robot,0), pc(&robot, &pp, &sp, this) {
@@ -467,4 +467,6 @@ void Mapper::FindRobot(std::string o, std::string n) {
 	}
 }
 
-Mapper::~Mapper(){}
+Mapper::~Mapper(){
+    grid.PrintFinalGrid();
+}
