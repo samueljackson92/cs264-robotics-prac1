@@ -1,0 +1,51 @@
+\documentclass{article}
+\usepackage[margin=2cm]{geometry}
+\usepackage{float}
+\usepackage{graphicx}
+
+
+% Paragraph settings
+\setlength{\parskip}{10pt plus 1pt minus 1pt
+\setlength{\parindent}{0cm}}
+
+\begin{document}
+\title{CS26410 - Assignment 3 \\ Robotic Hide and Seek}
+\author{Samuel Jackson \\ \texttt{slj11@aber.ac.uk}}
+\date{\today}
+\maketitle
+
+\section{Introduction}
+Assignment three for CS26410 required us to develop a collection of robotic controllers for use with the Pioneer robots in the ISL which could be used to play a game of hide and seek. This document details the solution that I have provided along with a discussion of its performance using trial runs on real robots.
+
+\section{Discussion of the Algorithms Used}
+In the development of this assignment I have used several different techniques and algorithms to solve the problems outlined in the assignment brief. For each of the major problems to be solved in the brief I have supplied a description of my approach to finding a solution.
+
+\subsection{Mapping Techniques}
+The first and most important component of the solution was to be able to create a map of the robots environment. The easiest approach to create a simple map of the environment was to create an occupancy gird of the world split into 60x60cm cells in which the robot could fit. As the robot moves through the world, it checks the readings from its sonar array and updates the likelihood that a cell is a wall using the range measured from the sensors. When the robot receives a reading that falls outside the area of the existing grid, my program will dynamically resize the grid to add more cells in the direction of the new reading.
+
+In the previous assignment this mapping was done using a purely random walk. While this approach worked well, it had the major drawback of not having a way to finish mapping unless a human actively told it to stop. In this assignment I decided to take a more structured approach to mapping the environment by utilising depth first and A* search techniques.
+
+Using the new mapping algorithm the robot moves 60cm at a time from one cell to the next while still reading input for its sensors and updating the occupancy grid. When the robot moves into a new cell it checks each of its neighbours to see if they have been discovered or visited. If neither of these conditions are true the robot will add the cell to its "frontier" to come back and look at later. The robot then attempts to keep moving forwards unless there is an obstacle in the way. If there is an obstacle in the way then it will attempt to move into cells on the left or right of it. If the robot hits a dead end it will take the next cell off the frontier and perform an A* search to find the quickest path from the current cell back to the next unexplored cell. The mapping algorithm with continue in this way until there are no more unexplored cells and hence the map is complete.
+
+This technique proved to be fairly suitable to the problem as it ensured that, presuming the world is closed, the robot would eventually map all of it. To ensure that the same parts of the map would not be remapped I turned off the map updating function when the robot was backtracking. While I realise that the use of the A* function is not strictly necessary as backtracking could be implemented with a simple depth-first search, it speeds up map creation considerably by not having to move back through every single previous cell, but instead taking the shortest route to the next unvisited cell.
+
+\subsection{Localization}
+After a map of the environment has been created it can be used to aid the robot when hiding or seeking. Note that my map making application saves the generated map as a CSV file which can be loaded into the hiding and seeking programs for reference later.
+
+When I start the hider application, it loads the saved map from file and converts it a map consisting of 0,1 or -1; where 0 is a floor, 1 is a wall and -1 is "undefined" space which we can ignore. To the raw map (containing the original floating point values) to a more structured map I use a threshold value to ensure that cells which might have been incorrectly marks as being slightly occupied are not treated as walls. In this project I am using Otsu's method of thresholding 
+
+In order to localize our self in this map we can begin mapping our environment to build up a picture of what is currently around the robot. I can then use this information and compare each cell in the new map with the existing map to see if it uniquely matches up. If the there is a single unique match then we have localized the robot inside the map. If there are no matches or multiple matches, the program will continue mapping until the grid expands and then attempt to localize again, or until the entire world has been mapped (if we've mapped the whole world again then we clearly must be localized in the environment).
+
+This method works on the basis that at some point in the map there will emerge a definitive landmark that can only match as single arrangement of cells in the pre-existing map. However, there are several problems with the approach that make it less suitable when deployed in the real world. One is the fact that the time complexity of comparing the whole pre-existing map to the newly generated map information multiple times is hardly efficient. Secondly, this approach will not work if the robot is not placed such that the newly generated grid matches up with the existing map. For example, imagine a corridor three cells wide. The robot could be put in such a position that it thinks the corridor is only two cells wide. This localization method would fail in this scenario because of this section of the map would never sync up with the existing map.
+
+\subsection{Finding a Hiding Spot}
+
+\subsection{Finding Map Differences} 
+
+\section{Trail Runs}
+
+\section{Discussion of Trial Runs}
+
+\section{Evaluation of Project}
+
+\end{document}
