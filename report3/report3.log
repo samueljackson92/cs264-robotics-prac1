@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.9.6)  17 APR 2013 16:28
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.9.6)  17 APR 2013 23:49
 entering extended mode
  %&-line parsing enabled.
 **report3.tex
@@ -78,18 +78,18 @@ File: pdftex.def 2010/03/12 v0.04p Graphics/color for pdfTeX
 ) (./report3.aux)
 \openout1 = `report3.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
 
 *geometry auto-detecting driver*
 *geometry detected driver: pdftex*
@@ -146,31 +146,75 @@ driver: pdftex
 \everyMPtoPDFconversion=\toks19
 )
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <12> on input line 15.
+(Font)              <12> on input line 14.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 15.
+(Font)              <8> on input line 14.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 15.
+(Font)              <6> on input line 14.
  [1
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2] (./report3.aux) ) 
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2]
+<img/robot_pics/20130416_132221.jpg, id=13, 3276.24pt x 2457.18pt>
+File: img/robot_pics/20130416_132221.jpg Graphic file (type jpg)
+
+<use img/robot_pics/20130416_132221.jpg>
+<img/robot_pics/20130416_132253.jpg, id=14, 3276.24pt x 2457.18pt>
+File: img/robot_pics/20130416_132253.jpg Graphic file (type jpg)
+
+<use img/robot_pics/20130416_132253.jpg>
+<img/robot_pics/20130416_132300.jpg, id=15, 3276.24pt x 2457.18pt>
+File: img/robot_pics/20130416_132300.jpg Graphic file (type jpg)
+
+<use img/robot_pics/20130416_132300.jpg> [3 <./img/robot_pics/20130416_132221.j
+pg> <./img/robot_pics/20130416_132253.jpg>]
+<img/robot_pics/20130416_133043.jpg, id=19, 3276.24pt x 2457.18pt>
+File: img/robot_pics/20130416_133043.jpg Graphic file (type jpg)
+
+<use img/robot_pics/20130416_133043.jpg>
+<img/robot_pics/run1_example.jpg, id=20, 324.21124pt x 347.2975pt>
+File: img/robot_pics/run1_example.jpg Graphic file (type jpg)
+
+<use img/robot_pics/run1_example.jpg> [4 <./img/robot_pics/20130416_132300.jpg>
+ <./img/robot_pics/20130416_133043.jpg>]
+<img/robot_pics/20130416_132228.jpg, id=24, 3276.24pt x 2457.18pt>
+File: img/robot_pics/20130416_132228.jpg Graphic file (type jpg)
+
+<use img/robot_pics/20130416_132228.jpg>
+<img/robot_pics/localize1.jpg, id=25, 231.86626pt x 531.9875pt>
+File: img/robot_pics/localize1.jpg Graphic file (type jpg)
+
+<use img/robot_pics/localize1.jpg> [5 <./img/robot_pics/run1_example.jpg> <./im
+g/robot_pics/20130416_132228.jpg>]
+<img/robot_pics/20130416_142622.jpg, id=29, 3276.24pt x 2457.18pt>
+File: img/robot_pics/20130416_142622.jpg Graphic file (type jpg)
+
+<use img/robot_pics/20130416_142622.jpg> [6 <./img/robot_pics/localize1.jpg>]
+<img/robot_pics/20130416_135014.jpg, id=33, 3276.24pt x 2457.18pt>
+File: img/robot_pics/20130416_135014.jpg Graphic file (type jpg)
+
+<use img/robot_pics/20130416_135014.jpg>
+<img/robot_pics/seeker_example.jpg, id=34, 221.82875pt x 366.36874pt>
+File: img/robot_pics/seeker_example.jpg Graphic file (type jpg)
+
+<use img/robot_pics/seeker_example.jpg> [7 <./img/robot_pics/20130416_142622.jp
+g> <./img/robot_pics/20130416_135014.jpg>] [8 <./img/robot_pics/seeker_example.
+jpg>] [9] [10] (./report3.aux) ) 
 Here is how much of TeX's memory you used:
- 1352 strings out of 495061
- 17719 string characters out of 1182622
- 72585 words of memory out of 3000000
- 4563 multiletter control sequences out of 15000+50000
+ 1417 strings out of 495061
+ 19702 string characters out of 1182622
+ 74666 words of memory out of 3000000
+ 4616 multiletter control sequences out of 15000+50000
  7756 words of font info for 28 fonts, out of 3000000 for 9000
  28 hyphenation exceptions out of 8191
  25i,6n,32p,904b,232s stack positions out of 5000i,500n,10000p,200000b,50000s
-</usr
-/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texm
-f-texlive/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-texlive/fo
-nts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texmf-texlive/fonts/type1/pu
-blic/amsfonts/cm/cmr17.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfont
-s/cm/cmtt12.pfb>
-Output written on report3.pdf (2 pages, 68787 bytes).
+</usr/share/texmf-texlive/fonts/type1/public/am
+sfonts/cm/cmbx12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/c
+mr10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr12.pfb></u
+sr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/tex
+mf-texlive/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
+Output written on report3.pdf (10 pages, 21142343 bytes).
 PDF statistics:
- 29 PDF objects out of 1000 (max. 8388607)
+ 65 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 51 words of extra memory for PDF output out of 10000 (max. 10000000)
 
