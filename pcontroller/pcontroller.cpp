@@ -48,7 +48,7 @@ double PController::DoUpdate() {
 
 void PController::SimTurn(double angle) {
 	using namespace PlayerCc;
-	const double gain = 1.1;
+	const double gain = 1.15;
 	double turnrate=0, yaw=0, error=0;
 
 	robot->Read();

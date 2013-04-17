@@ -69,17 +69,17 @@ std::vector<std::vector<int> > MapLoader::ConvertToBinaryMap(
 Point MapLoader::FindHidingSpots(const std::vector<std::vector<int> >& mapData) {
 	int minScore = 16;
 	Point p;
-	for (int i =0; i< mapData.size(); i++) {
-		for (int j = 0; j< mapData[i].size(); j++) {
+	for (int i = 2; i< mapData.size()-2; i++) {
+		for (int j = 2; j< mapData[i].size()-2; j++) {
 			
-			int score = 0;
+			int score = 999999;
 
 			//if valid square
-			if(mapData[i][j] == 0) {
+			if(mapData[i][j] == 0 && mapData[i-1][j] >= 0 && mapData[i][j-1] >= 0&& mapData[i+1][j] >= 0 && mapData[i][j+1] >= 0) {
 				for(int k = j; k <= j+4; k++) {
 					if(j+4 >= mapData[i].size()) {
 						break;
-					} else if (mapData[i][k] <= 0) {
+					} else if (mapData[i][k] == 0) {
 						score++;
 					} else {
 						break;
@@ -89,7 +89,7 @@ Point MapLoader::FindHidingSpots(const std::vector<std::vector<int> >& mapData) 
 				for(int k = i; k <= i+4; k++) {
 					if(i+4 >= mapData.size()) {
 						break;
-					} else if (mapData[k][j] <= 0) {
+					} else if (mapData[k][j] == 0) {
 						score++;
 					} else {
 						break;
@@ -99,7 +99,7 @@ Point MapLoader::FindHidingSpots(const std::vector<std::vector<int> >& mapData) 
 				for(int k = j; k >= j-4; k--) {
 					if(j-4 < 0) {
 						break;
-					} else if (mapData[i][k] <= 0) {
+					} else if (mapData[i][k] == 0) {
 						score++;
 					} else {
 						break;
@@ -109,14 +109,14 @@ Point MapLoader::FindHidingSpots(const std::vector<std::vector<int> >& mapData) 
 				for(int k = i; k >= i-4; k--) {
 					if(i-4 < 0) {
 						break;
-					} else if (mapData[k][j] <= 0) {
+					} else if (mapData[k][j] == 0) {
 						score++;
 					} else {
 						break;
 					}
 				}
 
-				if(score <= minScore) {
+				if(score < minScore) {
 					minScore = score;
 					p.SetX(j);
 					p.SetY(i);

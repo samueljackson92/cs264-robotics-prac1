@@ -99,9 +99,17 @@ void OccupancyGrid::PrintFinalGrid(){
 	using namespace std;
 	double threshold = CalculateThreshold();
 
+	 cout << "\t";
+	for (int x = 0; x < grid_width; x++) {
+	  cout << x;
+	}
+	cout << endl;
 	for (int y = (grid_height-1); y >= 0; y--) {
+		cout << y << "\t"; 
+		
 		for (int x = 0; x < grid_width; x++) {
 			int value = GetCellValue(x, y);
+			//cout << (int)value;
 
 			if(value < threshold)
 				cout << ".";

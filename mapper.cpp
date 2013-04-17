@@ -19,6 +19,7 @@
 #include "occupancygrid/occupancygrid.h"
 #include "probabilitydist/point.h"
 #include "probabilitydist/probabilitydist.h"
+#include "vectorutils/matrixutils.h"
 #include "comparepoints.h"
 #include "mapper.h"
 
@@ -444,11 +445,30 @@ vector<double> Mapper::GetMapNeighbours(int x, int y) {
 
 void Mapper::LoadMapData(std::string filename) {
 	mapName = filename;
-	mapData = ml.ConvertToBinaryMap(ml.LoadMap(filename), 10);
+	vector<vector<double> > rawMap = ml.LoadMap(filename);
+	vector<int> vec;
+	
+	for(int i = 0; i < rawMap.size(); i++) {
+		for(int j = 0; j < rawMap[i].size(); j++) {
+			double val = rawMap[i][j];
+			val = (val < 0) ? 0 : val;
+			vec.push_back(val);
+		}
+	}
+
+	threshold = MatrixUtils::Otsu(vec);
+	mapData = ml.ConvertToBinaryMap(rawMap, threshold);
 	map_height = mapData.size();
 
 	if (map_height > 0) {
 		map_width = mapData[0].size();	
+	}
+	
+	for (int i = 0; i< mapData.size(); i++) {
+	  for(int j=0; j<mapData[i].size();j++) {
+	    cout << mapData[i][j];
+	  }
+	  cout << endl;
 	}
 }
 
