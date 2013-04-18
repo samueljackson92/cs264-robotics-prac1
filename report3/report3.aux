@@ -1,33 +1,41 @@
 \relax 
-\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}}
-\@writefile{toc}{\contentsline {section}{\numberline {2}Discussion of the Algorithms Used}{1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Mapping Techniques}{1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Localization}{2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Finding a Hiding Spot}{2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Finding Map Differences}{2}}
-\@writefile{toc}{\contentsline {section}{\numberline {3}Trail Runs}{3}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Making a Map}{3}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Pioneer robot at start point in a simple environment.}}{3}}
-\newlabel{fig:robot-map-start}{{1}{3}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Pioneer robot after moving forward in the environment.}}{3}}
-\newlabel{fig:robot-map-moved}{{2}{3}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Pioneer robot after performing a turn. This angle was meant to be approximately 90 degrees but with up to 5 degrees of error.}}{4}}
-\newlabel{fig:robot-map-turned}{{3}{4}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Pioneer robot after it has visited every part of the environment and finished mapping.}}{4}}
-\newlabel{fig:robot-map-finished}{{4}{4}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Screen shot of the map produced by the trial run shown in the images.}}{5}}
-\newlabel{fig:robot-map-run1}{{5}{5}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Hiding the Robot}{5}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Pioneer trying to localize at start point in first environment.}}{5}}
-\newlabel{fig:robot-map-localize1-image}{{6}{5}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Screen shot showing a pioneer correctly localizing in a map where the robot starts at the same square (Note that save maps are buffered with 2 cells of padding hence why the robot changes position from (2,2) to (4,4). The hiding spot at the bottom is also (4,4) so the robot does not move.}}{6}}
-\newlabel{fig:robot-map-localize1}{{7}{6}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces A Pioneer successfully localizing in another environment. The initial mapping ran from one cell behind (next to the wooden table)}}{7}}
-\newlabel{fig:robot-map-localize2}{{8}{7}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Finding Map Differences}{7}}
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces A Pioneer about to find differences in the map. Complete with obstacle.}}{7}}
-\newlabel{fig:robot-map-obstacle-image}{{9}{7}}
-\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Screen shot after mapping the above environment. Notice the grid differs by one square on the map on the bottom.}}{8}}
-\newlabel{fig:robot-map-obstacle}{{10}{8}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Discussion of Trial Runs}{8}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Evaluation of Project}{9}}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{3}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Discussion of the Algorithms Used}{3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Mapping Techniques}{3}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {1}Modified depth-first search algorithm using both in mapping and during localization.}{3}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {2}A* search algorithm used in path finding and mapping.}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Localization}{6}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {3}Function for the localization of a robot.}{6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Finding a Hiding Spot}{7}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {4}Function for finding a hiding spot for the robot.}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Finding Map Differences}{9}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {5}Function for finding differences in the map.}{9}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Trail Runs}{9}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Making a Map}{9}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Pioneer robot at start point in a simple environment.\relax }}{10}}
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:robot-map-start}{{1}{10}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Pioneer robot after moving forward in the environment.\relax }}{10}}
+\newlabel{fig:robot-map-moved}{{2}{10}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Pioneer robot after performing a turn. This angle was meant to be approximately 90 degrees but with up to 5 degrees of error.\relax }}{11}}
+\newlabel{fig:robot-map-turned}{{3}{11}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Pioneer robot after it has visited every part of the environment and finished mapping.\relax }}{11}}
+\newlabel{fig:robot-map-finished}{{4}{11}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Screen shot of the map produced by the trial run shown in the images.\relax }}{12}}
+\newlabel{fig:robot-map-run1}{{5}{12}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Hiding the Robot}{12}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Pioneer trying to localize at start point in first environment.\relax }}{12}}
+\newlabel{fig:robot-map-localize1-image}{{6}{12}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Screen shot showing a pioneer correctly localizing in a map where the robot starts at the same square (Note that save maps are buffered with 2 cells of padding hence why the robot changes position from (2,2) to (4,4). The hiding spot at the bottom is also (4,4) so the robot does not move.\relax }}{13}}
+\newlabel{fig:robot-map-localize1}{{7}{13}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces A Pioneer successfully localizing in another environment. The initial mapping ran from one cell behind (next to the wooden table)\relax }}{14}}
+\newlabel{fig:robot-map-localize2}{{8}{14}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Finding Map Differences}{14}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces A Pioneer about to find differences in the map. Complete with hiding human.\relax }}{14}}
+\newlabel{fig:robot-map-obstacle-image}{{9}{14}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Screen shot after mapping the above environment. Notice the grid differs by one square on the map at the bottom because the robot has recognised the human obstacle.\relax }}{15}}
+\newlabel{fig:robot-map-obstacle}{{10}{15}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Discussion of Trial Runs}{15}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Evaluation of Project}{16}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Shows the result of performing Otsu's method of thresholding on the occupancy grid built from the first trial run (output shown in figure 5\hbox {}). The left heatmap shows without thresholding, compared with the thresholded map on the right.\relax }}{17}}
+\newlabel{fig:robot-map-start}{{11}{17}}

@@ -1,0 +1,12 @@
+\contentsline {section}{\numberline {1}Introduction}{3}
+\contentsline {section}{\numberline {2}Discussion of the Algorithms Used}{3}
+\contentsline {subsection}{\numberline {2.1}Mapping Techniques}{3}
+\contentsline {subsection}{\numberline {2.2}Localization}{6}
+\contentsline {subsection}{\numberline {2.3}Finding a Hiding Spot}{7}
+\contentsline {subsection}{\numberline {2.4}Finding Map Differences}{9}
+\contentsline {section}{\numberline {3}Trail Runs}{9}
+\contentsline {subsection}{\numberline {3.1}Making a Map}{9}
+\contentsline {subsection}{\numberline {3.2}Hiding the Robot}{12}
+\contentsline {subsection}{\numberline {3.3}Finding Map Differences}{14}
+\contentsline {section}{\numberline {4}Discussion of Trial Runs}{15}
+\contentsline {section}{\numberline {5}Evaluation of Project}{16}

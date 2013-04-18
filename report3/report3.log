@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.9.6)  17 APR 2013 23:49
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.9.6)  18 APR 2013 22:18
 entering extended mode
  %&-line parsing enabled.
 **report3.tex
@@ -75,21 +75,92 @@ File: pdftex.def 2010/03/12 v0.04p Graphics/color for pdfTeX
 ))
 \Gin@req@height=\dimen107
 \Gin@req@width=\dimen108
-) (./report3.aux)
+)
+(/usr/share/texmf-texlive/tex/latex/listings/listings.sty
+\lst@mode=\count92
+\lst@gtempboxa=\box28
+\lst@token=\toks18
+\lst@length=\count93
+\lst@currlwidth=\dimen109
+\lst@column=\count94
+\lst@pos=\count95
+\lst@lostspace=\dimen110
+\lst@width=\dimen111
+\lst@newlines=\count96
+\lst@lineno=\count97
+\lst@maxwidth=\dimen112
+
+(/usr/share/texmf-texlive/tex/latex/listings/lstmisc.sty
+File: lstmisc.sty 2007/02/22 1.4 (Carsten Heinz)
+\c@lstnumber=\count98
+\lst@skipnumbers=\count99
+\lst@framebox=\box29
+)
+(/usr/share/texmf-texlive/tex/latex/listings/listings.cfg
+File: listings.cfg 2007/02/22 1.4 listings configuration
+))
+Package: listings 2007/02/22 1.4 (Carsten Heinz)
+
+(./listing-config.tex (/usr/share/texmf-texlive/tex/latex/graphics/color.sty
+Package: color 2005/11/14 v1.0j Standard LaTeX Color (DPC)
+
+(/etc/texmf/tex/latex/config/color.cfg
+File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
+)
+Package color Info: Driver file: pdftex.def on input line 130.
+)
+(/usr/share/texmf/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2007/01/21 v2.11 LaTeX color extensions (UK)
+
+(/etc/texmf/tex/latex/config/color.cfg
+File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
+)
+Package xcolor Info: Driver file: pdftex.def on input line 225.
+LaTeX Info: Redefining \color on input line 702.
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1337.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1341.
+Package xcolor Info: Model `RGB' extended on input line 1353.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1355.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1356.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1357.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1358.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1359.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1360.
+)
+(/usr/share/texmf-texlive/tex/latex/caption/caption.sty
+Package: caption 2009/10/09 v3.1k Customizing captions (AR)
+
+(/usr/share/texmf-texlive/tex/latex/caption/caption3.sty
+Package: caption3 2009/10/09 v3.1k caption3 kernel (AR)
+\captionmargin=\dimen113
+\captionmargin@=\dimen114
+\captionwidth=\dimen115
+\caption@indent=\dimen116
+\caption@parindent=\dimen117
+\caption@hangindent=\dimen118
+)
+\c@ContinuedFloat=\count100
+Package caption Info: float package is loaded.
+Package caption Info: listings package is loaded.
+)) (./report3.aux
+
+LaTeX Warning: Label `fig:robot-map-start' multiply defined.
+
+)
 \openout1 = `report3.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
 
 *geometry auto-detecting driver*
 *geometry detected driver: pdftex*
@@ -134,87 +205,177 @@ driver: pdftex
 -----------------------
 (/usr/share/texmf-texlive/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count92
-\scratchdimen=\dimen109
-\scratchbox=\box28
-\nofMPsegments=\count93
-\nofMParguments=\count94
-\everyMPshowfont=\toks18
-\MPscratchCnt=\count95
-\MPscratchDim=\dimen110
-\MPnumerator=\count96
-\everyMPtoPDFconversion=\toks19
+\scratchcounter=\count101
+\scratchdimen=\dimen119
+\scratchbox=\box30
+\nofMPsegments=\count102
+\nofMParguments=\count103
+\everyMPshowfont=\toks19
+\MPscratchCnt=\count104
+\MPscratchDim=\dimen120
+\MPnumerator=\count105
+\everyMPtoPDFconversion=\toks20
 )
+\c@lstlisting=\count106
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: End \AtBeginDocument code.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <12> on input line 14.
+(Font)              <12> on input line 18.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 14.
+(Font)              <8> on input line 18.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 14.
+(Font)              <6> on input line 18.
  [1
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2]
-<img/robot_pics/20130416_132221.jpg, id=13, 3276.24pt x 2457.18pt>
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] (./report3.toc
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 3.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 3.
+)
+\tf@toc=\write3
+\openout3 = `report3.toc'.
+
+
+[2
+
+] (/usr/share/texmf-texlive/tex/latex/listings/lstlang1.sty
+File: lstlang1.sty 2004/09/05 1.3 listings language file
+)
+(/usr/share/texmf-texlive/tex/latex/listings/lstlang1.sty
+File: lstlang1.sty 2004/09/05 1.3 listings language file
+)
+(/usr/share/texmf-texlive/tex/latex/listings/lstmisc.sty
+File: lstmisc.sty 2007/02/22 1.4 (Carsten Heinz)
+)
+Overfull \hbox (6.0pt too wide) in paragraph at lines 33--33
+[][][][][][][] 
+ []
+
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 36.
+(/usr/share/texmf-texlive/tex/latex/base/omscmr.fd
+File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <8> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 36.
+LaTeX Font Info:    Try loading font information for OML+cmr on input line 37.
+
+(/usr/share/texmf-texlive/tex/latex/base/omlcmr.fd
+File: omlcmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OML/cmr/m/n' in size <8> not available
+(Font)              Font shape `OML/cmm/m/it' tried instead on input line 37.
+ [3
+
+]
+Overfull \hbox (6.0pt too wide) in paragraph at lines 111--111
+[][][][][][][] 
+ []
+
+[4] [5]
+Overfull \hbox (6.0pt too wide) in paragraph at lines 224--224
+[][][][][][][] 
+ []
+
+[6]
+Overfull \hbox (6.0pt too wide) in paragraph at lines 295--295
+[][][][][][][] 
+ []
+
+[7]
+Overfull \hbox (40.45953pt too wide) in paragraph at lines 309--311
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+[8]
+Overfull \hbox (6.0pt too wide) in paragraph at lines 373--373
+[][][][][][][] 
+ []
+
+<img/robot_pics/20130416_132221.jpg, id=38, 3276.24pt x 2457.18pt>
 File: img/robot_pics/20130416_132221.jpg Graphic file (type jpg)
 
-<use img/robot_pics/20130416_132221.jpg>
-<img/robot_pics/20130416_132253.jpg, id=14, 3276.24pt x 2457.18pt>
+<use img/robot_pics/20130416_132221.jpg> [9]
+<img/robot_pics/20130416_132253.jpg, id=42, 3276.24pt x 2457.18pt>
 File: img/robot_pics/20130416_132253.jpg Graphic file (type jpg)
 
 <use img/robot_pics/20130416_132253.jpg>
-<img/robot_pics/20130416_132300.jpg, id=15, 3276.24pt x 2457.18pt>
+<img/robot_pics/20130416_132300.jpg, id=43, 3276.24pt x 2457.18pt>
 File: img/robot_pics/20130416_132300.jpg Graphic file (type jpg)
 
-<use img/robot_pics/20130416_132300.jpg> [3 <./img/robot_pics/20130416_132221.j
-pg> <./img/robot_pics/20130416_132253.jpg>]
-<img/robot_pics/20130416_133043.jpg, id=19, 3276.24pt x 2457.18pt>
+<use img/robot_pics/20130416_132300.jpg> [10 <./img/robot_pics/20130416_132221.
+jpg> <./img/robot_pics/20130416_132253.jpg>]
+<img/robot_pics/20130416_133043.jpg, id=47, 3276.24pt x 2457.18pt>
 File: img/robot_pics/20130416_133043.jpg Graphic file (type jpg)
 
 <use img/robot_pics/20130416_133043.jpg>
-<img/robot_pics/run1_example.jpg, id=20, 324.21124pt x 347.2975pt>
+<img/robot_pics/run1_example.jpg, id=48, 324.21124pt x 347.2975pt>
 File: img/robot_pics/run1_example.jpg Graphic file (type jpg)
 
-<use img/robot_pics/run1_example.jpg> [4 <./img/robot_pics/20130416_132300.jpg>
- <./img/robot_pics/20130416_133043.jpg>]
-<img/robot_pics/20130416_132228.jpg, id=24, 3276.24pt x 2457.18pt>
+<use img/robot_pics/run1_example.jpg> [11 <./img/robot_pics/20130416_132300.jpg
+> <./img/robot_pics/20130416_133043.jpg>]
+<img/robot_pics/20130416_132228.jpg, id=52, 3276.24pt x 2457.18pt>
 File: img/robot_pics/20130416_132228.jpg Graphic file (type jpg)
 
 <use img/robot_pics/20130416_132228.jpg>
-<img/robot_pics/localize1.jpg, id=25, 231.86626pt x 531.9875pt>
+<img/robot_pics/localize1.jpg, id=53, 231.86626pt x 531.9875pt>
 File: img/robot_pics/localize1.jpg Graphic file (type jpg)
 
-<use img/robot_pics/localize1.jpg> [5 <./img/robot_pics/run1_example.jpg> <./im
-g/robot_pics/20130416_132228.jpg>]
-<img/robot_pics/20130416_142622.jpg, id=29, 3276.24pt x 2457.18pt>
+<use img/robot_pics/localize1.jpg> [12 <./img/robot_pics/run1_example.jpg> <./i
+mg/robot_pics/20130416_132228.jpg>]
+<img/robot_pics/20130416_142622.jpg, id=57, 3276.24pt x 2457.18pt>
 File: img/robot_pics/20130416_142622.jpg Graphic file (type jpg)
 
-<use img/robot_pics/20130416_142622.jpg> [6 <./img/robot_pics/localize1.jpg>]
-<img/robot_pics/20130416_135014.jpg, id=33, 3276.24pt x 2457.18pt>
+<use img/robot_pics/20130416_142622.jpg> [13 <./img/robot_pics/localize1.jpg>]
+<img/robot_pics/20130416_135014.jpg, id=62, 3276.24pt x 2457.18pt>
 File: img/robot_pics/20130416_135014.jpg Graphic file (type jpg)
 
 <use img/robot_pics/20130416_135014.jpg>
-<img/robot_pics/seeker_example.jpg, id=34, 221.82875pt x 366.36874pt>
+<img/robot_pics/seeker_example.jpg, id=63, 221.82875pt x 366.36874pt>
 File: img/robot_pics/seeker_example.jpg Graphic file (type jpg)
 
-<use img/robot_pics/seeker_example.jpg> [7 <./img/robot_pics/20130416_142622.jp
-g> <./img/robot_pics/20130416_135014.jpg>] [8 <./img/robot_pics/seeker_example.
-jpg>] [9] [10] (./report3.aux) ) 
+<use img/robot_pics/seeker_example.jpg> [14 <./img/robot_pics/20130416_142622.j
+pg> <./img/robot_pics/20130416_135014.jpg>] [15 <./img/robot_pics/seeker_exampl
+e.jpg>] <img/og_no_threshold.png, id=70, 855.195pt x 513.92pt>
+File: img/og_no_threshold.png Graphic file (type png)
+
+<use img/og_no_threshold.png>
+<img/og_thresholded.png, id=72, 854.19125pt x 513.92pt>
+File: img/og_thresholded.png Graphic file (type png)
+
+<use img/og_thresholded.png>
+Overfull \hbox (2.2222pt too wide) in paragraph at lines 509--511
+[][] [] 
+ []
+
+[16] [17 <./img/og_no_threshold.png> <./img/og_thresholded.png>] (./report3.aux
+)
+
+LaTeX Warning: There were multiply-defined labels.
+
+ ) 
 Here is how much of TeX's memory you used:
- 1417 strings out of 495061
- 19702 string characters out of 1182622
- 74666 words of memory out of 3000000
- 4616 multiletter control sequences out of 15000+50000
- 7756 words of font info for 28 fonts, out of 3000000 for 9000
+ 4434 strings out of 495061
+ 65055 string characters out of 1182622
+ 165615 words of memory out of 3000000
+ 7579 multiletter control sequences out of 15000+50000
+ 8373 words of font info for 30 fonts, out of 3000000 for 9000
  28 hyphenation exceptions out of 8191
- 25i,6n,32p,904b,232s stack positions out of 5000i,500n,10000p,200000b,50000s
-</usr/share/texmf-texlive/fonts/type1/public/am
-sfonts/cm/cmbx12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/c
-mr10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr12.pfb></u
-sr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/tex
-mf-texlive/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on report3.pdf (10 pages, 21142343 bytes).
+ 39i,6n,67p,911b,1644s stack positions out of 5000i,500n,10000p,200000b,50000s
+</usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/sha
+re/texmf-texlive/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texmf-te
+xlive/fonts/type1/public/amsfonts/cm/cmbx8.pfb></usr/share/texmf-texlive/fonts/
+type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texmf-texlive/fonts/type1/public
+/amsfonts/cm/cmr10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm
+/cmr12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr17.pfb><
+/usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/te
+xmf-texlive/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texmf-texlive/f
+onts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texmf-texlive/fonts/type1/p
+ublic/amsfonts/cm/cmtt12.pfb>
+Output written on report3.pdf (17 pages, 21283001 bytes).
 PDF statistics:
- 65 PDF objects out of 1000 (max. 8388607)
+ 116 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 51 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 61 words of extra memory for PDF output out of 10000 (max. 10000000)
 

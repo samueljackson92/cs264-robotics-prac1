@@ -32,7 +32,10 @@ std::vector<std::vector<double> > MapLoader::LoadMap(std::string filename) {
 std::vector<Point> MapLoader::FindNewCells(const std::vector<std::vector<int> >& map1, 
 	const std::vector<std::vector<int> >& map2) {
 
+	//vector of points that have changed
 	std::vector<Point> diffPoints;
+
+	//loop over old map and compare each point with the new map
 	for(int i=0; i< map1.size(); i++) {
 		for (int j=0; j < map1[i].size(); j++) {
 			if(map1[i][j] != map2[i][j]) {
@@ -69,13 +72,20 @@ std::vector<std::vector<int> > MapLoader::ConvertToBinaryMap(
 Point MapLoader::FindHidingSpots(const std::vector<std::vector<int> >& mapData) {
 	int minScore = 16;
 	Point p;
+
+	//for every cell in the grid (ignoring the buffering around the outside of the map)
 	for (int i = 2; i< mapData.size()-2; i++) {
 		for (int j = 2; j< mapData[i].size()-2; j++) {
 			
+			//certified big number
+			//guaranteed to be large
 			int score = 999999;
 
 			//if valid square
 			if(mapData[i][j] == 0 && mapData[i-1][j] >= 0 && mapData[i][j-1] >= 0&& mapData[i+1][j] >= 0 && mapData[i][j+1] >= 0) {
+
+				//get all the neigbours 4 away from each cell in +/-x and +/-y
+
 				for(int k = j; k <= j+4; k++) {
 					if(j+4 >= mapData[i].size()) {
 						break;
@@ -116,6 +126,7 @@ Point MapLoader::FindHidingSpots(const std::vector<std::vector<int> >& mapData) 
 					}
 				}
 
+				//if this score lower, set it as the new point to hide at
 				if(score < minScore) {
 					minScore = score;
 					p.SetX(j);
@@ -125,6 +136,7 @@ Point MapLoader::FindHidingSpots(const std::vector<std::vector<int> >& mapData) 
 		}
 	}
 
+	//return the suggested hiding spot
 	return p;
 }
 

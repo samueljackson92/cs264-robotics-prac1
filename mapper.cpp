@@ -67,20 +67,23 @@ void Mapper::StartMapping(bool localize) {
 	vector<Cell*> frontier;
 
 	
+	//init the starting cell
 	Cell* start = grid.GetCurrentCell();
 	start->SetDiscovered(true);
 	start->SetVisited(true);
 	start->SetValue(0);
 
+	//add it to the frontier
 	frontier.push_back(start);
 
 	Cell* current = start;
-	Cell* nextCell;
+	Cell* nextCell = NULL;
 
 	//0 = NORTH, 1 = EAST, 2 = SOUTH, 3 = WEST
 	int direction = 1;
 	backtracking = false;
 
+	//if we're not attempting to localize
 	if(!localize) {
 		localized = true;
 	}
@@ -92,14 +95,17 @@ void Mapper::StartMapping(bool localize) {
 
 	Point myLocation;
 
+	//if we haven't localized yet, attempt to localize
 	if(!localized) {
 		myLocation = Localize();
 	}
 
 	//while there are still unexplored cells.
+	//or we haven't yet managed to localize
 	while((!frontier.empty() && !localize) || (!frontier.empty() && !localized)) {
-		//find the 4 neighbours
 		current->SetValue(0);
+
+		//find the 4 neighbours
 		threshold = grid.CalculateThreshold()/2;
 
 		vector<Cell*> neighbours = GetNeighbours(current);
@@ -120,6 +126,7 @@ void Mapper::StartMapping(bool localize) {
 			}
 		}
 
+		//add neighbours to frontier for later examination
 		for(vector<Cell*>::iterator it = neighbours.begin(); it != neighbours.end(); ++it) {
 			Cell *neighbour = *it;
 			if(neighbour->GetValue() <= threshold) {
@@ -137,6 +144,7 @@ void Mapper::StartMapping(bool localize) {
 		cout << *current << endl;
 		cout << *nextCell << endl;
 
+		//if we are heading backwards
 		if(backtracking) {
 			//get next non visited cell on frontier.
 			while(!frontier.empty()) {
@@ -150,18 +158,21 @@ void Mapper::StartMapping(bool localize) {
 					break;
 				}
 			}
-		} else {		
+		} else {
+			//just move to the next cell.
 			MoveToNextCell(*current, *nextCell);
 			nextCell->SetVisited(true);
 			current = nextCell;
 		}
 
+		//if we're not localized, attempt to
 		if(!localized) {
 			myLocation = Localize();
 		}
 
 	}
 
+	//if we we're trying to localize, move to a hiding spot
 	if(localize && localized) {
 		cout << "Moving to hiding spot!!" << endl;
 		grid.SetRobotPosition(myLocation.GetX(), myLocation.GetY());
@@ -185,50 +196,77 @@ void Mapper::Hide() {
 
 
 vector<Cell*> Mapper::FindPath(Cell* start, Cell* goal) {
+	//define map of f scores, g scores
 	map<Cell*, int> f_score;
 	map<Cell*, int> g_score;
+
+	//close and open sets
 	vector<Cell*> closed_set;
 	vector<Cell*> in_queue;
+
+	//map for paths reoonstruction
 	map<Cell*, Cell*> came_from;
+
+	//finished path to follow
 	vector<Cell*> path;
 
-	cout << *start << *goal << endl;
+	//Priority queue of cells in frontier
+	//ordered shortest distance to goal first
 	priority_queue<Cell*, vector<Cell*>, ComparePoints> frontier(ComparePoints(goal, f_score));
+
+	//add where we are to frontier
 	frontier.push(start);
 
+	//Init start cell scores
 	g_score[start] = 0;
 	f_score[start] = g_score[start] + ComparePoints::Distance(start, goal);
 
 	Cell* current;
+
+	//while there are still potential pathways
 	while (!frontier.empty()) {
+		//get next best looking cell
 		current = frontier.top();
 
+		//if its the goal, we're done!
+		//Reconstruct the path and return it
 		if(*current == *goal) {
 			return ReconstructPath(came_from, goal);
 		}
+
+		//else add it to closed set and examine it
 		closed_set.push_back(current);
 		frontier.pop();
 
+		//get the neighbours of the current cell
 		vector<Cell*> neighbours = GetNeighbours(current);
 		for (vector<Cell*>::iterator it = neighbours.begin();
 			it != neighbours.end(); ++it) {
 			Cell* neighbour = *it;
 
+			//check if the neighbour is a valid cell
 			if(neighbour->GetValue() <= threshold) {
 				int tentative_g_score = g_score[current] + 1;
 
+				//if we've already examined it and it's score isn't any better just forget
+				//and contiune with next neighbour
 				if(vec_contains(closed_set, neighbour)) {
 					if(tentative_g_score >= g_score[neighbour]) {
 						continue;
 					}
 				}
 
+				//if its not already in the queue to be looked at
+				//or has a shorter path score
 				if(!vec_contains(in_queue, neighbour)
 					|| tentative_g_score < g_score[(neighbour)]) {
 					came_from[neighbour] = current;
+
+					//compute the new scores for this neighbour
 					g_score[neighbour] = tentative_g_score;
 					f_score[neighbour] = g_score[neighbour] + ComparePoints::Distance(neighbour, goal);
 
+					//if it's not already queued, queue it!
 					if(!vec_contains(in_queue, neighbour)) {
 						frontier.push(neighbour);
 						in_queue.push_back(neighbour);
@@ -238,6 +276,7 @@ vector<Cell*> Mapper::FindPath(Cell* start, Cell* goal) {
 		}
 	}
 
+	//return the empty path if no path found
 	return path;
 }
 
@@ -270,11 +309,15 @@ vector<Cell*> Mapper::ReconstructPath(map<Cell*, Cell*> came_from,
 	Cell* current_node) {
 
 	vector<Cell*> vec;
+	//if current node in the map
 	if(came_from.find(current_node) != came_from.end()) {
+		//recursively build the map
 		vec = ReconstructPath(came_from, came_from[current_node]);
+		//add this node to the end of the path
 		vec.push_back(current_node);
 		return vec;
 	} else {
+		//just add it to the end of the path
 		vec.push_back(current_node);
 		return vec;
 	}
@@ -375,6 +418,8 @@ Point Mapper::Localize() {
 	me.SetX(-1);
 	me.SetY(-1);
 
+	//only attempt to localize when the grid expands some more
+	//(or at the start)
 	if(grid_height != grid.GetGridHeight() 
 		|| grid_width != grid.GetGridWidth()) {
 
@@ -391,8 +436,11 @@ Point Mapper::Localize() {
 						double mval = mapData[i+k][j+l];
 						double gval = grid.GetCell(l,k)->GetValue();
 
+						//check if cells match
 						if((gval == 0 && mval == 0) || (gval > 0 && mval > 0)) {
 							count++;
+
+						//count it as matched if it's unvisited
 						} else if(gval < 0) {
 							count++;
 						}
@@ -414,6 +462,7 @@ Point Mapper::Localize() {
 
 		cout << matches << endl;
 
+		//if we have exactly one match we're localized
 		if(matches == 1) {
 			localized = true;
 		}
@@ -421,6 +470,8 @@ Point Mapper::Localize() {
 
 	cout << *grid.GetCurrentCell();
 	cout << "Point x: " << me.GetX() << " y: " << me.GetY() << endl;
+
+	//return the point we think we're at
 	return me;
 }
 

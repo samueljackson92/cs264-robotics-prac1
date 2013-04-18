@@ -35,35 +35,16 @@ if __name__ == "__main__":
 		print "Exception: ", e
 		exit(-1)
 	
-	dat = dat[::-1]
+	#dat = dat[::-1]
 
-	def average_list(listdat):
-		return float(sum(listdat)) / float(len(listdat))
-
-	def weight(listdat):
-		maxdat = max(listdat)
-		weights_list = [(float(maxdat - item)/ float(maxdat)) for item in listdat]
-		return average_list(weights_list)/2
-
-	flatdat = [item for sublist in dat for item in sublist if item > 0 ]
-	average = average_list(flatdat)
-	threshold = math.ceil(math.floor(average) * weight(flatdat)) 
-
-	print "\nSTATS---------------------------------"
-	print "Average Density: %0.3f" % average
-	print "Suggested Lower Threshold:  %0.3f" % 5.6
+	threshold = 0
 
 	img = dat[:,:]
 
 	hm = plt.figure(figsize=(12,5))
 	hm.suptitle('Heat Map of Occupancy Grid', fontsize=14, fontweight='bold')
-
-	plt.subplot(121)
-	plt.title('Without Threshold')
-	hm1, imgplot1 = createHeatmap(img)
-	plt.subplot(122)
-	plt.title('With Lower Threshold : ' + str(34))
-	hm2, imgplot2 = createHeatmap(img, 34, None)
+	#hm.title('With Threshold : ' + str(threshold))
+	hm2, imgplot2 = createHeatmap(img, threshold, None)
 
 	plt.colorbar()
 	plt.show()
